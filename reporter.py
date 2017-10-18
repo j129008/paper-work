@@ -1,10 +1,25 @@
 import pickle
 import re
 from collections import Counter
+from lib.death_book import txt_loader, book
+from tqdm import tqdm as bar
+import sys
+
+def loadTestData(books):
+    X, Y = [], []
+    for book in bar( books ):
+        X.extend( [ feature for feature in book.feature_list ] )
+        Y.extend( [ end_lab for end_lab in book.end_label ] )
+    return X, Y
+
+if len(sys.argv) == 2:
+    books = [ book( txt ) for txt in bar ( txt_loader(sys.argv[1]) ) ]
+    X, Y = loadTestData(books)
+else:
+    X    = pickle.load(open('./pickles/X_private.pkl', 'rb'))
+    Y    = pickle.load(open('./pickles/Y_private.pkl', 'rb'))
 
 crf  = pickle.load(open('./pickles/crf_best_model.pkl', 'rb'))
-X    = pickle.load(open('./pickles/X_private.pkl', 'rb'))
-Y    = pickle.load(open('./pickles/Y_private.pkl', 'rb'))
 P    = crf.predict([X])[0]
 text = "".join( [ele['@0'] for ele in X] )
 
