@@ -21,6 +21,24 @@ for book in bar( books ):
     X.extend( [ feature for feature in book.feature_list ] )
     Y.extend( [ end_lab for end_lab in book.end_label ] )
 
+# get label
+def loadLabel():
+    txt_no_comma_all = ''
+    for book in bar( books ):
+        txt_no_comma_all += book.no_comma_text
+    lab_addr = label(txt_no_comma_all, txt_loader('./ref/known/address2.txt'), 'address')
+    lab_office = label(txt_no_comma_all, txt_loader('./ref/known/office2.txt'), 'office')
+    lab_name = label(txt_no_comma_all, txt_loader('./ref/known/name5.txt'), 'name')
+    lab_nianhao = label(txt_no_comma_all, txt_loader('./ref/known/nianhao.txt'), 'nianhao')
+    lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
+
+    for i in range(len(X)):
+        X[i]['addr'] = lab_addr[i]
+        X[i]['office'] = lab_office[i]
+        X[i]['name'] = lab_name[i]
+        X[i]['nianhao'] = lab_nianhao[i]
+        X[i]['entry'] = lab_entry[i]
+
 pickle.dump(X, open('./pickles/X_all.pkl', 'wb'))
 pickle.dump(Y, open('./pickles/Y_all.pkl', 'wb'))
 
@@ -54,7 +72,7 @@ def randomCV():
     rs = RandomizedSearchCV(crf, params_space,
                             cv      = 3,
                             verbose = 1,
-                            n_jobs  = 1,
+                            n_jobs  = 4,
                             n_iter  = 50,
                             scoring = f1_scorer)
 

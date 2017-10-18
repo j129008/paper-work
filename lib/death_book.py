@@ -42,11 +42,7 @@ class book:
                 '@1'     : text_append[i+1],
                 '@1~2'   : text_append[i+1   : i+3],
                 '@2'     : text_append[i+2],
-                'y@-1'   : self.end_label[i-2-1],
-                'y@-2'   : self.end_label[i-2-2],
-                'y@-3'   : self.end_label[i-2-3],
-                'y@-4'   : self.end_label[i-2-4],
-                'y@-5'   : self.end_label[i-2-5]
+                'y@-1'   : self.end_label[i-2-1]
             })
         return feature_list
 

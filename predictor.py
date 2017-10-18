@@ -1,20 +1,30 @@
 import pickle
 from lib.death_book import txt_loader, book
 from sklearn_crfsuite import metrics
+from tqdm import tqdm as bar
+import sys
 
-X_private = pickle.load( open('./pickles/X_private.pkl', 'rb') )
-Y_private = pickle.load( open('./pickles/Y_private.pkl', 'rb') )
+def loadTestData(books):
+    X, Y = [], []
+    for book in bar( books ):
+        X.extend( [ feature for feature in book.feature_list ] )
+        Y.extend( [ end_lab for end_lab in book.end_label ] )
+    return X, Y
+
+if len(sys.argv) == 2:
+    books = [ book( txt ) for txt in bar ( txt_loader(sys.argv[1]) ) ]
+    X_private, Y_private = loadTestData(books)
+else:
+    X_private = pickle.load( open('./pickles/X_private.pkl', 'rb') )
+    Y_private = pickle.load( open('./pickles/Y_private.pkl', 'rb') )
+
 Y_pred = []
 
-label_cache = [ 'I', 'I', 'I', 'I' , 'I']
+label_cache = [ 'I' ]
 crf_model = pickle.load( open('./pickles/crf_best_model.pkl', 'rb') )
 for feature in X_private:
     feature_copy = feature.copy()
     feature_copy['y@-1'] = label_cache[-1]
-    feature_copy['y@-2'] = label_cache[-2]
-    feature_copy['y@-3'] = label_cache[-3]
-    feature_copy['y@-4'] = label_cache[-4]
-    feature_copy['y@-5'] = label_cache[-5]
     pred = crf_model.predict_single([feature_copy])[0]
     Y_pred.append(pred)
     label_cache.append(pred)
