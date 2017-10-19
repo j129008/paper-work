@@ -2,7 +2,7 @@ import regex as re
 from tqdm import tqdm as bar
 
 def txt_loader(path):
-    return open(path, 'r').read().split('\n')[:-1]
+    return open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
 
 def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
