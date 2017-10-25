@@ -20,22 +20,22 @@ else:
 
 Y_pred = []
 
-label_cache = [ 'I' ]
+#  label_cache = [ 'I' ]
 crf_model = pickle.load( open('./pickles/crf_best_model.pkl', 'rb') )
-for feature in X_private:
-    feature_copy = feature.copy()
-    feature_copy['y@-1'] = label_cache[-1]
-    pred = crf_model.predict_single([feature_copy])[0]
-    Y_pred.append(pred)
-    label_cache.append(pred)
-    label_cache.pop(0)
+#  for feature in X_private:
+    #  feature_copy = feature.copy()
+    #  feature_copy['y@-1'] = label_cache[-1]
+    #  pred = crf_model.predict_single([feature_copy])[0]
+    #  Y_pred.append(pred)
+    #  label_cache.append(pred)
+    #  label_cache.pop(0)
 
 Y_pred_ideal = crf_model.predict_single(X_private)
 
-print(metrics.flat_classification_report(
-    Y_private, Y_pred, labels=('I', 'E'), digits=3
-))
-print( '============== ideal y@-1 ~ y@-4 ================' )
+#  print(metrics.flat_classification_report(
+    #  Y_private, Y_pred, labels=('I', 'E'), digits=3
+#  ))
+#  print( '============== ideal y@-1 ~ y@-4 ================' )
 print(metrics.flat_classification_report(
     Y_private, Y_pred_ideal, labels=('I', 'E'), digits=3
 ))

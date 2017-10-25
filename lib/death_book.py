@@ -42,7 +42,6 @@ class book:
                 '@1'     : text_append[i+1],
                 '@1~2'   : text_append[i+1   : i+3],
                 '@2'     : text_append[i+2],
-                'y@-1'   : self.end_label[i-2-1]
             })
         return feature_list
 

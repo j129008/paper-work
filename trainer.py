@@ -21,8 +21,8 @@ for book in bar( books ):
     X.extend( [ feature for feature in book.feature_list ] )
     Y.extend( [ end_lab for end_lab in book.end_label ] )
 
-# get label
 def loadLabel():
+    print('load label txt')
     txt_no_comma_all = ''
     for book in bar( books ):
         txt_no_comma_all += book.no_comma_text
@@ -32,12 +32,15 @@ def loadLabel():
     lab_nianhao = label(txt_no_comma_all, txt_loader('./ref/known/nianhao.txt'), 'nianhao')
     lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
 
+    print('insert label into feature')
     for i in range(len(X)):
         X[i]['addr'] = lab_addr[i]
         X[i]['office'] = lab_office[i]
         X[i]['name'] = lab_name[i]
         X[i]['nianhao'] = lab_nianhao[i]
         X[i]['entry'] = lab_entry[i]
+
+loadLabel()
 
 pickle.dump(X, open('./pickles/X_all.pkl', 'wb'))
 pickle.dump(Y, open('./pickles/Y_all.pkl', 'wb'))
@@ -58,12 +61,14 @@ def randomCV():
     crf = sklearn_crfsuite.CRF(
         algorithm                = 'lbfgs',
         max_iterations           = 100,
-        all_possible_transitions = True
+        all_possible_transitions = True,
+        c1 = 0.01650478417296183,
+        c2 = 0.17925029793689362
     )
 
     params_space = {
-        'c1': scipy.stats.expon(scale=0.5),
-        'c2': scipy.stats.expon(scale=0.05)
+        #  'c1': scipy.stats.expon(scale=0.5),
+        #  'c2': scipy.stats.expon(scale=0.05)
     }
 
     f1_scorer = make_scorer(metrics.flat_f1_score,
@@ -72,8 +77,8 @@ def randomCV():
     rs = RandomizedSearchCV(crf, params_space,
                             cv      = 3,
                             verbose = 1,
-                            n_jobs  = 4,
-                            n_iter  = 50,
+                            n_jobs  = 8,
+                            n_iter  = 1,
                             scoring = f1_scorer)
 
     rs.fit([ [x] for x in X ], Y)
