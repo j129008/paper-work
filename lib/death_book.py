@@ -1,7 +1,8 @@
 import regex as re
 from tqdm import tqdm as bar
 from collections import Counter
-from math import log2
+from math import log2, sqrt
+import numpy as np
 
 def txt_loader(path):
     return open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
@@ -21,6 +22,43 @@ def mi_info(txt):
         mi_score.append( log2( Pxy/(Px*Py) ) )
     mi_score.append( 0.0 )
     return mi_score
+
+def t_diff(txt):
+    # w"x"yz
+    w_dic = Counter(txt)
+    bi_dic = Counter(ngram(txt))
+    t_diff_score = []
+    sigma_dic = {}
+    for i in range(len(txt)-1):
+        Px = w_dic[txt[i]]/len(txt)
+        Py = w_dic[txt[i+1]]/len(txt)
+        Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
+        Py_x = Pxy/Px
+        try:
+            sigma_dic[txt[i:i+2]].append(Py_x)
+        except:
+            sigma_dic[txt[i:i+2]] = []
+            sigma_dic[txt[i:i+2]].append(Py_x)
+
+    for key in sigma_dic:
+        sigma_dic[key] = np.var(sigma_dic[key]) + 1
+
+    for i in range(len(txt)-3):
+        Pw = w_dic[txt[i-1]]/len(txt)
+        Px = w_dic[txt[i]]/len(txt)
+        Py = w_dic[txt[i+1]]/len(txt)
+        Pz = w_dic[txt[i+2]]/len(txt)
+        Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
+        Pwx = bi_dic[txt[i-1:i+1]]/( len(txt)-1 )
+        Pyz = bi_dic[txt[i+1:i+3]]/( len(txt)-1 )
+        Py_x = Pxy/Px
+        Px_w = Pwx/Pw
+        Pz_y = Pyz/Py
+        t_x = ( Py_x - Px_w )/sqrt(sigma_dic[txt[i:i+2]]+sigma_dic[txt[i+1:i+3]])
+        t_y = ( Pz_y - Py_x )/sqrt(sigma_dic[txt[i+1:i+3]]+sigma_dic[txt[i:i+2]])
+        t_diff_score.append(t_x - t_y)
+    t_diff_score.extend([0, 0, 0])
+    return t_diff_score
 
 def label( text, lab_data, lab_name ):
     lab_list = ['O']*len( text )
