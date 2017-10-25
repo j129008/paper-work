@@ -1,5 +1,7 @@
 import regex as re
 from tqdm import tqdm as bar
+from collections import Counter
+from math import log2
 
 def txt_loader(path):
     return open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
@@ -7,6 +9,18 @@ def txt_loader(path):
 def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
     return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
+
+def mi_info(txt):
+    w_dic = Counter(txt)
+    bi_dic = Counter(ngram(txt))
+    mi_score = []
+    for i in range(len(txt)-1):
+        Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
+        Px = w_dic[txt[i]]/len(txt)
+        Py = w_dic[txt[i+1]]/len(txt)
+        mi_score.append( log2( Pxy/(Px*Py) ) )
+    mi_score.append( 0.0 )
+    return mi_score
 
 def label( text, lab_data, lab_name ):
     lab_list = ['O']*len( text )
