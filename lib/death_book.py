@@ -11,6 +11,24 @@ def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
     return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
 
+def rhyme(txt, path):
+    data = open(path,'r' , encoding='utf-8')
+    rhyme_dic = dict()
+    rhyme_type = ''
+    for line in data:
+        id, word, exp = line.strip().split('|')
+        if id.split('.')[1] == '1':
+            rhyme_type = word
+        rhyme_dic[word] = rhyme_type
+    ret = []
+    for word in txt:
+        try:
+            ret.append(rhyme_dic[word])
+        except:
+            ret.append(word)
+    return ret
+
+
 def mi_info(txt):
     w_dic = Counter(txt)
     bi_dic = Counter(ngram(txt))
