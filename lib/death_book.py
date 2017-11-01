@@ -23,37 +23,41 @@ def mi_info(txt):
     mi_score.append( 0.0 )
     return mi_score
 
+def t_test(f_xy, f_yz, f_x, f_y, v):
+    return ( ( f_yz+0.5 )/( f_y + v/2 ) - ( f_xy+0.5 )/( f_x + v/2 ) )/sqrt( ( f_yz+0.5 )/pow(f_y + v/2, 2) + ( f_xy+0.5 )/pow(f_x + v/2, 2) )
+
+def v_calc(bigram_end, bigram_list):
+    w_set = set()
+    for bi in bigram_list:
+        if bi[1] == bigram_end:
+            w_set.add(bi[0])
+    return len(w_set)
+
 def t_diff(txt):
-    # w"x"yz
+    # wxyz
     w_dic = Counter(txt)
     bi_dic = Counter(ngram(txt))
+    bi_list = [ ele for ele in bi_dic ]
+    v_dic = dict()
+    print('mapping var v')
+    for w in bar(w_dic):
+        v_dic[w] = v_calc(w, bi_list)
     t_diff_score = []
-    for i in range(len(txt)-1):
-        Px = w_dic[txt[i]]/len(txt)
-        Py = w_dic[txt[i+1]]/len(txt)
-        Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
-        Py_x = Pxy/Px
 
     for i in range(len(txt)-3):
-        f_w = w_dic[txt[i-1]]
-        f_x = w_dic[txt[i]]
-        f_y = w_dic[txt[i+1]]
-        f_z = w_dic[txt[i+2]]
-        Pw = ( f_w+0.5 )/len(txt)
-        Px = ( f_x+0.5 )/len(txt)
-        Py = ( f_y+0.5 )/len(txt)
-        Pz = ( f_z+0.5 )/len(txt)
+        w_w = txt[i-1]
+        w_x = txt[i]
+        w_y = txt[i+1]
+        w_z = txt[i+2]
+        f_w = w_dic[w_w]
+        f_x = w_dic[w_x]
+        f_y = w_dic[w_y]
+        f_z = w_dic[w_z]
         f_xy = bi_dic[txt[i:i+2]]
         f_wx = bi_dic[txt[i-1:i+1]]
         f_yz = bi_dic[txt[i+1:i+3]]
-        Pxy = ( f_xy+0.5 )/( len(txt)-1 )
-        Pwx = ( f_wx+0.5 )/( len(txt)-1 )
-        Pyz = ( f_yz+0.5 )/( len(txt)-1 )
-        Py_x = Pxy/Px
-        Px_w = Pwx/Pw
-        Pz_y = Pyz/Py
-        t_x = ( Py_x - Px_w )/sqrt( ( f_xy + 0.5 )/pow(f_x + 0.5, 2) + ( f_wx + 0.5 )/pow(f_w + 0.5, 2) )
-        t_y = ( Pz_y - Py_x )/sqrt( ( f_yz + 0.5 )/pow(f_y + 0.5, 2) + ( f_xy + 0.5 )/pow(f_x + 0.5, 2) )
+        t_x = t_test(f_wx, f_xy, f_w, f_y, v_dic[w_w] + v_dic[w_x] )
+        t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
         t_diff_score.append(t_x - t_y)
     t_diff_score.extend([0, 0, 0])
     return t_diff_score
