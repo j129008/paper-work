@@ -1,7 +1,7 @@
 import regex as re
 from tqdm import tqdm as bar
 from collections import Counter
-from math import log2, sqrt
+from math import log2, sqrt, pow
 import numpy as np
 
 def txt_loader(path):
@@ -28,34 +28,32 @@ def t_diff(txt):
     w_dic = Counter(txt)
     bi_dic = Counter(ngram(txt))
     t_diff_score = []
-    sigma_dic = {}
     for i in range(len(txt)-1):
         Px = w_dic[txt[i]]/len(txt)
         Py = w_dic[txt[i+1]]/len(txt)
         Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
         Py_x = Pxy/Px
-        try:
-            sigma_dic[txt[i:i+2]].append(Py_x)
-        except:
-            sigma_dic[txt[i:i+2]] = []
-            sigma_dic[txt[i:i+2]].append(Py_x)
-
-    for key in sigma_dic:
-        sigma_dic[key] = np.var(sigma_dic[key]) + 1
 
     for i in range(len(txt)-3):
-        Pw = w_dic[txt[i-1]]/len(txt)
-        Px = w_dic[txt[i]]/len(txt)
-        Py = w_dic[txt[i+1]]/len(txt)
-        Pz = w_dic[txt[i+2]]/len(txt)
-        Pxy = bi_dic[txt[i:i+2]]/( len(txt)-1 )
-        Pwx = bi_dic[txt[i-1:i+1]]/( len(txt)-1 )
-        Pyz = bi_dic[txt[i+1:i+3]]/( len(txt)-1 )
+        f_w = w_dic[txt[i-1]]
+        f_x = w_dic[txt[i]]
+        f_y = w_dic[txt[i+1]]
+        f_z = w_dic[txt[i+2]]
+        Pw = ( f_w+0.5 )/len(txt)
+        Px = ( f_x+0.5 )/len(txt)
+        Py = ( f_y+0.5 )/len(txt)
+        Pz = ( f_z+0.5 )/len(txt)
+        f_xy = bi_dic[txt[i:i+2]]
+        f_wx = bi_dic[txt[i-1:i+1]]
+        f_yz = bi_dic[txt[i+1:i+3]]
+        Pxy = ( f_xy+0.5 )/( len(txt)-1 )
+        Pwx = ( f_wx+0.5 )/( len(txt)-1 )
+        Pyz = ( f_yz+0.5 )/( len(txt)-1 )
         Py_x = Pxy/Px
         Px_w = Pwx/Pw
         Pz_y = Pyz/Py
-        t_x = ( Py_x - Px_w )/sqrt(sigma_dic[txt[i:i+2]]+sigma_dic[txt[i+1:i+3]])
-        t_y = ( Pz_y - Py_x )/sqrt(sigma_dic[txt[i+1:i+3]]+sigma_dic[txt[i:i+2]])
+        t_x = ( Py_x - Px_w )/sqrt( ( f_xy + 0.5 )/pow(f_x + 0.5, 2) + ( f_wx + 0.5 )/pow(f_w + 0.5, 2) )
+        t_y = ( Pz_y - Py_x )/sqrt( ( f_yz + 0.5 )/pow(f_y + 0.5, 2) + ( f_xy + 0.5 )/pow(f_x + 0.5, 2) )
         t_diff_score.append(t_x - t_y)
     t_diff_score.extend([0, 0, 0])
     return t_diff_score
