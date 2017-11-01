@@ -26,22 +26,25 @@ def mi_info(txt):
 def t_test(f_xy, f_yz, f_x, f_y, v):
     return ( ( f_yz+0.5 )/( f_y + v/2 ) - ( f_xy+0.5 )/( f_x + v/2 ) )/sqrt( ( f_yz+0.5 )/pow(f_y + v/2, 2) + ( f_xy+0.5 )/pow(f_x + v/2, 2) )
 
-def v_calc(bigram_end, bigram_list):
-    w_set = set()
-    for bi in bigram_list:
-        if bi[1] == bigram_end:
-            w_set.add(bi[0])
-    return len(w_set)
+def v_calc(bigram_list):
+    v_dic = {}
+    print('mapping v dic')
+    for bi in bar(bigram_list):
+        try:
+            v_dic[bi[1]].add(bi[0])
+        except:
+            v_dic[bi[1]] = set()
+            v_dic[bi[1]].add(bi[0])
+    for key in v_dic:
+        v_dic[key] = len(v_dic[key])
+    return v_dic
 
 def t_diff(txt):
     # wxyz
     w_dic = Counter(txt)
     bi_dic = Counter(ngram(txt))
     bi_list = [ ele for ele in bi_dic ]
-    v_dic = dict()
-    print('mapping var v')
-    for w in bar(w_dic):
-        v_dic[w] = v_calc(w, bi_list)
+    v_dic = v_calc(bi_list)
     t_diff_score = []
 
     for i in range(len(txt)-3):
