@@ -3,6 +3,7 @@ from tqdm import tqdm as bar
 from collections import Counter
 from math import log2, sqrt, pow
 import numpy as np
+import pickle
 
 def txt_loader(path):
     return open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
@@ -11,7 +12,8 @@ def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
     return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
 
-def rhyme(txt, path):
+def rhyme(txt, rhy_type, path='./data/rhyme.txt', pkl_path='./pickles/rhyme_list.pkl'):
+    small_rhyme = pickle.load(open(pkl_path, 'rb'))
     data = open(path,'r' , encoding='utf-8')
     rhyme_dic = dict()
     rhyme_type = ''
@@ -23,7 +25,7 @@ def rhyme(txt, path):
     ret = []
     for word in txt:
         try:
-            ret.append(rhyme_dic[word])
+            ret.append(small_rhyme[rhyme_dic[word]][rhy_type])
         except:
             ret.append(word)
     return ret
