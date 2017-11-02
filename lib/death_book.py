@@ -12,22 +12,30 @@ def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
     return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
 
-def rhyme(txt, rhy_type, path='./data/rhyme.txt', pkl_path='./pickles/rhyme_list.pkl'):
+def rhyme(txt, rhy_type_list, path='./data/rhyme.txt', pkl_path='./pickles/rhyme_list.pkl'):
     small_rhyme = pickle.load(open(pkl_path, 'rb'))
     data = open(path,'r' , encoding='utf-8')
     rhyme_dic = dict()
     rhyme_type = ''
-    for line in data:
+    print('step 1')
+    for line in bar(data):
         id, word, exp = line.strip().split('|')
         if id.split('.')[1] == '1':
             rhyme_type = word
         rhyme_dic[word] = rhyme_type
-    ret = []
-    for word in txt:
+    ret = dict()
+    for types in rhy_type_list:
+        ret[types] = []
+
+    print('step 2')
+    for word in bar(txt):
         try:
-            ret.append(small_rhyme[rhyme_dic[word]][rhy_type])
+            pd_ret = small_rhyme[rhyme_dic[word]]
+            for types in rhy_type_list:
+                ret[types].append(pd_ret[types])
         except:
-            ret.append(word)
+            for types in rhy_type_list:
+                ret[types].append(word)
     return ret
 
 
