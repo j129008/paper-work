@@ -12,6 +12,16 @@ def ngram(data, num=2):
     pattern = '.{' + str(num)  + '}'
     return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
 
+def rhy_exten(rhy, ext_num):
+    rhy_exp = []
+    for i in range(len(rhy) - ext_num):
+        exp = ''
+        for j in range(i-ext_num, i+ext_num+1):
+            exp += rhy[j]
+        rhy_exp.append(exp)
+    rhy_exp.extend(['*']*ext_num)
+    return rhy_exp
+
 def rhyme(txt, rhy_type_list, path='./data/rhyme.txt', pkl_path='./pickles/rhyme_list.pkl'):
     small_rhyme = pickle.load(open(pkl_path, 'rb'))
     data = open(path,'r' , encoding='utf-8')

@@ -33,7 +33,12 @@ def update_feature():
     #  lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
     #  mi_score = mi_info(txt_no_comma_all)
     #  t_diff_score = t_diff(txt_no_comma_all)
-    rhy = rhyme(txt_no_comma_all, [ '反切', '聲母', '韻目', '調'])
+    #  rhy = rhyme(txt_no_comma_all, [ '反切', '聲母', '韻目', '調'])
+    rhy = rhyme(txt_no_comma_all, ['調'])['調']
+    rhy_exp1 = rhy_exten(rhy, 1)
+    rhy_exp2 = rhy_exten(rhy, 2)
+    rhy_exp3 = rhy_exten(rhy, 3)
+    rhy_exp4 = rhy_exten(rhy, 4)
 
     print('insert label into feature')
     for i in range(len(X)):
@@ -44,10 +49,10 @@ def update_feature():
         #  X[i]['entry'] = lab_entry[i]
         #  X[i]['mi'] = mi_score[i]
         #  X[i]['t_diff'] = t_diff_score[i]
-        X[i]['rhy1'] = rhy['反切'][i]
-        X[i]['rhy2'] = rhy['聲母'][i]
-        X[i]['rhy3'] = rhy['韻目'][i]
-        X[i]['rhy4'] = rhy['調'][i]
+        X[i]['rhy1'] = rhy_exp1[i]
+        X[i]['rhy2'] = rhy_exp2[i]
+        X[i]['rhy3'] = rhy_exp3[i]
+        X[i]['rhy4'] = rhy_exp4[i]
 
 update_feature()
 
