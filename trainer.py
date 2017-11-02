@@ -26,23 +26,28 @@ def update_feature():
     txt_no_comma_all = ''
     for book in bar( books ):
         txt_no_comma_all += book.no_comma_text
-    lab_addr = label(txt_no_comma_all, txt_loader('./ref/known/address2.txt'), 'address')
-    lab_office = label(txt_no_comma_all, txt_loader('./ref/known/office2.txt'), 'office')
-    lab_name = label(txt_no_comma_all, txt_loader('./ref/known/name5.txt'), 'name')
-    lab_nianhao = label(txt_no_comma_all, txt_loader('./ref/known/nianhao.txt'), 'nianhao')
-    lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
-    mi_score = mi_info(txt_no_comma_all)
-    t_diff_score = t_diff(txt_no_comma_all)
+    #  lab_addr = label(txt_no_comma_all, txt_loader('./ref/known/address2.txt'), 'address')
+    #  lab_office = label(txt_no_comma_all, txt_loader('./ref/known/office2.txt'), 'office')
+    #  lab_name = label(txt_no_comma_all, txt_loader('./ref/known/name5.txt'), 'name')
+    #  lab_nianhao = label(txt_no_comma_all, txt_loader('./ref/known/nianhao.txt'), 'nianhao')
+    #  lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
+    #  mi_score = mi_info(txt_no_comma_all)
+    #  t_diff_score = t_diff(txt_no_comma_all)
+    rhy = rhyme(txt_no_comma_all, [ '反切', '聲母', '韻目', '調'])
 
     print('insert label into feature')
     for i in range(len(X)):
-        X[i]['addr'] = lab_addr[i]
-        X[i]['office'] = lab_office[i]
-        X[i]['name'] = lab_name[i]
-        X[i]['nianhao'] = lab_nianhao[i]
-        X[i]['entry'] = lab_entry[i]
-        X[i]['mi'] = mi_score[i]
-        X[i]['t_diff'] = t_diff_score[i]
+        #  X[i]['addr'] = lab_addr[i]
+        #  X[i]['office'] = lab_office[i]
+        #  X[i]['name'] = lab_name[i]
+        #  X[i]['nianhao'] = lab_nianhao[i]
+        #  X[i]['entry'] = lab_entry[i]
+        #  X[i]['mi'] = mi_score[i]
+        #  X[i]['t_diff'] = t_diff_score[i]
+        X[i]['rhy1'] = rhy['反切'][i]
+        X[i]['rhy2'] = rhy['聲母'][i]
+        X[i]['rhy3'] = rhy['韻目'][i]
+        X[i]['rhy4'] = rhy['調'][i]
 
 update_feature()
 
@@ -65,14 +70,14 @@ def randomCV():
     crf = sklearn_crfsuite.CRF(
         algorithm                = 'lbfgs',
         max_iterations           = 100,
-        all_possible_transitions = True
-        #  c1 = 0.01650478417296183,
-        #  c2 = 0.17925029793689362
+        all_possible_transitions = True,
+        c1 = 0.01650478417296183,
+        c2 = 0.17925029793689362
     )
 
     params_space = {
-        'c1': scipy.stats.expon(scale=0.5),
-        'c2': scipy.stats.expon(scale=0.05)
+        #  'c1': scipy.stats.expon(scale=0.5),
+        #  'c2': scipy.stats.expon(scale=0.05)
     }
 
     f1_scorer = make_scorer(metrics.flat_f1_score,
@@ -82,7 +87,8 @@ def randomCV():
                             cv      = 3,
                             verbose = 1,
                             n_jobs  = 8,
-                            n_iter  = 50,
+                            #  n_iter  = 50,
+                            n_iter  = 1,
                             scoring = f1_scorer)
 
     rs.fit([ [x] for x in X ], Y)
