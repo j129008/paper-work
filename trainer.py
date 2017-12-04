@@ -4,6 +4,7 @@ from sklearn_crfsuite import metrics
 from sklearn.metrics import make_scorer
 from tqdm import tqdm as bar
 from lib.death_book import *
+from lib.crf import CRF
 import pickle
 from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
@@ -17,7 +18,8 @@ X, Y = [], []
 for book in bar( books ):
     X.extend( [ feature for feature in book.feature_list ] )
     Y.extend( [ end_lab for end_lab in book.end_label ] )
-
+X = X[:200]
+Y = Y[:200]
 def update_feature():
     print('load label txt')
     txt_no_comma_all = ''
@@ -28,7 +30,7 @@ def update_feature():
     #  lab_name = label(txt_no_comma_all, txt_loader('./ref/known/name5.txt'), 'name')
     #  lab_nianhao = label(txt_no_comma_all, txt_loader('./ref/known/nianhao.txt'), 'nianhao')
     #  lab_entry = label(txt_no_comma_all, txt_loader('./ref/known/entry1.txt'), 'entry')
-    #  mi_score = mi_info(txt_no_comma_all)
+    mi_score = mi_info(txt_no_comma_all)
     #  t_diff_score = t_diff(txt_no_comma_all)
     #  rhy_all = rhyme(txt_no_comma_all, [ '反切', '聲母', '韻目', '調'])
     #  rhy = rhyme(txt_no_comma_all, ['調'])['調']
@@ -45,14 +47,14 @@ def update_feature():
         #  X[i]['name'] = lab_name[i]
         #  X[i]['nianhao'] = lab_nianhao[i]
         #  X[i]['entry'] = lab_entry[i]
-        #  X[i]['mi'] = mi_score[i]
+        X[i]['mi'] = mi_score[i]
         #  X[i]['t_diff'] = t_diff_score[i]
         #  X[i]['rhy1'] = rhy_exp1[i]
         #  X[i]['rhy2'] = rhy_exp2[i]
         #  X[i]['rhy3'] = rhy_exp3[i]
         #  X[i]['rhy4'] = rhy_exp4[i]
 
-update_feature()
+#  update_feature()
 
 pickle.dump(X, open('./pickles/X_all.pkl', 'wb'))
 pickle.dump(Y, open('./pickles/Y_all.pkl', 'wb'))
@@ -66,11 +68,8 @@ pickle.dump(Y, open('./pickles/Y.pkl', 'wb'))
 pickle.dump(X_private, open('./pickles/X_private.pkl', 'wb'))
 pickle.dump(Y_private, open('./pickles/Y_private.pkl', 'wb'))
 
-X = np.array(X)
-Y = np.array(Y)
-
 def randomCV():
-    crf = sklearn_crfsuite.CRF(
+    crf = CRF(
         algorithm                = 'lbfgs',
         max_iterations           = 100,
         all_possible_transitions = True,
@@ -94,7 +93,7 @@ def randomCV():
                             n_iter  = 1,
                             scoring = f1_scorer)
 
-    rs.fit([ [x] for x in X ], Y)
+    rs.fit(X, Y)
 
     return rs
 
