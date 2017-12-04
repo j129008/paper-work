@@ -5,12 +5,9 @@ from sklearn.metrics import make_scorer
 from tqdm import tqdm as bar
 from lib.death_book import *
 import pickle
-from pathlib import Path
-from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import RandomizedSearchCV
 import numpy as np
 import scipy
-from sklearn.model_selection import train_test_split
 import random
 
 books = [ book( txt ) for txt in bar ( txt_loader('./data/data2.txt') ) ]
