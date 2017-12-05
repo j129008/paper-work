@@ -31,6 +31,7 @@ class Learner(Data):
         clf_CV.fit(X, Y)
         self.clf = clf_CV.best_estimator_
         self.Y_pred = self.clf.predict(self.X_private)
+        return self.crf
 
     def train(self, train_size=0.6, c1=0, c2=1):
         X, self.X_private, Y, self.Y_private = train_test_split(
@@ -45,7 +46,7 @@ class Learner(Data):
             c2                       = c2
         )
         self.crf.fit(X, Y)
-        self.Y_pred = self.crf.predict(self.X_private)
+        return self.crf
 
     def predict_file(self, path):
         test_data = Data(path)
@@ -55,6 +56,7 @@ class Learner(Data):
         return self.Y_pred
 
     def report(self):
+        self.Y_pred = self.crf.predict(self.X_private)
         print(metrics.flat_classification_report(
             self.Y_private, self.Y_pred, labels=('I', 'E'), digits=4
         ))
