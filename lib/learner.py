@@ -9,7 +9,7 @@ class Learner(Data):
     def __init__(self, path):
         super().__init__(path)
     def train_CV(self, train_size=0.6, c1=0, c2=1, cv=3, n_iter=1, params_space={}):
-        X, X_private, Y, Y_private = train_test_split(
+        X, self.X_private, Y, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size
         )
         crf = CRF(
@@ -29,7 +29,8 @@ class Learner(Data):
                                 n_iter  = n_iter,
                                 scoring = f1_scorer)
         self.clf.fit(X, Y)
-        Y_pred = self.clf.best_estimator_.predict(X_private)
+    def report(self):
+        self.Y_pred = self.clf.best_estimator_.predict(self.X_private)
         print(metrics.flat_classification_report(
-            Y_private, Y_pred, labels=('I', 'E'), digits=4
+            self.Y_private, self.Y_pred, labels=('I', 'E'), digits=4
         ))
