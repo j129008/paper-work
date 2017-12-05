@@ -9,3 +9,6 @@ learner.feature_loader(funcs=[context], params=[[]])
 learner.resize(0.1)
 learner.train()
 learner.report()
+
+model_list = [ learner.train() for _ in range(2) ]
+
