@@ -17,19 +17,29 @@ class Bagging(Learner):
         for i in range(voter):
             thread = Thread(
                 target=self.gen_model,
-                args=(train_size, c1, c2)
+                args=[train_size, c1, c2]
             )
             thread.start()
             pool.append(thread)
         for thread in bar( pool ):
             thread.join()
             self.model_list.append(self.queue.get())
-
+    def gen_predict(self, model):
+        self.queue.put( model.predict(self.X_private) )
     def report(self):
         predict_res = []
         vote_res = []
+        pool = []
         for model in self.model_list:
-            predict_res.append( model.predict(self.X_private) )
+            thread = Thread(
+                target=self.gen_predict,
+                args=[model]
+            )
+            thread.start()
+            pool.append(thread)
+        for thread in pool:
+            thread.join()
+            predict_res.append(self.queue.get())
         predict_res = zip(*predict_res)
         for vote in predict_res:
             vote_res.append(Counter(vote).most_common(1)[0][0])
