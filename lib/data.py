@@ -48,13 +48,16 @@ class Data:
             for feature_name in func_ret[i]:
                 self.X[i][feature_name] = func_ret[i][feature_name]
     def feature_loader(self, funcs=None, params=None):
+        self.funcs = funcs
+        self.params= params
         for func_i, func in enumerate(funcs):
             func_ret = func(*params[func_i], text=self.text)
             self.copyer(func_ret)
-        return ( self.X, self.Y )
+        return self.X
+    def resize(self, persent):
+        resize = int( len(self.X)*persent )
+        self.X = self.X[:resize]
+        self.Y = self.Y[:resize]
     def __getitem__(self, i):
         return ( self.text[i], self.X[i], self.Y[i] )
 
-if __name__ == '__main__':
-    data = Data('../data/data2.txt')
-    print(data[0:10])

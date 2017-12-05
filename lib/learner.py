@@ -24,20 +24,22 @@ class Learner(Data):
                                 labels=['I', 'E'])
         clf_CV = RandomizedSearchCV(crf, params_space,
                                 cv      = cv,
-                                verbose = 1,
+                                verbose = 3,
                                 n_jobs  = 8,
                                 n_iter  = n_iter,
                                 scoring = f1_scorer)
         clf_CV.fit(X, Y)
         self.clf = clf_CV.best_estimator_
+        self.Y_pred = self.clf.predict(self.X_private)
 
     def predict_file(self, path):
         test_data = Data(path)
-        self.Y_pred = self.clf(test_data.X)
+        test_data.feature_loader(self.funcs, self.params)
+        self.Y_pred = self.clf.predict(test_data.X)
+        self.Y_private = test_data.Y
         return self.Y_pred
 
     def report(self):
-        self.Y_pred = self.clf.best_estimator_.predict(self.X_private)
         print(metrics.flat_classification_report(
             self.Y_private, self.Y_pred, labels=('I', 'E'), digits=4
         ))
