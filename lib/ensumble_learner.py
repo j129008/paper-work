@@ -3,7 +3,6 @@ from lib.learner import Learner
 from collections import Counter
 from queue import Queue
 from threading import Thread
-from tqdm import tqdm as bar
 
 class Bagging(Learner):
     def __init__(self, path):
@@ -21,7 +20,7 @@ class Bagging(Learner):
             )
             thread.start()
             pool.append(thread)
-        for thread in bar( pool ):
+        for thread in pool:
             thread.join()
             self.model_list.append(self.queue.get())
     def gen_predict(self, model):

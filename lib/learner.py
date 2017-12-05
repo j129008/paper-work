@@ -34,12 +34,12 @@ class Learner(Data):
         self.Y_pred = self.clf.predict(self.X_private)
         return self.crf
 
-    def train(self, sub_train=1.0, c1=0, c2=1):
+    def train(self, sub_train=1.0, c1=0, c2=1, verbose=True):
         self.crf = CRF(
             algorithm                = 'lbfgs',
             max_iterations           = 100,
             all_possible_transitions = True,
-            verbose                  = True,
+            verbose                  = verbose,
             c1                       = c1,
             c2                       = c2
         )
