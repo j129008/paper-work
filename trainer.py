@@ -9,4 +9,3 @@ bagging.feature_loader(funcs=[context], params=[[]])
 bagging.resize(0.1)
 bagging.train()
 bagging.report()
-
