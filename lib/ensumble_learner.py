@@ -10,7 +10,7 @@ class Bagging(Learner):
         self.model_list = []
         self.queue = Queue()
     def gen_model(self, train_size, c1, c2):
-        self.queue.put( super().train(sub_train=train_size) )
+        self.queue.put( super().train(sub_train=train_size, c1=c1, c2=c2) )
     def train(self, voter=2, train_size=0.05, c1=0, c2=1):
         pool = []
         for i in range(voter):
@@ -44,3 +44,20 @@ class Bagging(Learner):
             vote_res.append(Counter(vote).most_common(1)[0][0])
         self.Y_pred = vote_res
         super().report()
+
+class Boosting(Learner):
+    def __init__(self, path):
+        super().__init__(path)
+    def train(self, C1_size=0.5):
+        self.model_C1 = super().train(sub_train=C1_size)
+        self.sub_y_pred = self.model_C1.predict(self.sub_x)
+        err_pool = []
+        hit_pool = []
+        C2_pool = []
+        for i in range(len(self.sub_y_pred)):
+            if self.sub_y_pred[i] == self.sub_y[i]:
+                hit_pool.append(i)
+            else:
+                err_pool.append(i)
+            if len(err_pool) > len(hit_pool):
+

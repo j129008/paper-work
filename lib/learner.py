@@ -1,6 +1,6 @@
 from lib.data import Data
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import make_scorer
+from sklearn.metrics import *
 from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
@@ -46,7 +46,7 @@ class Learner(Data):
 
         sub_size = int( sub_train*len(self.X_train) )
         if sub_train < 1.0:
-            sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
+            self.sub_x, self.sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
             self.crf.fit(sub_x, sub_y)
             return self.crf
 
