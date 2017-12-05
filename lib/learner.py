@@ -32,6 +32,21 @@ class Learner(Data):
         self.clf = clf_CV.best_estimator_
         self.Y_pred = self.clf.predict(self.X_private)
 
+    def train(self, train_size=0.6, c1=0, c2=1):
+        X, self.X_private, Y, self.Y_private = train_test_split(
+            self.X, self.Y, test_size=1.0-train_size
+        )
+        self.crf = CRF(
+            algorithm                = 'lbfgs',
+            max_iterations           = 100,
+            all_possible_transitions = True,
+            verbose                  = True,
+            c1                       = c1,
+            c2                       = c2
+        )
+        self.crf.fit(X, Y)
+        self.Y_pred = self.crf.predict(self.X_private)
+
     def predict_file(self, path):
         test_data = Data(path)
         test_data.feature_loader(self.funcs, self.params)
