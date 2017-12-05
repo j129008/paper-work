@@ -41,14 +41,16 @@ class Data:
         book = Book(path)
         self.chaper_list = book.chapter_list
         self.text = book.text
-        self.X = [dict()]*len(self.text)
         self.Y = book.label
+        self.X = [{} for _ in range(len(self.Y))]
+    def copyer(self, func_ret):
+        for i in range(len(self.text)):
+            for feature_name in func_ret[i]:
+                self.X[i][feature_name] = func_ret[i][feature_name]
     def feature_loader(self, funcs=None, params=None):
-        for func in funcs:
-            func_ret = func(*params, text=self.text)
-            for i in range(len(self.text)):
-                for feature_name in func_ret[i]:
-                    self.X[i][feature_name] = func_ret[i][feature_name]
+        for func_i, func in enumerate(funcs):
+            func_ret = func(*params[func_i], text=self.text)
+            self.copyer(func_ret)
         return ( self.X, self.Y )
     def __getitem__(self, i):
         return ( self.text[i], self.X[i], self.Y[i] )
