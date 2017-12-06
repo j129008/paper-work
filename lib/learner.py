@@ -41,12 +41,15 @@ class Learner(Data):
         crf = self.get_CRF(c1=c1, c2=c2)
         sub_size = int( sub_train*len(self.X_train) )
         if sub_train < 1.0:
-            self.sub_x, self.sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
+            sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
             crf.fit(sub_x, sub_y)
             return crf
-
         crf.fit(self.X_train, self.Y_train)
+        self.crf = crf
         return crf
+
+    def predict(self, X):
+        return self.crf.predict(X)
 
     def predict_file(self, path):
         test_data = Data(path)
@@ -55,8 +58,8 @@ class Learner(Data):
         self.Y_private = test_data.Y
         return self.Y_pred
 
-    def report(self, model=None):
-        self.Y_pred = model.predict(self.X_private)
+    def report(self):
+        Y_pred = self.predict(self.X_private)
         print(metrics.flat_classification_report(
-            self.Y_private, self.Y_pred, labels=('I', 'E'), digits=4
+            self.Y_private, Y_pred, labels=('I', 'E'), digits=4
         ))
