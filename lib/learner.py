@@ -61,8 +61,9 @@ class Learner(Data):
         self.Y_private = test_data.Y
         return self.Y_pred
 
-    def report(self):
-        Y_pred = self.predict(self.X_private)
+    def report(self, Y_pred=None):
+        if Y_pred == None:
+            Y_pred = self.predict(self.X_private)
         print(metrics.flat_classification_report(
             self.Y_private, Y_pred, labels=('I', 'E'), digits=4
         ))
