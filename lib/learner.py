@@ -61,7 +61,7 @@ class Learner(Data):
         self.Y_private = test_data.Y
         return self.Y_pred
 
-    def get_score(Y_pred=None, label='E'):
+    def get_score(self, Y_pred=None, label='E'):
         if Y_pred == None:
             Y_pred = self.predict(self.X_private)
         P = metrics.flat_precision_score(self.Y_private, Y_pred, pos_label=label)
