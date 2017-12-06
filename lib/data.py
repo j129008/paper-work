@@ -48,11 +48,12 @@ class Data:
         for i in range(len(self.text)):
             for feature_name in func_ret[i]:
                 self.X[i][feature_name] = func_ret[i][feature_name]
-    def feature_loader(self, funcs=None, params=None):
+    def load_feature(self, funcs=None, params=None):
         self.funcs = funcs
         self.params= params
         for func_i, func in enumerate(funcs):
-            func_ret = func(*params[func_i], text=self.text)
+            params[func_i]['text'] = self.text
+            func_ret = func(params[func_i])
             self.copyer(func_ret)
         return self.X
     def resize(self, persent):

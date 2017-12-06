@@ -7,24 +7,24 @@ import pickle
 class Feature:
     def __init__(self):
         self.list = [self.context, self.t_diff, self.mi_info, self.label, self.rhyme]
-    def context(text=None):
+    def context(param):
+        text = param['text']
+        k = param['k']
+        n_gram = param['n_gram']
         feature_list = []
-        text_append = '@!' + text + '!@'
-        for i in range( 2,len( text )+2 ):
-            feature_list.append({
-                '@-2'    : text_append[i-2],
-                '@-2~-1' : text_append[i-2   : i],
-                '@-1'    : text_append[i-1],
-                '@-1~0'  : text_append[i-1   : i+1],
-                '@0'     : text_append[i],
-                '@0~1'   : text_append[i     : i+2],
-                '@1'     : text_append[i+1],
-                '@1~2'   : text_append[i+1   : i+3],
-                '@2'     : text_append[i+2],
-            })
+        text_append = '!'*k + text + '!'*k
+        for i in range( k, len( text )+k ):
+            context_feature = {}
+            context_list = []
+            for n in range(1, n_gram+1):
+                context_list += ngram(text[i-k:i+k+1], num=n)
+            for j, word in enumerate(context_list):
+                context_feature[str(j)] = word
+            feature_list.append(context_feature)
         return feature_list
 
-    def mi_info(text=None):
+    def mi_info(param):
+        text = param['text']
         w_dic = Counter(text)
         bi_dic = Counter(ngram(text))
         mi_score = []
@@ -36,7 +36,8 @@ class Feature:
         mi_score.append( {'mi-info': 0.0} )
         return mi_score
 
-    def t_diff(text):
+    def t_diff(param):
+        text = param['text']
         def t_test(f_xy, f_yz, f_x, f_y, v):
             return ( ( f_yz+0.5 )/( f_y + v/2 ) - ( f_xy+0.5 )/( f_x + v/2 ) )/sqrt( ( f_yz+0.5 )/pow(f_y + v/2, 2) + ( f_xy+0.5 )/pow(f_x + v/2, 2) )
 
@@ -76,7 +77,10 @@ class Feature:
         t_diff_score.extend([{'t-diff': 0}]*3)
         return t_diff_score
 
-    def label( lab_name, path, text=None ):
+    def label(param):
+        text = param['text']
+        lab_name = param['lab_name']
+        path = param['path']
         lab_data = open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
         lab_list = ['O']*len( text )
         print('label ' + lab_name)
@@ -95,7 +99,11 @@ class Feature:
                 continue
         return [ {lab_name:lab} for lab in lab_list ]
 
-    def rhyme(rhy_type_list, text=None, path='./data/rhyme.txt', pkl_path='./pickles/rhyme_list.pkl'):
+    def rhyme(param):
+        text = param['text']
+        path = param['path']
+        pkl_path = param['pkl_path']
+        rhy_type_list = param['rhy_type_list']
         small_rhyme = pickle.load(open(pkl_path, 'rb'))
         data = open(path,'r' , encoding='utf-8')
         rhyme_dic = dict()

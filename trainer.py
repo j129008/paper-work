@@ -4,7 +4,7 @@ from lib.learner import Learner
 from lib.feature import Feature
 from lib.ensumble_learner import Boosting
 
-boosting = Boosting('./data/data4.txt')
-boosting.feature_loader(funcs=[Feature.context], params=[[]])
-boosting.train()
-boosting.report()
+man = Learner('./data/data2.txt')
+man.load_feature(funcs=[Feature.context], params=[{'k':2, 'n_gram':2}])
+man.train()
+man.report()
