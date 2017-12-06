@@ -12,12 +12,12 @@ class Feature:
         k = param['k']
         n_gram = param['n_gram']
         feature_list = []
-        text_append = '!'*k + text + '!'*k
+        text_append = '！'*k + text + '！'*k
         for i in range( k, len( text )+k ):
             context_feature = {}
             context_list = []
             for n in range(1, n_gram+1):
-                context_list += ngram(text[i-k:i+k+1], num=n)
+                context_list += ngram(text_append[i-k:i+k+1], num=n)
             for j, word in enumerate(context_list):
                 context_feature[str(j)] = word
             feature_list.append(context_feature)
