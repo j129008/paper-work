@@ -11,5 +11,5 @@ bagging.resize(0.1)
 for voter in range(3, 11):
     for train_size in [ 0.03, 0.05, 0.1, 0.2, 0.3, 0.4 ]:
         print('voter:', voter, 'data size:', train_size)
-        bagging.train(voter=voter, train_size=train_size)
-        bagging.report()
+        model = bagging.train(voter=voter, train_size=train_size)
+        bagging.report(model=model)

@@ -12,7 +12,7 @@ class Learner(Data):
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size
         )
-    def train_CV(self, c1=0, c2=1, cv=3, n_iter=1, params_space={}):
+    def get_CRF(self, c1=0, c2=1):
         crf = CRF(
             algorithm                = 'lbfgs',
             max_iterations           = 100,
@@ -20,6 +20,9 @@ class Learner(Data):
             c1 = c1,
             c2 = c2
         )
+        return crf
+    def train_CV(self, c1=0, c2=1, cv=3, n_iter=1, params_space={}):
+        crf = self.get_CRF(c1=c1, c2=c2)
         f1_scorer = make_scorer(metrics.flat_f1_score,
                                 average='weighted',
                                 labels=['I', 'E'])
@@ -30,28 +33,20 @@ class Learner(Data):
                                 n_iter  = n_iter,
                                 scoring = f1_scorer)
         clf_CV.fit(self.X_train, self.Y_train)
-        self.clf = clf_CV.best_estimator_
-        self.Y_pred = self.clf.predict(self.X_private)
-        return self.crf
+        clf = clf_CV.best_estimator_
+        self.Y_pred = clf.predict(self.X_private)
+        return clf
 
     def train(self, sub_train=1.0, c1=0, c2=1, verbose=False):
-        self.crf = CRF(
-            algorithm                = 'lbfgs',
-            max_iterations           = 100,
-            all_possible_transitions = True,
-            verbose                  = verbose,
-            c1                       = c1,
-            c2                       = c2
-        )
-
+        crf = self.get_CRF(c1=c1, c2=c2)
         sub_size = int( sub_train*len(self.X_train) )
         if sub_train < 1.0:
             self.sub_x, self.sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
-            self.crf.fit(sub_x, sub_y)
-            return self.crf
+            crf.fit(sub_x, sub_y)
+            return crf
 
-        self.crf.fit(self.X_train, self.Y_train)
-        return self.crf
+        crf.fit(self.X_train, self.Y_train)
+        return crf
 
     def predict_file(self, path):
         test_data = Data(path)
@@ -60,8 +55,8 @@ class Learner(Data):
         self.Y_private = test_data.Y
         return self.Y_pred
 
-    def report(self):
-        self.Y_pred = self.crf.predict(self.X_private)
+    def report(self, model=None):
+        self.Y_pred = model.predict(self.X_private)
         print(metrics.flat_classification_report(
             self.Y_private, self.Y_pred, labels=('I', 'E'), digits=4
         ))

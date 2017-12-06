@@ -3,6 +3,8 @@ from lib.learner import Learner
 from collections import Counter
 from queue import Queue
 from threading import Thread
+from sklearn.utils import resample
+import numpy as np
 
 class Bagging(Learner):
     def __init__(self, path):
@@ -23,16 +25,16 @@ class Bagging(Learner):
         for thread in pool:
             thread.join()
             self.model_list.append(self.queue.get())
-    def gen_predict(self, model):
-        self.queue.put( model.predict(self.X_private) )
-    def report(self):
+    def gen_predict(self, model, X):
+        self.queue.put( model.predict(X) )
+    def predict(self, X):
         predict_res = []
         vote_res = []
         pool = []
         for model in self.model_list:
             thread = Thread(
                 target=self.gen_predict,
-                args=[model]
+                args=[model, X]
             )
             thread.start()
             pool.append(thread)
@@ -42,22 +44,56 @@ class Bagging(Learner):
         predict_res = zip(*predict_res)
         for vote in predict_res:
             vote_res.append(Counter(vote).most_common(1)[0][0])
-        self.Y_pred = vote_res
-        super().report()
+        return vote_res
 
 class Boosting(Learner):
     def __init__(self, path):
         super().__init__(path)
-    def train(self, C1_size=0.5):
-        self.model_C1 = super().train(sub_train=C1_size)
-        self.sub_y_pred = self.model_C1.predict(self.sub_x)
-        err_pool = []
-        hit_pool = []
-        C2_pool = []
-        for i in range(len(self.sub_y_pred)):
-            if self.sub_y_pred[i] == self.sub_y[i]:
-                hit_pool.append(i)
+    def half_hit_idx(y_true=None, y_pred=None):
+        err_pool_idx = []
+        hit_pool_idx = []
+        sample_size = 0
+        for i in range(len(y_pred)):
+            if y_pred[i] == y_true[i]:
+                hit_pool_idx.append(i)
             else:
-                err_pool.append(i)
-            if len(err_pool) > len(hit_pool):
-
+                err_pool_idx.append(i)
+        sample_size = min(len(hit_pool_idx), len(err_pool_idx))
+        hit_idx, err_idx = resample(hit_pool_idx, err_pool_idx, n_samples=sample_size)
+        res_idx = hit_idx + err_idx
+        return res_idx + err_idx
+    def C1_C2_disagree_idx(C1_pred=None, C2_pred=None):
+        S3_idx = []
+        for i in range(len(C1_pred)):
+            if C1_pred[i] != C2_pred[i]:
+                S3_idx.append(i)
+        return S3_idx
+    def train(self, sample_size=0.5):
+        self.C1 = super().train(sub_train=sample_size)
+        S1_X = self.sub_x
+        S1_Y_pred = C1.predict(self.sub_x)
+        S1_Y_true = self.sub_y
+        S2_idx = self.half_hit_idx(S1_Y_pred, S1_Y_true)
+        C2_X = np.array(S1_X)[S2_idx]
+        C2_Y = np.array(S1_Y_true)[S2_idx]
+        self.C2 = self.get_CRF()
+        self.C2.fit(C2_X, C2_Y)
+        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=len(S1_X))
+        C1_pred = C1.predict(sample_x)
+        C2_pred = C2.predict(sample_x)
+        S3_idx = self.C1_C2_disagree_idx(C1_pred, C2_pred)
+        S3_X = np.array(sample_x)[S3_idx]
+        S3_Y = np.array(sample_y)[S3_idx]
+        self.C3 = self.get_CRF()
+        self.C3.fit(S3_X, S3_Y)
+    def predict(self, X):
+        C1_pred = self.C1.predict(X)
+        C2_pred = self.C2.predict(X)
+        C3_pred = self.C3.predict(X)
+        final_pred = []
+        for i in range(len(C1_pred)):
+            if C1_pred[i] == C2_pred[i]:
+                final_pred.append(C1_pred[i])
+            else:
+                final_pred.append(C3_pred[i])
+        return final_pred
