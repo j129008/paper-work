@@ -59,22 +59,6 @@ class Data:
         resize = int( len(self.X)*persent )
         self.X = self.X[:resize]
         self.Y = self.Y[:resize]
-
-    def crfSuite_transform(self, train_size=0.6, train_file='./train.txt', test_file='./test.txt'):
-        key_list = sorted( list( self.X[0].keys() ) )
-        n_train = int( len(self.X)*train_size )
-        data_pool = []
-        print('transform to crfSuite:')
-        for i in bar( range(len(self.X)) ):
-            instance = []
-            instance.append( str( self.Y[i] ) )
-            for key in key_list:
-                instance.append( str( self.X[i][key] ) )
-            data_pool.append( '\t'.join( instance ) )
-        print('write to file: ', train_file, test_file)
-        open(train_file, 'w').write('\n'.join(data_pool[:n_train]))
-        open(test_file, 'w').write('\n'.join(data_pool[n_train:]))
-
     def __getitem__(self, i):
         return ( self.text[i], self.X[i], self.Y[i] )
 
