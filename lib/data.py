@@ -67,8 +67,8 @@ class Data:
         print('transform to crfSuite:')
         for i in bar( range(len(self.X)) ):
             instance = []
+            instance.append( str( self.Y[i] ) )
             for key in key_list:
-                instance.append( str( self.Y[i] ) )
                 instance.append( str( self.X[i][key] ) )
             data_pool.append( '\t'.join( instance ) )
         print('write to file: ', train_file, test_file)
