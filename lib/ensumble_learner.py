@@ -71,7 +71,7 @@ class Boosting(Learner):
         n_samples = int( len(self.Y_train)*sample_size )
         print('training C1')
         self.C1 = super().train(sub_train=sample_size)
-        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples)
+        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples, replace=False)
         S1_X = sample_x
         S1_Y_pred = self.C1.predict(sample_x)
         S1_Y_true = sample_y
@@ -81,7 +81,7 @@ class Boosting(Learner):
         print('training C2')
         self.C2 = self.get_CRF()
         self.C2.fit(C2_X, C2_Y)
-        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples)
+        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples, replace=False)
         C1_pred = self.C1.predict(sample_x)
         C2_pred = self.C2.predict(sample_x)
         S3_idx = self.C1_C2_disagree_idx(C1_pred, C2_pred)

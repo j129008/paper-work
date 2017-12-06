@@ -41,7 +41,7 @@ class Learner(Data):
         crf = self.get_CRF(c1=c1, c2=c2)
         sub_size = int( sub_train*len(self.X_train) )
         if sub_train < 1.0:
-            sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
+            sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size, replace=False)
             crf.fit(sub_x, sub_y)
             self.sub_x = sub_x
             self.sub_y = sub_y
