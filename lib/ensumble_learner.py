@@ -68,18 +68,20 @@ class Boosting(Learner):
                 S3_idx.append(i)
         return S3_idx
     def train(self, sample_size=0.5):
+        n_samples = int( len(self.Y_train)*sample_size )
         print('training C1')
         self.C1 = super().train(sub_train=sample_size)
-        S1_X = self.sub_x
-        S1_Y_pred = self.C1.predict(self.sub_x)
-        S1_Y_true = self.sub_y
+        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples)
+        S1_X = sample_x
+        S1_Y_pred = self.C1.predict(sample_x)
+        S1_Y_true = sample_y
         S2_idx = self.half_hit_idx(S1_Y_pred, S1_Y_true)
         C2_X = np.array(S1_X)[S2_idx]
         C2_Y = np.array(S1_Y_true)[S2_idx]
         print('training C2')
         self.C2 = self.get_CRF()
         self.C2.fit(C2_X, C2_Y)
-        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=len(S1_X))
+        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples)
         C1_pred = self.C1.predict(sample_x)
         C2_pred = self.C2.predict(sample_x)
         S3_idx = self.C1_C2_disagree_idx(C1_pred, C2_pred)
