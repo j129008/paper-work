@@ -49,7 +49,7 @@ class Bagging(Learner):
 class Boosting(Learner):
     def __init__(self, path):
         super().__init__(path)
-    def half_hit_idx(y_true=None, y_pred=None):
+    def half_hit_idx(self, y_true=None, y_pred=None):
         err_pool_idx = []
         hit_pool_idx = []
         sample_size = 0
@@ -59,31 +59,33 @@ class Boosting(Learner):
             else:
                 err_pool_idx.append(i)
         sample_size = min(len(hit_pool_idx), len(err_pool_idx))
-        hit_idx, err_idx = resample(hit_pool_idx, err_pool_idx, n_samples=sample_size)
-        res_idx = hit_idx + err_idx
-        return res_idx + err_idx
-    def C1_C2_disagree_idx(C1_pred=None, C2_pred=None):
+        res_idx = err_pool_idx[:sample_size] + hit_pool_idx[:sample_size]
+        return res_idx
+    def C1_C2_disagree_idx(self, C1_pred=None, C2_pred=None):
         S3_idx = []
         for i in range(len(C1_pred)):
             if C1_pred[i] != C2_pred[i]:
                 S3_idx.append(i)
         return S3_idx
     def train(self, sample_size=0.5):
+        print('training C1')
         self.C1 = super().train(sub_train=sample_size)
         S1_X = self.sub_x
-        S1_Y_pred = C1.predict(self.sub_x)
+        S1_Y_pred = self.C1.predict(self.sub_x)
         S1_Y_true = self.sub_y
         S2_idx = self.half_hit_idx(S1_Y_pred, S1_Y_true)
         C2_X = np.array(S1_X)[S2_idx]
         C2_Y = np.array(S1_Y_true)[S2_idx]
+        print('training C2')
         self.C2 = self.get_CRF()
         self.C2.fit(C2_X, C2_Y)
         sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=len(S1_X))
-        C1_pred = C1.predict(sample_x)
-        C2_pred = C2.predict(sample_x)
+        C1_pred = self.C1.predict(sample_x)
+        C2_pred = self.C2.predict(sample_x)
         S3_idx = self.C1_C2_disagree_idx(C1_pred, C2_pred)
         S3_X = np.array(sample_x)[S3_idx]
         S3_Y = np.array(sample_y)[S3_idx]
+        print('training C3')
         self.C3 = self.get_CRF()
         self.C3.fit(S3_X, S3_Y)
     def predict(self, X):

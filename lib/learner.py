@@ -43,6 +43,9 @@ class Learner(Data):
         if sub_train < 1.0:
             sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size)
             crf.fit(sub_x, sub_y)
+            self.sub_x = sub_x
+            self.sub_y = sub_y
+            self.crf = crf
             return crf
         crf.fit(self.X_train, self.Y_train)
         self.crf = crf
