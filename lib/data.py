@@ -56,11 +56,6 @@ class Data:
             func_ret = func(params[func_i])
             self.copyer(func_ret)
         return self.X
-    def resize(self, persent):
-        resize = int( len(self.X)*persent )
-        self.X = self.X[:resize]
-        self.Y = self.Y[:resize]
-        self.text = self.text[:resize]
     def __getitem__(self, i):
         return ( self.text[i], self.X[i], self.Y[i] )
 
