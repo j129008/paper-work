@@ -60,6 +60,7 @@ class Data:
         resize = int( len(self.X)*persent )
         self.X = self.X[:resize]
         self.Y = self.Y[:resize]
+        self.text = self.text[:resize]
     def __getitem__(self, i):
         return ( self.text[i], self.X[i], self.Y[i] )
 
