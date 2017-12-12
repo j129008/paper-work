@@ -9,4 +9,10 @@ class CRF(sklearn_crfsuite.CRF):
         return [ ele[0] for ele in res ]
     def predict_prob(self, x):
         res = super().predict_marginals([ [ele] for ele in x ])
-        return [ ele[0]['E'] for ele in res ]
+        res_list = []
+        for ele in res:
+            try:
+                res_list.append(ele[0]['E'])
+            except:
+                res_list.append(0.0)
+        return res_list

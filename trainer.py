@@ -5,10 +5,27 @@ from lib.feature import Feature
 from lib.ensumble_learner import Boosting
 from lib.ensumble_learner import Bagging
 from pprint import pprint
+import csv
 
-for x in range(1, 8):
-    man = Boosting('./data/data2.txt')
-    man.load_feature(funcs=[Feature.context, Feature.t_diff, Feature.mi_info], params=[{'k':x, 'n_gram':2}, {}, {}])
-    man.train()
-    print('context: ', x)
-    pprint(man.get_score())
+fp = csv.writer( open('precision.csv', 'w') )
+fr = csv.writer( open('recall.csv', 'w') )
+man = Bagging('./data/data2.txt')
+man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
+
+P_list = []
+R_list = []
+for size in [0.1, 0.2, 0.3, 0.4, 0.5]:
+    P_voter_list = []
+    R_voter_list = []
+    for voter in range(3, 11):
+        print( 'voter: ', voter, 'size: ', size )
+        man.train(voter=voter, train_size=size)
+        pprint(man.get_score())
+        R_voter_list.append(man.get_score()['R'])
+        P_voter_list.append(man.get_score()['P'])
+    P_list.append(P_voter_list)
+    R_list.append(R_voter_list)
+fp.writerows(P_list)
+fr.writerows(R_list)
+man.train(train_size=1.0, voter=1)
+man.report()

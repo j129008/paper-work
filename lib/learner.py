@@ -54,6 +54,9 @@ class Learner(Data):
     def predict(self, X):
         return self.crf.predict(X)
 
+    def predict_prob(self, X):
+        return self.crf.predict_prob(X)
+
     def predict_file(self, path):
         test_data = Data(path)
         test_data.feature_loader(self.funcs, self.params)

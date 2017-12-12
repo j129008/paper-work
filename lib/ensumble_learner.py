@@ -26,7 +26,7 @@ class Bagging(Learner):
             thread.join()
             self.model_list.append(self.queue.get())
     def gen_predict(self, model, X):
-        self.queue.put( model.predict(X) )
+        self.queue.put( model.predict_prob(X) )
     def predict(self, X):
         predict_res = []
         vote_res = []
@@ -43,7 +43,11 @@ class Bagging(Learner):
             predict_res.append(self.queue.get())
         predict_res = zip(*predict_res)
         for vote in predict_res:
-            vote_res.append(Counter(vote).most_common(1)[0][0])
+            prob_avg = sum(vote)/len(vote)
+            if prob_avg > 0.5:
+                vote_res.append('E')
+            else:
+                vote_res.append('I')
         return vote_res
 
 class Boosting(Learner):
