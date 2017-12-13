@@ -1,12 +1,12 @@
 from sklearn.model_selection import train_test_split
-from lib.learner import Learner
+from lib.learner import Learner, RandomLearner
 from collections import Counter
 from queue import Queue
 from threading import Thread
 from sklearn.utils import resample
 import numpy as np
 
-class Bagging(Learner):
+class Bagging(RandomLearner):
     def __init__(self, path):
         super().__init__(path)
         self.model_list = []
