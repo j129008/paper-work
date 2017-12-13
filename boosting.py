@@ -8,7 +8,7 @@ from pprint import pprint
 import csv
 
 man = Boosting('./data/data4.txt')
-man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
+man.load_feature(funcs=[Feature.context, Feature.mi_info, Feature.t_diff], params=[{'k':1, 'n_gram':2}, {}, {}])
 man.train()
+print(man.alpha_list)
 man.report()
-

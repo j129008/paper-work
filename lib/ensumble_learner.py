@@ -76,23 +76,46 @@ class Boosting(WeightLearner):
         alpha = log(t)
         return alpha
 
-    def train(self, n_model=3):
+    def train(self, max_model=10):
         self.model_list = []
         self.alpha_list = []
-        for i in range(n_model):
-            self.model_list.append( super().train() )
-            self.alpha_list.append( self.update_weight() )
+        for i in range(max_model):
+            model = super().train()
+            alpha = self.update_weight()
+            if alpha > 0:
+                self.model_list.append( model )
+                self.alpha_list.append( alpha )
+            else:
+                break
 
-    def predict(self, x):
+    def predict_score(self, x):
         predict_res = []
         predict_list = []
+        predict_score = []
         for model in self.model_list:
             predict_list.append( model.predict_prob(x) )
         predict_list = [*zip(*predict_list)]
         for item in predict_list:
-            res = sum( [ a*b for a, b in zip(item, self.alpha_list) ] )
-            if res > 0.5:
-                predict_res.append('E')
+            score = sum( [ a*b for a, b in zip(item, self.alpha_list) ] )
+            predict_score.append(score)
+        return predict_score
+
+    def get_gap(self):
+        score_list = self.predict_score(self.X_train)
+        end_list = []
+        for i, lab in enumerate( self.Y_train ):
+            if lab == 'E':
+                end_list.append(score_list[i])
+        return sum(end_list)/len(end_list)
+
+    def predict(self, x):
+        score_list = self.predict_score(x)
+        gap = self.get_gap()
+        res_list = []
+        for score in score_list:
+            if score >= gap:
+                res_list.append('E')
             else:
-                predict_res.append('I')
-        return predict_res
+                res_list.append('I')
+        return res_list
+
