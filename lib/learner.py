@@ -5,6 +5,7 @@ from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
 from lib.crf import CRF, RandomCRF, WeightCRF
+import numpy as np
 
 class Learner(Data):
     def __init__(self, path, train_size=0.6):
@@ -95,7 +96,7 @@ class WeightLearner(Learner):
     def __init__(self, path):
         super().__init__(path)
         N = len(self.X_train)
-        self.weight_list = [1/N]*N
+        self.weight_list = [np.longdouble(1/N)]*N
     def get_CRF(self, c1=0, c2=1):
         crf = WeightCRF(
             algorithm                = 'lbfgs',
