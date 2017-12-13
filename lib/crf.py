@@ -18,6 +18,17 @@ class CRF(sklearn_crfsuite.CRF):
                 res_list.append(0.0)
         return res_list
 
+class WeightCRF(CRF):
+    def fit(self, x, y, weight_list=None):
+        N = len(x)
+        weight_list = [ int(weight*N) for weight in weight_list ]
+        x_ = []
+        y_ = []
+        for i in range(len(weight_list)):
+            x_.extend( weight_list[i]*[ x[i] ] )
+            y_.extend( weight_list[i]*[ y[i] ] )
+        super().fit(x_, y_)
+
 class RandomCRF(CRF):
     def feature_select(self, x, feature_list):
         random_x = []

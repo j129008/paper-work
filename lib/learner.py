@@ -4,7 +4,7 @@ from sklearn.metrics import *
 from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
-from lib.crf import CRF, RandomCRF
+from lib.crf import CRF, RandomCRF, WeightCRF
 
 class Learner(Data):
     def __init__(self, path, train_size=0.6):
@@ -88,4 +88,32 @@ class RandomLearner(Learner):
             c1 = c1,
             c2 = c2
         )
+        return crf
+
+class WeightLearner(Learner):
+    def __init__(self, path):
+        super().__init__(path)
+        N = len(self.X_train)
+        self.weight_list = [1/N]*N
+    def get_CRF(self, c1=0, c2=1):
+        crf = WeightCRF(
+            algorithm                = 'lbfgs',
+            max_iterations           = 100,
+            all_possible_transitions = True,
+            c1 = c1,
+            c2 = c2
+        )
+        return crf
+    def train(self, sub_train=1.0, c1=0, c2=1, verbose=False):
+        crf = self.get_CRF(c1=c1, c2=c2)
+        sub_size = int( sub_train*len(self.X_train) )
+        if sub_train < 1.0:
+            sub_x, sub_y = resample(self.X_train, self.Y_train, n_samples=sub_size, replace=False)
+            crf.fit(sub_x, sub_y, self.weight_list)
+            self.sub_x = sub_x
+            self.sub_y = sub_y
+            self.crf = crf
+            return crf
+        crf.fit(self.X_train, self.Y_train, self.weight_list)
+        self.crf = crf
         return crf
