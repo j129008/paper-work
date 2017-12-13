@@ -4,7 +4,7 @@ from sklearn.metrics import *
 from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
-from lib.crf import CRF, randomCRF
+from lib.crf import CRF, RandomCRF
 
 class Learner(Data):
     def __init__(self, path, train_size=0.6):
@@ -81,7 +81,7 @@ class Learner(Data):
 
 class RandomLearner(Learner):
     def get_CRF(self, c1=0, c2=1):
-        crf = randomCRF(
+        crf = RandomCRF(
             algorithm                = 'lbfgs',
             max_iterations           = 100,
             all_possible_transitions = True,

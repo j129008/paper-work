@@ -18,7 +18,7 @@ class CRF(sklearn_crfsuite.CRF):
                 res_list.append(0.0)
         return res_list
 
-class randomCRF(CRF):
+class RandomCRF(CRF):
     def feature_select(self, x, feature_list):
         random_x = []
         for ins in x:
