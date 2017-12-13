@@ -64,12 +64,13 @@ class Learner(Data):
         self.Y_private = test_data.Y
         return self.Y_pred
 
-    def get_score(self, Y_pred=None, label='E'):
-        if Y_pred == None:
+    def get_score(self, Y_pred=None, Y_private=None, label='E'):
+        if ( Y_pred == None ) or ( Y_private == None ):
             Y_pred = self.predict(self.X_private)
-        P = metrics.flat_precision_score(self.Y_private, Y_pred, pos_label=label)
-        R = metrics.flat_recall_score(self.Y_private, Y_pred, pos_label=label)
-        f1 = metrics.flat_f1_score(self.Y_private, Y_pred, pos_label=label)
+            Y_private = self.Y_private
+        P = metrics.flat_precision_score(Y_private, Y_pred, pos_label=label)
+        R = metrics.flat_recall_score(Y_private, Y_pred, pos_label=label)
+        f1 = metrics.flat_f1_score(Y_private, Y_pred, pos_label=label)
         return {'P':P, 'R':R, 'f1':f1}
 
     def report(self, Y_pred=None):

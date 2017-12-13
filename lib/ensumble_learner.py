@@ -1,10 +1,12 @@
 from sklearn.model_selection import train_test_split
-from lib.learner import Learner, RandomLearner
+from lib.learner import Learner, RandomLearner, WeightLearner
 from collections import Counter
 from queue import Queue
 from threading import Thread
 from sklearn.utils import resample
 import numpy as np
+from math import sqrt, log
+import pdb
 
 class Bagging(RandomLearner):
     def __init__(self, path):
@@ -50,55 +52,47 @@ class Bagging(RandomLearner):
                 vote_res.append('I')
         return vote_res
 
-class Boosting(Learner):
+class Boosting(WeightLearner):
     def __init__(self, path):
         super().__init__(path)
-    def half_hit_idx(self, y_true=None, y_pred=None):
-        err_pool_idx = []
-        hit_pool_idx = []
-        sample_size = 0
-        for i in range(len(y_pred)):
-            if y_pred[i] == y_true[i]:
-                hit_pool_idx.append(i)
+
+    def sigma_error_weight(self, Y_pred, Y_private):
+        sum_of_error_weight = 0.0
+        for i in range(len(Y_pred)):
+            if Y_pred[i] != Y_private[i]:
+                sum_of_error_weight += self.weight_list[i]
+        return sum_of_error_weight
+
+    def update_weight(self):
+        Y_pred = super().predict(self.X_train)
+        Y_private = self.Y_train
+        epsilon = self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list)
+        t = sqrt((1-epsilon)/epsilon)
+        for i in range(len(Y_pred)):
+            if Y_pred[i] == Y_private[i]:
+                self.weight_list[i]/=t
             else:
-                err_pool_idx.append(i)
-        sample_size = min(len(hit_pool_idx), len(err_pool_idx))
-        res_idx = err_pool_idx[:sample_size] + hit_pool_idx[:sample_size]
-        return res_idx
-    def C1_C2_disagree_idx(self, C1_pred=None, C2_pred=None):
-        S3_idx = []
-        for i in range(len(C1_pred)):
-            if C1_pred[i] != C2_pred[i]:
-                S3_idx.append(i)
-        return S3_idx
-    def train(self, sample_size=0.5):
-        n_samples = int( len(self.Y_train)*sample_size )
-        self.C1 = super().train(sub_train=sample_size)
-        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples, replace=False)
-        S1_X = sample_x
-        S1_Y_pred = self.C1.predict(sample_x)
-        S1_Y_true = sample_y
-        S2_idx = self.half_hit_idx(S1_Y_pred, S1_Y_true)
-        C2_X = np.array(S1_X)[S2_idx]
-        C2_Y = np.array(S1_Y_true)[S2_idx]
-        self.C2 = self.get_CRF()
-        self.C2.fit(C2_X, C2_Y)
-        sample_x, sample_y = resample(self.X_train, self.Y_train, n_samples=n_samples, replace=False)
-        C1_pred = self.C1.predict(sample_x)
-        C2_pred = self.C2.predict(sample_x)
-        S3_idx = self.C1_C2_disagree_idx(C1_pred, C2_pred)
-        S3_X = np.array(sample_x)[S3_idx]
-        S3_Y = np.array(sample_y)[S3_idx]
-        self.C3 = self.get_CRF()
-        self.C3.fit(S3_X, S3_Y)
-    def predict(self, X):
-        C1_pred = self.C1.predict(X)
-        C2_pred = self.C2.predict(X)
-        C3_pred = self.C3.predict(X)
-        final_pred = []
-        for i in range(len(C1_pred)):
-            if C1_pred[i] == C2_pred[i]:
-                final_pred.append(C1_pred[i])
+                self.weight_list[i]*=t
+        alpha = log(t)
+        return alpha
+
+    def train(self, n_model=3):
+        self.model_list = []
+        self.alpha_list = []
+        for i in range(n_model):
+            self.model_list.append( super().train() )
+            self.alpha_list.append( self.update_weight() )
+
+    def predict(self, x):
+        predict_res = []
+        predict_list = []
+        for model in self.model_list:
+            predict_list.append( model.predict_prob(x) )
+        predict_list = [*zip(*predict_list)]
+        for item in predict_list:
+            res = sum( [ a*b for a, b in zip(item, self.alpha_list) ] )
+            if res > 0.5:
+                predict_res.append('E')
             else:
-                final_pred.append(C3_pred[i])
-        return final_pred
+                predict_res.append('I')
+        return predict_res
