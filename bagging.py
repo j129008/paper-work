@@ -9,15 +9,15 @@ import csv
 
 fp = csv.writer( open('precision.csv', 'w') )
 fr = csv.writer( open('recall.csv', 'w') )
-man = Bagging('./data/data2.txt')
+man = Bagging('./data/data4.txt')
 man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
 
 P_list = []
 R_list = []
-for size in [0.1, 0.2, 0.3, 0.4, 0.5]:
+for size in [0.1, 0.2, 0.3, 0.4]:
     P_voter_list = []
     R_voter_list = []
-    for voter in range(3, 11):
+    for voter in range(3, 7):
         print( 'voter: ', voter, 'size: ', size )
         man.train(voter=voter, train_size=size)
         pprint(man.get_score())
@@ -27,5 +27,4 @@ for size in [0.1, 0.2, 0.3, 0.4, 0.5]:
     R_list.append(R_voter_list)
 fp.writerows(P_list)
 fr.writerows(R_list)
-man.train(train_size=1.0, voter=1)
-man.report()
+man.baseline()

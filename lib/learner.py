@@ -74,6 +74,10 @@ class Learner(Data):
         f1 = metrics.flat_f1_score(Y_private, Y_pred, pos_label=label)
         return {'P':P, 'R':R, 'f1':f1}
 
+    def baseline(self):
+        self.crf.fit(self.X_train, self.Y_train)
+        self.report()
+
     def report(self, Y_pred=None):
         if Y_pred == None:
             Y_pred = self.predict(self.X_private)

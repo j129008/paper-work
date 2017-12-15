@@ -21,6 +21,8 @@ class CRF(sklearn_crfsuite.CRF):
 
 class WeightCRF(CRF):
     def fit(self, x, y, weight_list=None):
+        if weight_list == None:
+            return super().fit(x, y)
         N = len(x)
         weight_list = [ int(weight*N + 0.00001) for weight in weight_list ]
         x_ = []
