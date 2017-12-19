@@ -24,7 +24,7 @@ class WeightCRF(CRF):
         if weight_list == None:
             return super().fit(x, y)
         N = len(x)
-        weight_list = [ int(weight*N + 0.00001) for weight in weight_list ]
+        weight_list = [ int(weight*N*10) for weight in weight_list ]
         x_ = []
         y_ = []
         for i in range(len(weight_list)):
