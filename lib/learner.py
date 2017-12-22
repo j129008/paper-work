@@ -4,7 +4,7 @@ from sklearn.metrics import *
 from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
-from lib.crf import CRF, RandomCRF, WeightCRF
+from lib.crf import CRF, RandomCRF, WeightCRF, RandomForest
 import numpy as np
 
 class Learner(Data):
@@ -84,6 +84,12 @@ class Learner(Data):
         print(metrics.flat_classification_report(
             self.Y_private, Y_pred, labels=('I', 'E'), digits=4
         ))
+
+class RandomForestLearner(Learner):
+    def get_CRF(self, c1=0, c2=1):
+        clf = RandomForest(n_jobs=8)
+        clf.build_index(self.X)
+        return clf
 
 class RandomLearner(Learner):
     def get_CRF(self, c1=0, c2=1):

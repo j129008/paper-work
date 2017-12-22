@@ -1,6 +1,22 @@
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction import DictVectorizer
 import sklearn_crfsuite
 from random import sample, randrange
 import pdb
+
+class RandomForest(RandomForestClassifier):
+    def build_index(self, x):
+        self.vec = DictVectorizer()
+        self.vec.fit_transform(x)
+    def fit(self, x, y):
+        vec_x = self.vec.transform(x)
+        vec_y = [ 1 if ele == 'E' else 0 for ele in y ]
+        super().fit(vec_x, vec_y)
+    def predict(self, x):
+        vec_x = self.vec.transform(x)
+        vec_y = super().predict(vec_x)
+        y = [ 'E' if ele == 1 else 'I' for ele in vec_y ]
+        return y
 
 class CRF(sklearn_crfsuite.CRF):
     def fit(self, x, y):
