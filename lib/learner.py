@@ -4,7 +4,7 @@ from sklearn.metrics import *
 from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
-from lib.crf import CRF, RandomCRF, WeightCRF, RandomForest
+from lib.crf import *
 import numpy as np
 
 class Learner(Data):
@@ -128,4 +128,10 @@ class WeightLearner(Learner):
             return crf
         crf.fit(self.X_train, self.Y_train, self.weight_list)
         self.crf = crf
+        return crf
+
+class WeightRandonForestLearner(WeightLearner):
+    def get_CRF(self, c1=0, c2=1):
+        crf = WeightRandomForest(n_jobs=8)
+        crf.build_index(self.X)
         return crf

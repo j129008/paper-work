@@ -17,6 +17,24 @@ class RandomForest(RandomForestClassifier):
         vec_y = super().predict(vec_x)
         y = [ 'E' if ele == 1 else 'I' for ele in vec_y ]
         return y
+    def predict_prob(self, x):
+        vec_x = self.vec.transform(x)
+        vec_y = super().predict_proba(vec_x)
+        y = [ 1.0 - ele[0] for ele in vec_y ]
+        return y
+
+class WeightRandomForest(RandomForest):
+    def fit(self, x, y, weight_list=None):
+        if weight_list == None:
+            return super().fit(x, y)
+        N = len(x)
+        weight_list = [ int(weight*N*10) for weight in weight_list ]
+        x_ = []
+        y_ = []
+        for i in range(len(weight_list)):
+            x_.extend( weight_list[i]*[ x[i] ] )
+            y_.extend( weight_list[i]*[ y[i] ] )
+        super().fit(x_, y_)
 
 class CRF(sklearn_crfsuite.CRF):
     def fit(self, x, y):

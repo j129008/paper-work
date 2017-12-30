@@ -1,11 +1,12 @@
 from sklearn.model_selection import train_test_split
-from lib.learner import Learner, RandomLearner, WeightLearner
+from lib.learner import *
 from collections import Counter
 from queue import Queue
 from threading import Thread
 from sklearn.utils import resample
 import numpy as np
 from math import sqrt, log
+import sys
 import pdb
 
 class Bagging(RandomLearner):
@@ -52,7 +53,7 @@ class Bagging(RandomLearner):
                 vote_res.append('I')
         return vote_res
 
-class Boosting(WeightLearner):
+class Boosting(WeightRandonForestLearner):
     def __init__(self, path):
         super().__init__(path)
 
@@ -66,7 +67,7 @@ class Boosting(WeightLearner):
     def update_weight(self):
         Y_pred = super().predict(self.X_train)
         Y_private = self.Y_train
-        epsilon = self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list)
+        epsilon = self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list) + sys.float_info.min
         t = sqrt((1-epsilon)/epsilon)
         for i in range(len(Y_pred)):
             if Y_pred[i] == Y_private[i]:
