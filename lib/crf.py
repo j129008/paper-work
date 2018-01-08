@@ -1,24 +1,29 @@
+from random import sample, randrange
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.decomposition import PCA
 import sklearn_crfsuite
-from random import sample, randrange
-import pdb
 
 class RandomForest(RandomForestClassifier):
-    def build_index(self, x):
-        self.vec = DictVectorizer()
-        self.vec.fit_transform(x)
+    def build_index(self, x, max_dim=100):
+        self.vec = DictVectorizer(sparse=False)
+        vec_x = self.vec.fit_transform(x)
+        self.max_dim = max_dim
+        self.pca = PCA(n_components=min(max_dim, vec_x.shape[1]))
+        self.pca.fit(vec_x)
     def fit(self, x, y):
-        vec_x = self.vec.transform(x)
+        if len(x) <= 0:
+            return None
+        vec_x = self.pca.transform(self.vec.transform(x))
         vec_y = [ 1 if ele == 'E' else 0 for ele in y ]
         super().fit(vec_x, vec_y)
     def predict(self, x):
-        vec_x = self.vec.transform(x)
+        vec_x = self.pca.transform(self.vec.transform(x))
         vec_y = super().predict(vec_x)
         y = [ 'E' if ele == 1 else 'I' for ele in vec_y ]
         return y
     def predict_prob(self, x):
-        vec_x = self.vec.transform(x)
+        vec_x = self.pca.transform(self.vec.transform(x))
         vec_y = super().predict_proba(vec_x)
         y = [ 1.0 - ele[0] for ele in vec_y ]
         return y
@@ -34,10 +39,16 @@ class WeightRandomForest(RandomForest):
         for i in range(len(weight_list)):
             x_.extend( weight_list[i]*[ x[i] ] )
             y_.extend( weight_list[i]*[ y[i] ] )
-        super().fit(x_, y_)
+        if len(x_) > 0:
+            super().fit(x_, y_)
+            return True
+        else:
+            return False
 
 class CRF(sklearn_crfsuite.CRF):
     def fit(self, x, y):
+        if len(x) <= 0:
+            return None
         super().fit([ [ele] for ele in x ], [ [ele] for ele in y ])
 
     def predict(self, x):

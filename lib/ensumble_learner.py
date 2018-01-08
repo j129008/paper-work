@@ -83,7 +83,7 @@ class Boosting(WeightRandonForestLearner):
         for i in range(max_model):
             model = super().train()
             alpha = self.update_weight()
-            if alpha > 0:
+            if alpha > 0 and model != None:
                 self.model_list.append( model )
                 self.alpha_list.append( alpha )
             else:

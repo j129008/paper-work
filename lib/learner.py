@@ -48,9 +48,10 @@ class Learner(Data):
             self.sub_y = sub_y
             self.crf = crf
             return crf
-        crf.fit(self.X_train, self.Y_train)
-        self.crf = crf
-        return crf
+        if crf.fit(self.X_train, self.Y_train) != None:
+            self.crf = crf
+            return crf
+        return None
 
     def predict(self, X):
         return self.crf.predict(X)
@@ -126,9 +127,12 @@ class WeightLearner(Learner):
             self.sub_y = sub_y
             self.crf = crf
             return crf
-        crf.fit(self.X_train, self.Y_train, self.weight_list)
-        self.crf = crf
-        return crf
+        fit_res = crf.fit(self.X_train, self.Y_train, self.weight_list)
+        if fit_res == True:
+            self.crf = crf
+            return crf
+        else:
+            return None
 
 class WeightRandonForestLearner(WeightLearner):
     def get_CRF(self, c1=0, c2=1):
