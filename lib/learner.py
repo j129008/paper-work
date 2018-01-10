@@ -8,7 +8,7 @@ from lib.crf import *
 import numpy as np
 
 class Learner(Data):
-    def __init__(self, path, train_size=0.6, random_state=None, shuffle=True):
+    def __init__(self, path, train_size=0.6, random_state=None, shuffle=False):
         super().__init__(path)
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
@@ -91,11 +91,11 @@ class Learner(Data):
         ))
 
 class RandomForestLearner(Learner):
-    def __init__(self, path, random_state=None, max_dim=100, shuffle=True):
+    def __init__(self, path, random_state=None, max_dim=100, shuffle=False):
         super().__init__(path, random_state=random_state, shuffle=shuffle)
         self.max_dim = max_dim
     def get_CRF(self, c1=0, c2=1):
-        clf = RandomForest(n_jobs=8, random_state=self.random_state)
+        clf = RandomForest(n_jobs=8, random_state=self.random_state, max_features=None, n_estimators=3)
         clf.build_index(self.X, max_dim=self.max_dim)
         return clf
 
@@ -111,8 +111,8 @@ class RandomLearner(Learner):
         return crf
 
 class WeightLearner(Learner):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, path, random_state=None):
+        super().__init__(path, random_state=random_state)
         N = len(self.X_train)
         self.weight_list = [np.longdouble(1/N)]*N
     def get_CRF(self, c1=0, c2=1):

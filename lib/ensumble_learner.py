@@ -54,8 +54,8 @@ class Bagging(RandomLearner):
         return vote_res
 
 class Boosting(WeightRandonForestLearner):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, path, random_state=None):
+        super().__init__(path, random_state=random_state)
 
     def sigma_error_weight(self, Y_pred, Y_private):
         sum_of_error_weight = 0.0

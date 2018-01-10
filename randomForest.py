@@ -9,13 +9,13 @@ import csv
 
 path = './data/data4.txt'
 
-man = RandomForestLearner(path, random_state=2, max_dim=200, shuffle=False)
+man = RandomForestLearner(path, random_state=2, max_dim=200)
 man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
 man.train()
 man.report()
 
 print('baseline')
-man = Learner(path, random_state=2, shuffle=False)
+man = Learner(path, random_state=2)
 man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
 man.train()
 man.report()

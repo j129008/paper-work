@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 class RandomForest(RandomForestClassifier):
-    def build_index(self, x, max_dim=100):
+    def build_index(self, x, max_dim=200):
         logging.info('indexing')
         self.vec = DictVectorizer(sparse=False)
         vec_x = self.vec.fit_transform(x)
