@@ -48,10 +48,13 @@ class Learner(Data):
             self.sub_y = sub_y
             self.crf = crf
             return crf
-        if crf.fit(self.X_train, self.Y_train) != None:
+
+        fit_res = crf.fit(self.X_train, self.Y_train)
+        if fit_res == True:
             self.crf = crf
             return crf
-        return None
+        else:
+            return None
 
     def predict(self, X):
         return self.crf.predict(X)

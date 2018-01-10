@@ -3,20 +3,28 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.decomposition import PCA
 import sklearn_crfsuite
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 class RandomForest(RandomForestClassifier):
     def build_index(self, x, max_dim=100):
+        logging.info('indexing')
         self.vec = DictVectorizer(sparse=False)
         vec_x = self.vec.fit_transform(x)
+        logging.info('dim: ' + str(vec_x.shape[1]))
         self.max_dim = max_dim
+        logging.info('running PCA to max dim: ' + str(max_dim))
         self.pca = PCA(n_components=min(max_dim, vec_x.shape[1]))
         self.pca.fit(vec_x)
     def fit(self, x, y):
+        logging.info('fitting')
         if len(x) <= 0:
-            return None
+            return False
         vec_x = self.pca.transform(self.vec.transform(x))
         vec_y = [ 1 if ele == 'E' else 0 for ele in y ]
         super().fit(vec_x, vec_y)
+        return True
     def predict(self, x):
         vec_x = self.pca.transform(self.vec.transform(x))
         vec_y = super().predict(vec_x)
@@ -48,8 +56,9 @@ class WeightRandomForest(RandomForest):
 class CRF(sklearn_crfsuite.CRF):
     def fit(self, x, y):
         if len(x) <= 0:
-            return None
+            return False
         super().fit([ [ele] for ele in x ], [ [ele] for ele in y ])
+        return True
 
     def predict(self, x):
         res = super().predict([ [ele] for ele in x ])
