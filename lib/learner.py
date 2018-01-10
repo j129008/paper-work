@@ -8,10 +8,10 @@ from lib.crf import *
 import numpy as np
 
 class Learner(Data):
-    def __init__(self, path, train_size=0.6):
+    def __init__(self, path, train_size=0.6, random_state=None):
         super().__init__(path)
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
-            self.X, self.Y, test_size=1.0-train_size
+            self.X, self.Y, test_size=1.0-train_size, random_state=random_state
         )
     def get_CRF(self, c1=0, c2=1):
         crf = CRF(
