@@ -8,11 +8,11 @@ from lib.crf import *
 import numpy as np
 
 class Learner(Data):
-    def __init__(self, path, train_size=0.6, random_state=None):
+    def __init__(self, path, train_size=0.6, random_state=None, shuffle=True):
         super().__init__(path)
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
-            self.X, self.Y, test_size=1.0-train_size, random_state=random_state
+            self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
         )
     def get_CRF(self, c1=0, c2=1):
         crf = CRF(
@@ -91,8 +91,8 @@ class Learner(Data):
         ))
 
 class RandomForestLearner(Learner):
-    def __init__(self, path, random_state=None, max_dim=100):
-        super().__init__(path, random_state=random_state)
+    def __init__(self, path, random_state=None, max_dim=100, shuffle=True):
+        super().__init__(path, random_state=random_state, shuffle=shuffle)
         self.max_dim = max_dim
     def get_CRF(self, c1=0, c2=1):
         clf = RandomForest(n_jobs=8, random_state=self.random_state)
