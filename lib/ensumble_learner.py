@@ -119,12 +119,13 @@ class Boosting(WeightLearner):
         gap = sum(end_list)/len(end_list)
         f1 = 0.0
         while True:
-            _f1 = self.get_score(self.score2lab(gap, score_list), self.Y_train)['f1']
+            score_dic = self.get_score(self.score2lab(gap, score_list), self.Y_train)
+            _f1 = score_dic['f1']
             if _f1 > f1:
                 f1 = _f1
                 gap -= 1
             else:
-                return gap
+                return gap+1
 
     def predict(self, x):
         score_list = self.predict_score(x)
