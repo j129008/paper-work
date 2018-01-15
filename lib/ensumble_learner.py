@@ -101,17 +101,7 @@ class Boosting(WeightLearner):
             predict_score.append(score)
         return predict_score
 
-    def get_gap(self):
-        score_list = self.predict_score(self.X_train)
-        end_list = []
-        for i, lab in enumerate( self.Y_train ):
-            if lab == 'E':
-                end_list.append(score_list[i])
-        return sum(end_list)/len(end_list)
-
-    def predict(self, x):
-        score_list = self.predict_score(x)
-        gap = self.get_gap()
+    def score2lab(self, gap, score_list):
         res_list = []
         for score in score_list:
             if score >= gap:
@@ -119,4 +109,25 @@ class Boosting(WeightLearner):
             else:
                 res_list.append('I')
         return res_list
+
+    def get_gap(self):
+        score_list = self.predict_score(self.X_train)
+        end_list = []
+        for i, lab in enumerate( self.Y_train ):
+            if lab == 'E':
+                end_list.append(score_list[i])
+        gap = sum(end_list)/len(end_list)
+        f1 = 0.0
+        while True:
+            _f1 = self.get_score(self.score2lab(gap, score_list), self.Y_train)['f1']
+            if _f1 > f1:
+                f1 = _f1
+                gap -= 1
+            else:
+                return gap
+
+    def predict(self, x):
+        score_list = self.predict_score(x)
+        gap = self.get_gap()
+        return self.score2lab(gap, score_list)
 
