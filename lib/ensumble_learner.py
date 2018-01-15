@@ -53,7 +53,7 @@ class Bagging(RandomLearner):
                 vote_res.append('I')
         return vote_res
 
-class Boosting(WeightRandonForestLearner):
+class Boosting(WeightLearner):
     def __init__(self, path, random_state=None):
         super().__init__(path, random_state=random_state)
 

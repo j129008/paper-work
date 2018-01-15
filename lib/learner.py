@@ -5,7 +5,10 @@ from sklearn_crfsuite import metrics
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
 from lib.crf import *
+import logging
 import numpy as np
+
+logging.basicConfig(level=logging.DEBUG)
 
 class Learner(Data):
     def __init__(self, path, train_size=0.6, random_state=None, shuffle=False):
@@ -139,6 +142,7 @@ class WeightLearner(Learner):
             self.crf = crf
             return crf
         else:
+            logging.info('no model gen')
             return None
 
 class WeightRandonForestLearner(WeightLearner):

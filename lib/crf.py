@@ -75,6 +75,8 @@ class CRF(sklearn_crfsuite.CRF):
 
 class WeightCRF(CRF):
     def fit(self, x, y, weight_list=None):
+        if len(x) <= 0:
+            return False
         if weight_list == None:
             return super().fit(x, y)
         N = len(x)
@@ -85,6 +87,7 @@ class WeightCRF(CRF):
             x_.extend( weight_list[i]*[ x[i] ] )
             y_.extend( weight_list[i]*[ y[i] ] )
         super().fit(x_, y_)
+        return True
 
 class RandomCRF(CRF):
     def feature_select(self, x, feature_list):
