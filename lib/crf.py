@@ -3,20 +3,35 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.decomposition import PCA
 import sklearn_crfsuite
+import pickle
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 class RandomForest(RandomForestClassifier):
     def build_index(self, x, max_dim=200):
-        logging.info('indexing')
-        self.vec = DictVectorizer(sparse=False)
-        vec_x = self.vec.fit_transform(x)
-        logging.info('dim: ' + str(vec_x.shape[1]))
-        self.max_dim = max_dim
-        logging.info('running PCA to max dim: ' + str(max_dim))
-        self.pca = PCA(n_components=min(max_dim, vec_x.shape[1]))
-        self.pca.fit(vec_x)
+        try:
+            logging.info('load index file')
+            self.vec = pickle.load(open('./pickles/'+str(max_dim)+'_vec.pkl', 'rb'))
+            vec_x = self.vec.transform(x)
+            self.max_dim = max_dim
+            self.pca = pickle.load(open('./pickles/'+str(max_dim)+'_pca.pkl', 'rb'))
+            logging.info('load finish')
+        except Exception as e:
+            logging.info(str(e))
+            logging.info('indexing')
+            self.vec = DictVectorizer(sparse=False)
+            vec_x = self.vec.fit_transform(x)
+            pickle.dump(self.vec, open('./pickles/'+str(max_dim)+'_vec.pkl', 'wb'))
+
+            logging.info('dim: ' + str(vec_x.shape[1]))
+            self.max_dim = max_dim
+
+            logging.info('running PCA to max dim: ' + str(max_dim))
+            self.pca = PCA(n_components=min(max_dim, vec_x.shape[1]))
+            self.pca.fit(vec_x)
+            pickle.dump(self.pca, open('./pickles/'+str(max_dim)+'_pca.pkl', 'wb'))
+
     def fit(self, x, y):
         logging.info('fitting')
         if len(x) <= 0:
