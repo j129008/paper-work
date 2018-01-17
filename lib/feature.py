@@ -22,6 +22,10 @@ class Feature:
                 context_feature[str(j)] = word
             feature_list.append(context_feature)
         return feature_list
+    def ext_lab(param):
+        lab_name = param['lab_name']
+        lab = param['lab']
+        return [ {lab_name: ele} for ele in lab ]
 
     def mi_info(param):
         text = param['text']

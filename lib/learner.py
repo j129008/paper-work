@@ -13,6 +13,8 @@ logging.basicConfig(level=logging.DEBUG)
 class Learner(Data):
     def __init__(self, path, train_size=0.6, random_state=None, shuffle=False):
         super().__init__(path)
+        self.split_data(train_size=train_size, random_state=random_state, shuffle=shuffle)
+    def split_data(self, train_size=0.6, random_state=None, shuffle=False):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
