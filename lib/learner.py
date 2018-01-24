@@ -7,6 +7,8 @@ from sklearn.utils import resample
 from lib.crf import *
 import logging
 import numpy as np
+from collections import Counter
+import pickle
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -91,6 +93,7 @@ class Learner(Data):
     def report(self, Y_pred=None):
         if Y_pred == None:
             Y_pred = self.predict(self.X_private)
+        pickle.dump(self.Y_private, open('./pickles/'+'vec_y_test.pkl', 'wb'))
         print(metrics.flat_classification_report(
             self.Y_private, Y_pred, labels=('I', 'E'), digits=4
         ))

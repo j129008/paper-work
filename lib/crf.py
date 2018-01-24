@@ -36,13 +36,18 @@ class RandomForest(RandomForestClassifier):
         logging.info('fitting')
         if len(x) <= 0:
             return False
-        vec_x = self.svd.transform(self.vec.transform(x))
+        big_vec_x = self.vec.transform(x)
+        vec_x = self.svd.transform(big_vec_x)
         vec_y = [ 1 if ele == 'E' else 0 for ele in y ]
+        pickle.dump(vec_x, open('./pickles/'+'vec_x_train.pkl', 'wb'))
+        pickle.dump(vec_y, open('./pickles/'+'vec_y_train.pkl', 'wb'))
         super().fit(vec_x, vec_y)
         return True
     def predict(self, x):
-        vec_x = self.svd.transform(self.vec.transform(x))
+        big_vec_x = self.vec.transform(x)
+        vec_x = self.svd.transform(big_vec_x)
         vec_y = super().predict(vec_x)
+        pickle.dump(vec_x, open('./pickles/'+'vec_x_test.pkl', 'wb'))
         y = [ 'E' if ele == 1 else 'I' for ele in vec_y ]
         return y
     def predict_prob(self, x):
