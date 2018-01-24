@@ -21,6 +21,7 @@ class Learner(Data):
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
         )
+        pickle.dump(self.Y_private, open('./pickles/'+'vec_y_test.pkl', 'wb'))
     def get_CRF(self, c1=0, c2=1):
         crf = CRF(
             algorithm                = 'lbfgs',
@@ -93,7 +94,6 @@ class Learner(Data):
     def report(self, Y_pred=None):
         if Y_pred == None:
             Y_pred = self.predict(self.X_private)
-        pickle.dump(self.Y_private, open('./pickles/'+'vec_y_test.pkl', 'wb'))
         print(metrics.flat_classification_report(
             self.Y_private, Y_pred, labels=('I', 'E'), digits=4
         ))
@@ -106,6 +106,10 @@ class RandomForestLearner(Learner):
         clf = RandomForest(n_jobs=8, random_state=self.random_state, max_features=None, n_estimators=3)
         clf.build_index(self.X, max_dim=self.max_dim)
         return clf
+    def save_index(self):
+        crf = self.get_CRF(c1=1, c2=0)
+        crf.save_index(self.X_train, self.Y_train, 'train')
+        crf.save_index(self.X_private, self.Y_private, 'test')
 
 class RandomLearner(Learner):
     def get_CRF(self, c1=0, c2=1):

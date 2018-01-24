@@ -31,7 +31,13 @@ class RandomForest(RandomForestClassifier):
             self.svd = TruncatedSVD(n_components=min(max_dim, vec_x.shape[1]))
             self.svd.fit(vec_x)
             pickle.dump(self.svd, open('./pickles/'+str(max_dim)+'_svd.pkl', 'wb'))
-
+    def save_index(self, x, y, lab):
+        logging.info('save index')
+        big_vec_x = self.vec.transform(x)
+        vec_x = self.svd.transform(big_vec_x)
+        vec_y = [ 1 if ele == 'E' else 0 for ele in y ]
+        pickle.dump(vec_x, open('./pickles/'+'_vec_x_'+lab+'.pkl', 'wb'))
+        pickle.dump(vec_y, open('./pickles/'+'_vec_y_'+lab+'.pkl', 'wb'))
     def fit(self, x, y):
         logging.info('fitting')
         if len(x) <= 0:
@@ -47,7 +53,6 @@ class RandomForest(RandomForestClassifier):
         big_vec_x = self.vec.transform(x)
         vec_x = self.svd.transform(big_vec_x)
         vec_y = super().predict(vec_x)
-        pickle.dump(vec_x, open('./pickles/'+'vec_x_test.pkl', 'wb'))
         y = [ 'E' if ele == 1 else 'I' for ele in vec_y ]
         return y
     def predict_prob(self, x):

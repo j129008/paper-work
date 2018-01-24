@@ -5,14 +5,13 @@ from sklearn_crfsuite import metrics
 import pickle
 
 # Generate dummy data
-x_train = pickle.load(open('./pickles/vec_x_train.pkl','rb'))
-#  dim = x_train[0].shape[1]
+x_train = pickle.load(open('./pickles/_vec_x_train.pkl','rb'))
 dim = len(x_train[0])
 print(dim)
 x_train = np.array(x_train)
-x_test  = np.array(pickle.load(open('./pickles/vec_x_test.pkl', 'rb')))
-y_test  = np.array(pickle.load(open('./pickles/vec_y_test.pkl','rb')))
-y_train = np.array(pickle.load(open('./pickles/vec_y_train.pkl','rb')))
+x_test  = np.array(pickle.load(open('./pickles/_vec_x_test.pkl', 'rb')))
+y_test  = np.array(pickle.load(open('./pickles/_vec_y_test.pkl','rb')))
+y_train = np.array(pickle.load(open('./pickles/_vec_y_train.pkl','rb')))
 
 model = Sequential()
 model.add(Dense(64, input_dim=dim, activation='relu'))
@@ -25,7 +24,7 @@ model.compile(loss='binary_crossentropy',
                            optimizer='rmsprop',
                            metrics=['acc'])
 model.fit(x_train, y_train,
-                   epochs=2000,
+                   epochs=100,
                    batch_size=128)
 pred = model.predict(x_test, batch_size=128)
 
@@ -38,7 +37,7 @@ def to_label(y):
             labs.append('I')
     return labs
 
-Y_private = y_test
+Y_private = to_label(y_test)
 Y_pred = to_label(pred)
 
 print(metrics.flat_classification_report(
