@@ -1,43 +1,47 @@
 import numpy as np
+from lib.learner import Learner
+from lib.feature import Feature
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from sklearn_crfsuite import metrics
-import pickle
 from keras.optimizers import Adam
 from keras.layers import LSTM, TimeDistributed, SimpleRNN, Embedding, RNN
+from keras.preprocessing.text import one_hot
+from keras.preprocessing.sequence import pad_sequences
 
-def to_label(y):
-    labs = []
-    for ele in y:
-        if ele > 0.5:
-            labs.append('E')
-        else:
-            labs.append('I')
-    return labs
+path = './data/data3.txt'
+voc_size = len(set(open(path, 'r').read()))
 
-# Generate dummy data
-x_train = pickle.load(open('./pickles/_vec_x_train.pkl','rb'))
-dim = len(x_train[0])
-print(dim)
-x_train = np.array(x_train)
-x_test  = np.array(pickle.load(open('./pickles/_vec_x_test.pkl', 'rb')))
-y_test  = np.array(pickle.load(open('./pickles/_vec_y_test.pkl','rb')))
-y_train = np.array(pickle.load(open('./pickles/_vec_y_train.pkl','rb')))
+def x2list(x):
+    docs = []
+    for ele in x:
+        docs.append(ele['0'])
+    enc_docs = [ one_hot(d, voc_size) for d in docs ]
+    padded_docs = pad_sequences(enc_docs, maxlen=1, padding='post')
+    return np.array(padded_docs)
+def y2bin(y):
+    return np.array([ 1 if ele == 'E' else 0 for ele in y ])
+def y2lab(y):
+    return np.array([ 'E' if ele > 0.5 else 'I' for ele in y ])
+
+data = Learner(path)
+data.load_feature(funcs=[Feature.context], params=[{'k':0, 'n_gram':1}])
+x_train = x2list(data.X_train)
+x_test = x2list(data.X_private)
+y_train = y2bin(data.Y_train)
 
 model = Sequential()
-model.add(Embedding(64, output_dim=64))
-model.add(LSTM(64))
-#  model.add(Dense(64, activation='sigmoid', input_dim=1500))
-#  model.add(Dense(64, activation='sigmoid', input_dim=1500))
+model.add(Embedding(voc_size, output_dim=100, input_length=1))
+model.add(LSTM(100))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, batch_size=3)
+model.fit(x_train, y_train, batch_size=10, epochs=5)
 pred = model.predict(x_test)
-Y_private = to_label(y_test)
-Y_pred = to_label(pred)
+Y_private = data.Y_private
+Y_pred = y2lab(pred)
 print(metrics.flat_classification_report(
     Y_private, Y_pred, labels=('I', 'E'), digits=4
 ))
