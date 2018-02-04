@@ -12,7 +12,7 @@ class Feature:
         k = param['k']
         n_gram = param['n_gram']
         feature_list = []
-        text_append = '！'*k + text + '！'*k
+        text_append = text[0]*k + text + text[-1]*k
         for i in range( k, len( text )+k ):
             context_feature = {}
             context_list = []
