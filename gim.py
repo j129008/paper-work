@@ -4,6 +4,8 @@ from lib.learner import Learner
 from lib.feature import Feature
 from sklearn.ensemble import RandomForestClassifier
 from sklearn_crfsuite import metrics
+from sklearn.neural_network import MLPClassifier
+from sklearn import svm
 import pickle
 
 try:
@@ -37,12 +39,14 @@ def to_label(y):
 
 data = Learner('./data/data3.txt')
 data.load_feature(funcs=[Feature.context], params=[{'k':0, 'n_gram':1}])
-clf = RandomForestClassifier()
 x, y = toValue(data.X_train, data.Y_train)
+
+#  clf = MLPClassifier(hidden_layer_sizes=(64, 64))
+clf = svm.SVC()
 clf.fit(x, y)
+
 x, y = toValue(data.X_private, data.Y_private)
 Y_pred = clf.predict( x )
-
 print(metrics.flat_classification_report(
     data.Y_private, to_label(Y_pred), labels=('I', 'E'), digits=4
 ))
