@@ -1,9 +1,9 @@
-import regex as re
 from tqdm import tqdm as bar
+import re
 
 def ngram(data, num=2):
-    pattern = '.{' + str(num)  + '}'
-    return [match.group() for match in re.finditer(pattern, data, overlapped=True)]
+    pattern = r'(?=(.{' + str(num)  + '}))'
+    return [match.group(1) for match in re.finditer(pattern, data)]
 
 class Chapter:
     def __init__(self, text):

@@ -1,23 +1,30 @@
 from collections import Counter
-from lib.data import *
+from lib.data import Data
 from math import log2, sqrt, pow
 from tqdm import tqdm as bar
 import re
 import pickle
 
+def ngram(data, num=2):
+    pattern = r'(?=(.{' + str(num)  + '}))'
+    return [match for match in re.finditer(pattern, data)]
+
 class Context(Data):
     def __init__(self, path, n_gram=2, k=1):
         super().__init__(path)
         feature_list = []
-        text_append = '！'*k + self.text + '！'*k
-        for i in range( k, len( self.text )+k ):
-            context_feature = {}
-            context_list = []
-            for n in range(1, n_gram+1):
-                context_list += ngram(text_append[i-k:i+k+1], num=n)
-            for j, word in enumerate(context_list):
-                context_feature[str(j)] = word
-            feature_list.append(context_feature)
+        for chap in self.chapter_list:
+            text_append = '！'*k + chap.text + '！'*k
+            for i in range( k, len( chap.text )+k ):
+                context_feature = {}
+                match_list = []
+                for n in range(1, n_gram+1):
+                    match_list += ngram(text_append[i-k:i+k+1], num=n)
+                for i, match in enumerate(match_list):
+                    start = match.start(1) - k
+                    end = match.end(1) - k-1
+                    context_feature[str(start)+','+str(end)] = match.group(1)
+                feature_list.append(context_feature)
         self.X = feature_list
 
 class MutualInfo(Data):
