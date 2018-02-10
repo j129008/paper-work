@@ -57,29 +57,3 @@ Y_pred = y2lab(pred)
 print(metrics.flat_classification_report(
     Y_private, Y_pred, labels=('I', 'E'), digits=4
 ))
-
-f = open('./pred.txt', 'w')
-cutter = 20
-line_true = ''
-line_pred = ''
-for i in range(len(data.Y_private)):
-    word = data.X_private[i][str(k)]
-    if i%cutter == 0:
-        f.write(line_true+'\n')
-        f.write(line_pred+'\n')
-        f.write('\n')
-        line_true = ''
-        line_pred = ''
-    line_pred+=word
-    line_true+=word
-    pred_w = Y_pred[i]
-    real_w = Y_private[i]
-    if pred_w == real_w and real_w == 'E':
-        line_pred+='，'
-        line_true+='，'
-    if pred_w == 'E' and real_w == 'I':
-        line_pred+='，'
-        line_true+='　'
-    if pred_w == 'I' and real_w == 'E':
-        line_pred+='　'
-        line_true+='，'
