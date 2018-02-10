@@ -1,19 +1,16 @@
 from collections import Counter
-from lib.data import ngram
+from lib.data import *
 from math import log2, sqrt, pow
 from tqdm import tqdm as bar
 import re
 import pickle
-class Feature:
-    def __init__(self):
-        self.list = [self.context, self.t_diff, self.mi_info, self.label, self.rhyme]
-    def context(param):
-        text = param['text']
-        k = param['k']
-        n_gram = param['n_gram']
+
+class Context(Data):
+    def __init__(self, path, n_gram=2, k=1):
+        super().__init__(path)
         feature_list = []
-        text_append = text[0]*k + text + text[-1]*k
-        for i in range( k, len( text )+k ):
+        text_append = '！'*k + self.text + '！'*k
+        for i in range( k, len( self.text )+k ):
             context_feature = {}
             context_list = []
             for n in range(1, n_gram+1):
@@ -21,14 +18,12 @@ class Feature:
             for j, word in enumerate(context_list):
                 context_feature[str(j)] = word
             feature_list.append(context_feature)
-        return feature_list
-    def ext_lab(param):
-        lab_name = param['lab_name']
-        lab = param['lab']
-        return [ {lab_name: ele} for ele in lab ]
+        self.X = feature_list
 
-    def mi_info(param):
-        text = param['text']
+class MutualInfo(Data):
+    def __init__(self, path):
+        super().__init__(path)
+        text = self.text
         w_dic = Counter(text)
         bi_dic = Counter(ngram(text))
         mi_score = []
@@ -38,10 +33,12 @@ class Feature:
             Py = w_dic[text[i+1]]/len(text)
             mi_score.append( { 'mi-info':log2( Pxy/(Px*Py) ) } )
         mi_score.append( {'mi-info': 0.0} )
-        return mi_score
+        self.X = mi_score
 
-    def t_diff(param):
-        text = param['text']
+class Tdiff(Data):
+    def __init__(self, path):
+        super().__init__(path)
+        text = self.text
         def t_test(f_xy, f_yz, f_x, f_y, v):
             return ( ( f_yz+0.5 )/( f_y + v/2 ) - ( f_xy+0.5 )/( f_x + v/2 ) )/sqrt( ( f_yz+0.5 )/pow(f_y + v/2, 2) + ( f_xy+0.5 )/pow(f_x + v/2, 2) )
 
@@ -79,15 +76,14 @@ class Feature:
             t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
             t_diff_score.append({'t-diff': t_x - t_y})
         t_diff_score.extend([{'t-diff': 0}]*3)
-        return t_diff_score
+        self.X = t_diff_score
 
-    def label(param):
-        text = param['text']
-        lab_name = param['lab_name']
-        path = param['path']
-        lab_data = open(path, 'r', encoding='utf-8').read().split('\n')[:-1]
+class Label(Data):
+    def __init__(self, path, lab_name, lab_file):
+        super().__init__(path)
+        text = self.text
+        lab_data = open(lab_file, 'r', encoding='utf-8').read().split('\n')[:-1]
         lab_list = ['O']*len( text )
-        print('label ' + lab_name)
         for lab in bar( lab_data ):
             try:
                 p = re.compile( lab )
@@ -101,18 +97,17 @@ class Feature:
                     lab_list[j] = lab_name + '-I'
             except:
                 continue
-        return [ {lab_name:lab} for lab in lab_list ]
+        self.X = [ {lab_name:lab} for lab in lab_list ]
 
-    def rhyme(param):
-        text = param['text']
-        path = param['path']
-        pkl_path = param['pkl_path']
-        rhy_type_list = param['rhy_type_list']
-        small_rhyme = pickle.load(open(pkl_path, 'rb'))
-        data = open(path,'r' , encoding='utf-8')
+class Rhyme(Data):
+    def __init__(self, path, index_file, db_file, rhy_type_list):
+        super().__init__(path)
+        text = self.text
+        small_rhyme = pickle.load(open(db_file, 'rb'))
+        data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
-        print('step 1')
+        print('load index')
         for line in bar(data):
             id, word, exp = line.strip().split('|')
             if id.split('.')[1] == '1':
@@ -120,7 +115,7 @@ class Feature:
             rhyme_dic[word] = rhyme_type
         ret = []
 
-        print('step 2')
+        print('load db')
         for word in bar(text):
             try:
                 pd_ret = small_rhyme[rhyme_dic[word]]
@@ -133,4 +128,4 @@ class Feature:
                 for types in rhy_type_list:
                     exp[types] = 'O'
                 ret.append(exp)
-        return ret
+        self.X = ret

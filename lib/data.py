@@ -17,6 +17,8 @@ class Chapter:
                 label.append('I')
         self.text  = text.replace('，','').strip()
         self.label = label
+    def __len__(self):
+        return len(self.label)
 
 class Book:
     def __init__(self, path):
@@ -34,28 +36,12 @@ class Book:
         for chapter in self.chapter_list:
             label_list.extend(chapter.label)
         return label_list
-    def __getitem__(self, i):
-        return self.chapter_list[i]
 
-class Data:
+class Data(Book):
     def __init__(self, path):
-        book = Book(path)
-        self.chaper_list = book.chapter_list
-        self.text = book.text
-        self.Y = book.label
+        super().__init__(path)
+        self.Y = self.label
         self.X = [{} for _ in range(len(self.Y))]
-    def copyer(self, func_ret):
-        for i in range(len(self.text)):
-            for feature_name in func_ret[i]:
-                self.X[i][feature_name] = func_ret[i][feature_name]
-    def load_feature(self, funcs=None, params=None):
-        self.funcs = funcs
-        self.params= params
-        for func_i, func in enumerate(funcs):
-            params[func_i]['text'] = self.text
-            func_ret = func(params[func_i])
-            self.copyer(func_ret)
-        return self.X
-    def __getitem__(self, i):
-        return ( self.text[i], self.X[i], self.Y[i] )
-
+    def __add__(self, other):
+        self.X = [ { **self.X[i], **other.X[i] } for i in range(len(self.text)) ]
+        return self
