@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from sklearn_crfsuite import metrics
 from keras.optimizers import Adam
-from keras.layers import LSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU
+from keras.layers import LSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.sequence import pad_sequences
 
@@ -16,7 +16,7 @@ try:
 except:
     sentence = open('./data/data2.txt', 'r').read().replace('\n','').split('，')
     sentence = [ list(ele) for ele in sentence]
-    w2v = Word2Vec(sentence, min_count=1)
+    w2v = Word2Vec(sentence, min_count=1, workers=8, iter=50)
     pickle.dump(w2v, open('./pickles/word2vec.pkl', 'wb'))
 
 path = './data/data2.txt'
@@ -42,13 +42,15 @@ y_train = y2bin(data.Y_train)
 
 model = Sequential()
 #  model.add(Embedding(voc_size, output_dim=100, input_length=3))
-model.add(LSTM(50, input_dim=100, input_length=k*2+1))
+for _ in range(4):
+    model.add(Bidirectional(LSTM(50, return_sequences=True, go_backwards=True), input_shape=(k*2+1, 100)))
+model.add(Bidirectional(LSTM(50)))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-model.fit(x_train, y_train, batch_size=10, epochs=50)
+model.fit(x_train, y_train, batch_size=100, epochs=5)
 pred = model.predict(x_test)
 Y_private = data.Y_private
 Y_pred = y2lab(pred)
