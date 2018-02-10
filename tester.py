@@ -1,14 +1,12 @@
 from lib.data import Data
-from lib.feature import Feature
+from lib.feature import *
 from lib.crf import CRF
 from lib.metric import CompareFile
 from sklearn_crfsuite import metrics
 
-train_data = Data('./data/data2.txt')
-train_data.load_feature(funcs=[Feature.context], params=[{'k':4, 'n_gram':2}])
-
-test_data = Data('./test.txt')
-test_data.load_feature(funcs=[Feature.context], params=[{'k':4, 'n_gram':2}])
+path = './data/data4.txt'
+train_data = Context(path) + MutualInfo(path)
+test_data = Context('./test.txt')
 
 crf = CRF()
 crf.fit(train_data.X, train_data.Y)
