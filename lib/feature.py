@@ -1,7 +1,9 @@
 from collections import Counter
 from lib.data import Data
 from math import log2, sqrt, pow
+from gensim.models import Word2Vec
 from tqdm import tqdm as bar
+import numpy as np
 import re
 import pickle
 
@@ -26,6 +28,33 @@ class Context(Data):
                     context_feature[str(start)+','+str(end)] = match.group(1)
                 feature_list.append(context_feature)
         self.X = feature_list
+
+class VecContext(Context):
+    def __init__(self, path, k=1):
+        super().__init__(path, n_gram=1, k=k)
+        self.x2vec()
+        self.y2vec()
+    def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/data2.txt'):
+        try:
+            w2v = pickle.load(open(vec_file, 'rb'))
+        except:
+            sentence = open(txt_file, 'r').read().replace('\n','').split('，')
+            sentence = [ list('！'+ele+'！') for ele in sentence]
+            w2v = Word2Vec(sentence, min_count=1, workers=8, iter=50)
+            pickle.dump(w2v, open(vec_file, 'wb'))
+        return w2v
+    def x2vec(self):
+        docs = []
+        w2v = self.genVec()
+        for ele in self.X:
+            vec = [ w2v[ele[feature_name]] for feature_name in ele ]
+            docs.append(vec)
+        self.X = np.array(docs)
+    def y2vec(self):
+        self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
+        return self.Y
+    def y2lab(self, y):
+        return [ 'E' if ele > 0.5 else 'I' for ele in y ]
 
 class MutualInfo(Data):
     def __init__(self, path):
