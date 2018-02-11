@@ -4,8 +4,8 @@ from lib.crf import CRF
 from lib.metric import CompareFile
 from sklearn_crfsuite import metrics
 
-path = './data/data4.txt'
-train_data = Context(path) + MutualInfo(path)
+path = './data/data2.txt'
+train_data = Context(path)
 test_data = Context('./test.txt')
 
 crf = CRF()

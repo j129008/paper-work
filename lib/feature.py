@@ -56,6 +56,11 @@ class VecContext(Context):
     def y2lab(self, y):
         return [ 'E' if ele > 0.5 else 'I' for ele in y ]
 
+class UniVec(VecContext):
+    def __init__(self, path):
+        super().__init__(path, k=0)
+        self.X = [ vec_list[0] for vec_list in self.X ]
+
 class MutualInfo(Data):
     def __init__(self, path):
         super().__init__(path)
