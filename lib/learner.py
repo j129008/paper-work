@@ -44,9 +44,8 @@ class Learner(Data):
                                 n_iter  = n_iter,
                                 scoring = f1_scorer)
         clf_CV.fit(self.X_train, self.Y_train)
-        clf = clf_CV.best_estimator_
-        self.Y_pred = clf.predict(self.X_private)
-        return clf
+        self.crf = clf_CV.best_estimator_
+        return self.crf
 
     def train(self, sub_train=1.0, c1=0, c2=1, verbose=False):
         crf = self.get_CRF(c1=c1, c2=c2)
