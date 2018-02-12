@@ -10,13 +10,13 @@ import sys
 import pdb
 
 class Bagging(RandomLearner):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, random_state):
+        super().__init__(data, random_state=random_state)
         self.model_list = []
         self.queue = Queue()
     def gen_model(self, train_size, c1, c2):
         self.queue.put( super().train(sub_train=train_size, c1=c1, c2=c2) )
-    def train(self, voter=2, train_size=0.05, c1=0, c2=1):
+    def train(self, voter=8, train_size=0.1, c1=0, c2=1):
         pool = []
         for i in range(voter):
             thread = Thread(
@@ -54,8 +54,8 @@ class Bagging(RandomLearner):
         return vote_res
 
 class Boosting(WeightLearner):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, random_state):
+        super().__init__(data, random_state=random_state)
 
     def sigma_error_weight(self, Y_pred, Y_private):
         sum_of_error_weight = 0.0
