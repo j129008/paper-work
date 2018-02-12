@@ -1,20 +1,22 @@
 from lib.learner import Learner
 from lib.ensumble_learner import Bagging, Boosting
 from lib.feature import *
-from lib.data import PklData
-from datetime import datetime
 import csv
+import sys
 
-result_table = csv.writer( open('/mnt/d/progress/progress.csv', 'w') )
+learn_method = sys.argv[1]
+result_table = csv.writer( open('/mnt/d/progress/progress'+learn_method+'.csv', 'w') )
 result_table.writerow(['context', 'precision', 'recall', 'f1'])
-path = './data/data4.txt'
+path = './data/data2.txt'
 
-def experiment(data, tune=False, ensumble='Boosting', random_state=0):
-    if ensumble == 'Bagging':
+def experiment(data, tune=False, random_state=0):
+    if learn_method == 'Bagging':
+        print('start', learn_method)
         man = Bagging(data, random_state=random_state)
         tune = False
-    elif ensumble == 'Boosting':
-        man = Bagging(data, random_state=random_state)
+    elif learn_method == 'Boosting':
+        print('start', learn_method)
+        man = Boosting(data, random_state=random_state)
         tune = False
     else:
         man = Learner(data, random_state=random_state)
@@ -69,7 +71,3 @@ result_table.writerows(context_tdiff)
 result_table.writerows(context_mi_tdiff)
 result_table.writerows(context_rhyme)
 result_table.writerows(context_office)
-
-# svm
-# random forest
-# deep learning

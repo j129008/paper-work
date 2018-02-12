@@ -127,8 +127,8 @@ class RandomLearner(Learner):
         return crf
 
 class WeightLearner(Learner):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, random_state=None):
+        super().__init__(data, random_state=random_state)
         N = len(self.X_train)
         self.weight_list = [np.longdouble(1/N)]*N
     def get_CRF(self, c1=0, c2=1):
