@@ -1,7 +1,7 @@
 from lib.crf import CRF
 from lib.data import Data
 from lib.learner import Learner
-from lib.feature import Feature
+from lib.feature import Context
 from lib.ensumble_learner import Boosting
 from lib.ensumble_learner import Bagging
 from pprint import pprint
@@ -9,8 +9,8 @@ import csv
 
 fp = csv.writer( open('precision.csv', 'w') )
 fr = csv.writer( open('recall.csv', 'w') )
-man = Bagging('./data/data4.txt')
-man.load_feature(funcs=[Feature.context], params=[{'k':1, 'n_gram':2}])
+data = Context('./data/data4.txt')
+man = Bagging(data)
 
 P_list = []
 R_list = []

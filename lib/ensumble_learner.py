@@ -10,8 +10,8 @@ import sys
 import pdb
 
 class Bagging(RandomLearner):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, data):
+        super().__init__(data)
         self.model_list = []
         self.queue = Queue()
     def gen_model(self, train_size, c1, c2):
@@ -54,8 +54,8 @@ class Bagging(RandomLearner):
         return vote_res
 
 class Boosting(WeightLearner):
-    def __init__(self, path, random_state=None):
-        super().__init__(path, random_state=random_state)
+    def __init__(self, data):
+        super().__init__(data)
 
     def sigma_error_weight(self, Y_pred, Y_private):
         sum_of_error_weight = 0.0

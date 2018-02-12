@@ -13,15 +13,16 @@ import pickle
 logging.basicConfig(level=logging.DEBUG)
 
 class Learner(Data):
-    def __init__(self, path, train_size=0.6, random_state=None, shuffle=False):
-        super().__init__(path)
-        self.split_data(train_size=train_size, random_state=random_state, shuffle=shuffle)
+    def __init__(self, data, split=True):
+        self.X = data.X
+        self.Y = data.Y
+        if split == True:
+            self.split_data()
     def split_data(self, train_size=0.6, random_state=None, shuffle=False):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
         )
-        pickle.dump(self.Y_private, open('./pickles/'+'vec_y_test.pkl', 'wb'))
     def get_CRF(self, c1=0, c2=1):
         crf = CRF(
             algorithm                = 'lbfgs',
@@ -99,8 +100,8 @@ class Learner(Data):
         ))
 
 class RandomForestLearner(Learner):
-    def __init__(self, path, random_state=None, max_dim=100, shuffle=False):
-        super().__init__(path, random_state=random_state, shuffle=shuffle)
+    def __init__(self, data, max_dim=100):
+        super().__init__(data)
         self.max_dim = max_dim
     def get_CRF(self, c1=0, c2=1):
         clf = RandomForest(n_jobs=8, random_state=self.random_state, max_features=None, n_estimators=3)
@@ -123,8 +124,8 @@ class RandomLearner(Learner):
         return crf
 
 class WeightLearner(Learner):
-    def __init__(self, path, random_state=None):
-        super().__init__(path, random_state=random_state)
+    def __init__(self, data):
+        super().__init__(data)
         N = len(self.X_train)
         self.weight_list = [np.longdouble(1/N)]*N
     def get_CRF(self, c1=0, c2=1):
