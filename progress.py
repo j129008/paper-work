@@ -1,21 +1,21 @@
 from lib.learner import Learner
 from lib.ensumble_learner import Bagging, Boosting
 from lib.feature import *
+from tqdm import tqdm as bar
 import csv
 import sys
 
 learn_method = sys.argv[1]
-result_table = csv.writer( open('/mnt/d/progress/progress'+learn_method+'.csv', 'w') )
+result_table = csv.writer( open('/mnt/d/progress/'+learn_method+'.csv', 'w') )
 result_table.writerow(['context', 'precision', 'recall', 'f1'])
 path = './data/data2.txt'
+print('start', learn_method)
 
 def experiment(data, tune=False, random_state=0):
     if learn_method == 'Bagging':
-        print('start', learn_method)
         man = Bagging(data, random_state=random_state)
         tune = False
     elif learn_method == 'Boosting':
-        print('start', learn_method)
         man = Boosting(data, random_state=random_state)
         tune = False
     else:
@@ -39,7 +39,7 @@ tdiff_data = Tdiff(path)
 rhyme_data = Rhyme(path, './data/rhyme.txt', './pickles/rhyme_list.pkl', ['反切', '聲母', '韻目', '調', '等', '呼', '韻母'])
 office_data = Label(path, 'office', './ref/known/office2.txt')
 
-for k in range(1, 6):
+for k in bar(range(1, 6)):
     # context
     context_data = Context(path, k=k)
     score = experiment(context_data)

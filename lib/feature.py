@@ -2,7 +2,6 @@ from collections import Counter
 from lib.data import Data
 from math import log2, sqrt, pow
 from gensim.models import Word2Vec
-from tqdm import tqdm as bar
 import numpy as np
 import re
 import pickle
@@ -134,7 +133,7 @@ class Label(Data):
         text = self.text
         lab_data = open(lab_file, 'r', encoding='utf-8').read().split('\n')[:-1]
         lab_list = ['O']*len( text )
-        for lab in bar( lab_data ):
+        for lab in lab_data:
             try:
                 p = re.compile( lab )
                 m = p.search( text ).span()[0]
@@ -157,16 +156,14 @@ class Rhyme(Data):
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
-        print('load index')
-        for line in bar(data):
+        for line in data:
             id, word, exp = line.strip().split('|')
             if id.split('.')[1] == '1':
                 rhyme_type = word
             rhyme_dic[word] = rhyme_type
         ret = []
 
-        print('load db')
-        for word in bar(text):
+        for word in text:
             try:
                 pd_ret = small_rhyme[rhyme_dic[word]]
                 exp = {}
