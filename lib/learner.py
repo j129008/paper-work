@@ -7,18 +7,18 @@ from sklearn.utils import resample
 from lib.crf import *
 import logging
 import numpy as np
+import scipy
 from collections import Counter
 import pickle
 
 logging.basicConfig(level=logging.DEBUG)
 
 class Learner(Data):
-    def __init__(self, data, split=True):
+    def __init__(self, data, random_state=None):
         self.X = data.X
         self.Y = data.Y
-        if split == True:
-            self.split_data()
-    def split_data(self, train_size=0.6, random_state=None, shuffle=False):
+        self.split_data(random_state=random_state)
+    def split_data(self, train_size=0.6, random_state=None, shuffle=True):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
@@ -32,11 +32,15 @@ class Learner(Data):
             c2 = c2
         )
         return crf
-    def train_CV(self, c1=0, c2=1, cv=3, n_iter=1, params_space={}):
+    def train_CV(self, c1=0, c2=1, cv=3, n_iter=1):
         crf = self.get_CRF(c1=c1, c2=c2)
         f1_scorer = make_scorer(metrics.flat_f1_score,
                                 average='weighted',
                                 labels=['I', 'E'])
+        params_space = {
+                'c1': scipy.stats.expon(scale=0.5),
+                'c2': scipy.stats.expon(scale=0.05),
+        }
         clf_CV = RandomizedSearchCV(crf, params_space,
                                 cv      = cv,
                                 verbose = 3,

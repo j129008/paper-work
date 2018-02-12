@@ -46,6 +46,10 @@ class Data(Book):
     def __add__(self, other):
         self.X = [ { **self.X[i], **other.X[i] } for i in range(len(self.text)) ]
         return self
+
+class PklData(Data):
+    def __init__(self, path):
+        self.load(path)
     def save(self, file_name):
         pickle.dump(self, open(file_name, 'wb'))
     def load(self, file_name):
