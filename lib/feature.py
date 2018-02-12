@@ -6,8 +6,14 @@ from tqdm import tqdm as bar
 import numpy as np
 import re
 import pickle
+import sys
+import pdb
 
 def ngram(data, num=2):
+    pattern = r'(?=(.{' + str(num)  + '}))'
+    return [match.group(1) for match in re.finditer(pattern, data)]
+
+def m_ngram(data, num=2):
     pattern = r'(?=(.{' + str(num)  + '}))'
     return [match for match in re.finditer(pattern, data)]
 
@@ -21,7 +27,7 @@ class Context(Data):
                 context_feature = {}
                 match_list = []
                 for n in range(1, n_gram+1):
-                    match_list += ngram(text_append[i-k:i+k+1], num=n)
+                    match_list += m_ngram(text_append[i-k:i+k+1], num=n)
                 for i, match in enumerate(match_list):
                     start = match.start(1) - k
                     end = match.end(1) - k-1
@@ -69,7 +75,7 @@ class MutualInfo(Data):
         bi_dic = Counter(ngram(text))
         mi_score = []
         for i in range(len(text)-1):
-            Pxy = bi_dic[text[i:i+2]]/( len(text)-1 )
+            Pxy = bi_dic[text[i:i+2]]/( len(text)-1 ) + sys.float_info.min
             Px = w_dic[text[i]]/len(text)
             Py = w_dic[text[i+1]]/len(text)
             mi_score.append( { 'mi-info':log2( Pxy/(Px*Py) ) } )
@@ -89,8 +95,11 @@ class Tdiff(Data):
                 try:
                     v_dic[bi[1]].add(bi[0])
                 except:
-                    v_dic[bi[1]] = set()
-                    v_dic[bi[1]].add(bi[0])
+                    try:
+                        v_dic[bi[1]] = set()
+                        v_dic[bi[1]].add(bi[0])
+                    except:
+                        pdb.set_trace()
             for key in v_dic:
                 v_dic[key] = len(v_dic[key])
             return v_dic
