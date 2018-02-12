@@ -1,4 +1,5 @@
 from tqdm import tqdm as bar
+import pickle
 import re
 
 def ngram(data, num=2):
@@ -45,3 +46,9 @@ class Data(Book):
     def __add__(self, other):
         self.X = [ { **self.X[i], **other.X[i] } for i in range(len(self.text)) ]
         return self
+    def save(self, file_name):
+        pickle.dump(self, open(file_name, 'wb'))
+    def load(self, file_name):
+        data = pickle.load(open(file_name, 'rb'))
+        self.X = data.X
+        self.Y = data.Y
