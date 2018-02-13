@@ -27,3 +27,6 @@ class CompareFile:
             if pred_w == 'I' and real_w == 'E':
                 line_pred+='　'
                 line_true+='，'
+        f.write(line_true+'\n')
+        f.write(line_pred+'\n')
+        f.write('\n')
