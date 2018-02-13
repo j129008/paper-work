@@ -1,4 +1,5 @@
 from tqdm import tqdm as bar
+from copy import deepcopy
 import pickle
 import re
 
@@ -44,8 +45,9 @@ class Data(Book):
         self.Y = self.label
         self.X = [{} for _ in range(len(self.Y))]
     def __add__(self, other):
-        self.X = [ { **self.X[i], **other.X[i] } for i in range(len(self.text)) ]
-        return self
+        self_copy = deepcopy(self)
+        self_copy.X = [ { **self.X[i], **other.X[i] } for i in range(len(self.text)) ]
+        return self_copy
 
 class PklData(Data):
     def __init__(self, path):

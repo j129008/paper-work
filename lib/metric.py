@@ -7,7 +7,6 @@ class ErrorAnalyze:
             if pred[i] != truth[i]:
                 f.write('{}, T:{}, P:{}, {}\n'.format(text[i], truth[i], pred[i], feature_data.X[i]))
             else:
-                if truth[i] == 'E':
-                    f.write('{}, {}\n\n'.format(text[i], feature_data.X[i]))
-                else:
-                    f.write('{}, {}\n'.format(text[i], feature_data.X[i]))
+                f.write('{}, {}\n'.format(text[i], feature_data.X[i]))
+            if truth[i] == 'E':
+                f.write('\n')
