@@ -54,7 +54,7 @@ class Bagging(RandomLearner):
         return vote_res
 
 class Boosting(WeightLearner):
-    def __init__(self, data, random_state):
+    def __init__(self, data, random_state=None):
         super().__init__(data, random_state=random_state)
 
     def sigma_error_weight(self, Y_pred, Y_private):
@@ -112,21 +112,13 @@ class Boosting(WeightLearner):
 
     def get_gap(self):
         score_list = self.predict_score(self.X_train)
-        end_list = []
-        for i, lab in enumerate( self.Y_train ):
-            if lab == 'E':
-                end_list.append(score_list[i])
-        gap = sum(end_list)/len(end_list)
-        f1 = 0.0
-        while True:
-            score_dic = self.get_score(self.score2lab(gap, score_list), self.Y_train)
-            print(score_dic)
-            _f1 = score_dic['f1']
-            if _f1 > f1:
-                f1 = _f1
-                gap -= 1.0
-            else:
-                return gap+1.0
+        max_score = int(max(score_list))
+        min_score = int(min(score_list))
+        f1_dic = dict()
+        for threshold in range(min_score, max_score):
+            train_pred = self.score2lab(threshold, score_list)
+            f1_dic[self.get_score(train_pred, self.Y_train)['f1']] = threshold
+        return f1_dic[max(f1_dic)]
 
     def predict(self, x):
         score_list = self.predict_score(x)
