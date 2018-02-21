@@ -118,8 +118,8 @@ class RandomForestLearner(Learner):
 class RandomLearner(Learner):
     def get_CRF(self, c1=0, c2=1):
         crf = RandomCRF(
-            algorithm                = 'ap',
-            max_iterations           = 9,
+            algorithm                = 'lbfgs',
+            max_iterations           = 100,
             all_possible_transitions = True,
             c1 = c1,
             c2 = c2
