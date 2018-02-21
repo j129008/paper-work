@@ -10,7 +10,7 @@ import csv
 fp = csv.writer( open('precision.csv', 'w') )
 fr = csv.writer( open('recall.csv', 'w') )
 data = Context('./data/data4.txt')
-man = Bagging(data)
+man = Bagging(data, random_state=0)
 
 P_list = []
 R_list = []

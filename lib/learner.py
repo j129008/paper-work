@@ -18,7 +18,7 @@ class Learner(Data):
         self.X = data.X
         self.Y = data.Y
         self.split_data(random_state=random_state)
-    def split_data(self, train_size=0.6, random_state=None, shuffle=True):
+    def split_data(self, train_size=0.6, random_state=None, shuffle=False):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
@@ -118,8 +118,8 @@ class RandomForestLearner(Learner):
 class RandomLearner(Learner):
     def get_CRF(self, c1=0, c2=1):
         crf = RandomCRF(
-            algorithm                = 'lbfgs',
-            max_iterations           = 100,
+            algorithm                = 'ap',
+            max_iterations           = 9,
             all_possible_transitions = True,
             c1 = c1,
             c2 = c2

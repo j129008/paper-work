@@ -112,10 +112,13 @@ class Boosting(WeightLearner):
 
     def get_gap(self):
         score_list = self.predict_score(self.X_train)
-        max_score = int(max(score_list))
-        min_score = int(min(score_list))
+        max_score = max(score_list)
+        min_score = min(score_list)
         f1_dic = dict()
-        for threshold in range(min_score, max_score):
+        threshold_gap = (max_score - min_score)/1000
+        threshold = min_score
+        for _ in range(1000):
+            threshold += threshold_gap
             train_pred = self.score2lab(threshold, score_list)
             f1_dic[self.get_score(train_pred, self.Y_train)['f1']] = threshold
         return f1_dic[max(f1_dic)]

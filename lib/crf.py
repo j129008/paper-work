@@ -82,20 +82,15 @@ class CRF(sklearn_crfsuite.CRF):
     def fit(self, x, y):
         if len(x) <= 0:
             return False
-        super().fit([ [ele] for ele in x ], [ [ele] for ele in y ])
+        super().fit([x], [y])
         return True
 
     def predict(self, x):
-        res = super().predict([ [ele] for ele in x ])
-        return [ ele[0] for ele in res ]
+        res = super().predict([x])
+        return res[0]
     def predict_prob(self, x):
-        res = super().predict_marginals([ [ele] for ele in x ])
-        res_list = []
-        for ele in res:
-            try:
-                res_list.append(ele[0]['E'])
-            except:
-                res_list.append(0.0)
+        res = super().predict_marginals([x])
+        res_list = [ ele['E'] for ele in res[0] ]
         return res_list
 
 class WeightCRF(CRF):
