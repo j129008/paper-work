@@ -40,28 +40,28 @@ rhyme_data = Rhyme(path, './data/rhyme.txt', './pickles/rhyme_list.pkl', ['ÂèçÂà
 office_data = Label(path, 'office', './ref/known/office2.txt')
 
 for k in bar(range(1, 6)):
-    # context
+    print('context')
     context_data = Context(path, k=k)
     score = experiment(context_data)
     context.append([k, score['P'], score['R'], score['f1']])
 
-    # context + MI
+    print('context + MI')
     score = experiment(context_data + mi_data)
     context_mi.append([k, score['P'], score['R'], score['f1']])
 
-    # context + t-diff
+    print('context + t-diff')
     score = experiment(context_data + tdiff_data)
     context_tdiff.append([k, score['P'], score['R'], score['f1']])
 
-    # context + mutual infomation + t-diff
+    print('context + mutual infomation + t-diff')
     score = experiment(context_data + tdiff_data + mi_data)
     context_mi_tdiff.append([k, score['P'], score['R'], score['f1']])
 
-    # context + rhyme
+    print('context + rhyme')
     score = experiment(context_data + rhyme_data)
     context_rhyme.append([k, score['P'], score['R'], score['f1']])
 
-    # context + word label
+    print('context + word label')
     score = experiment(context_data + office_data)
     context_office.append([k, score['P'], score['R'], score['f1']])
 

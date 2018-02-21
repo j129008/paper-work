@@ -77,8 +77,8 @@ class MutualInfo(Data):
             Pxy = bi_dic[text[i:i+2]]/( len(text)-1 ) + sys.float_info.min
             Px = w_dic[text[i]]/len(text)
             Py = w_dic[text[i+1]]/len(text)
-            mi_score.append( { 'mi-info': -log2( Pxy/(Px*Py) ) } )
-        mi_score.append( {'mi-info': 0.0} )
+            mi_score.append( { 'mi-info': str(int(log2( Pxy/(Px*Py))*10) ) } )
+        mi_score.append( {'mi-info': '0'} )
         self.X = mi_score
 
 class Tdiff(Data):
@@ -123,8 +123,8 @@ class Tdiff(Data):
             f_yz = bi_dic[text[i+1:i+3]]
             t_x = t_test(f_wx, f_xy, f_w, f_y, v_dic[w_w] + v_dic[w_x] )
             t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
-            t_diff_score.append({'t-diff': -(t_x - t_y)})
-        t_diff_score.extend([{'t-diff': 0}]*3)
+            t_diff_score.append({'t-diff': str(int( (t_x - t_y)*10))})
+        t_diff_score.extend([{'t-diff': '0'}]*3)
         self.X = t_diff_score
 
 class Label(Data):
