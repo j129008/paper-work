@@ -4,6 +4,10 @@ from lib.feature import *
 import csv
 import sys
 
+from datetime import datetime
+
+start = datetime.now()
+
 path = './data/data3.txt'
 learn_method = 'Basic'
 print('start', learn_method)
@@ -27,3 +31,7 @@ def experiment(data, tune=False, random_state=0):
 # context
 context_data = Context(path, k=1)
 score = experiment(context_data)
+
+end = datetime.now()
+delta = end - start
+print( delta.total_seconds() )
