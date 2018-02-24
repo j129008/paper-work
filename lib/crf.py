@@ -97,14 +97,17 @@ class WeightCRF(CRF):
 class RandomCRF(CRF):
     def feature_select(self, x, feature_list):
         random_x = []
-        for ins in x:
-            new_ins = {}
-            for key in feature_list:
-                new_ins[key] = ins[key]
-            random_x.append(new_ins)
+        for chap in x:
+            random_chap = []
+            for ins in chap:
+                new_ins = {}
+                for key in feature_list:
+                    new_ins[key] = ins[key]
+                random_chap.append(new_ins)
+            random_x.append(random_chap)
         return random_x
     def fit(self, x, y):
-        feature = [*x[0].keys()]
+        feature = [*x[0][0].keys()]
         n_feature = randrange(1, len(feature))
         self.random_feature = sample(feature, n_feature)
         random_x = self.feature_select(x, self.random_feature)
@@ -114,4 +117,4 @@ class RandomCRF(CRF):
         return super().predict(random_x)
     def predict_prob(self, x):
         random_x = self.feature_select(x, self.random_feature)
-        return super().predict_prob(random_x)
+        return super().predict_marginals(random_x)

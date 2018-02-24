@@ -9,14 +9,45 @@ from math import sqrt, log
 import sys
 import pdb
 
-class Bagging(RandomLearner):
-    def __init__(self, data, random_state):
+class EnsumbleTool:
+    def get_gap(self):
+        score_list = self.predict_score(self.X_train)
+        score = [ score for chap_score in score_list for score in chap_score]
+        max_score = max(score)
+        min_score = min(score)
+        f1_dic = dict()
+        meature = 1000
+        threshold_gap = (max_score - min_score)/meature
+        threshold = min_score
+        for _ in range(meature):
+            threshold += threshold_gap
+            train_pred = self.score2lab(threshold, score_list)
+            f1_dic[self.get_score(train_pred, self.Y_train)['f1']] = threshold
+        return f1_dic[max(f1_dic)]
+    def score2lab(self, gap, score_list):
+        res_list = []
+        for chap_score in score_list:
+            chap_res = []
+            for score in chap_score:
+                if score >= gap:
+                    chap_res.append('E')
+                else:
+                    chap_res.append('I')
+            res_list.append(chap_res)
+        return res_list
+    def predict(self, x):
+        score_list = self.predict_score(x)
+        gap = self.get_gap()
+        return self.score2lab(gap, score_list)
+
+class Bagging(RandomLearner, EnsumbleTool):
+    def __init__(self, data, random_state=None):
         super().__init__(data, random_state=random_state)
         self.model_list = []
         self.queue = Queue()
     def gen_model(self, train_size, c1, c2):
         self.queue.put( super().train(sub_train=train_size, c1=c1, c2=c2) )
-    def train(self, voter=8, train_size=0.1, c1=0, c2=1):
+    def train(self, voter=8, train_size=0.4, c1=0, c2=1):
         pool = []
         for i in range(voter):
             thread = Thread(
@@ -30,7 +61,7 @@ class Bagging(RandomLearner):
             self.model_list.append(self.queue.get())
     def gen_predict(self, model, X):
         self.queue.put( model.predict_prob(X) )
-    def predict(self, X):
+    def predict_score(self, X):
         predict_res = []
         vote_res = []
         pool = []
@@ -45,15 +76,17 @@ class Bagging(RandomLearner):
             thread.join()
             predict_res.append(self.queue.get())
         predict_res = zip(*predict_res)
-        for vote in predict_res:
-            prob_avg = sum(vote)/len(vote)
-            if prob_avg > 0.5:
-                vote_res.append('E')
-            else:
-                vote_res.append('I')
+        for chap_pred in predict_res:
+            pred_merge = zip(*chap_pred)
+            chap_res = []
+            for vote in pred_merge:
+                score_list = [ v['E'] for v in vote ]
+                prob_avg = sum(score_list)/len(score_list)
+                chap_res.append(prob_avg)
+            vote_res.append(chap_res)
         return vote_res
 
-class Boosting(WeightLearner):
+class Boosting(WeightLearner, EnsumbleTool):
     def __init__(self, data, random_state=None):
         super().__init__(data, random_state=random_state)
 
@@ -100,31 +133,3 @@ class Boosting(WeightLearner):
             score = sum( [ a*b for a, b in zip(item, self.alpha_list) ] )
             predict_score.append(score)
         return predict_score
-
-    def score2lab(self, gap, score_list):
-        res_list = []
-        for score in score_list:
-            if score >= gap:
-                res_list.append('E')
-            else:
-                res_list.append('I')
-        return res_list
-
-    def get_gap(self):
-        score_list = self.predict_score(self.X_train)
-        max_score = max(score_list)
-        min_score = min(score_list)
-        f1_dic = dict()
-        threshold_gap = (max_score - min_score)/1000
-        threshold = min_score
-        for _ in range(1000):
-            threshold += threshold_gap
-            train_pred = self.score2lab(threshold, score_list)
-            f1_dic[self.get_score(train_pred, self.Y_train)['f1']] = threshold
-        return f1_dic[max(f1_dic)]
-
-    def predict(self, x):
-        score_list = self.predict_score(x)
-        gap = self.get_gap()
-        return self.score2lab(gap, score_list)
-
