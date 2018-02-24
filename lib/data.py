@@ -32,6 +32,12 @@ class Data:
         for chap_i in range(len(self_copy.X)):
             self_copy.X[chap_i] = [ { **self.X[chap_i][i], **other.X[chap_i][i] } for i in range(len(self.X[chap_i])) ]
         return self_copy
+    def segment(self, length=10):
+        union = lambda data: [ ins for chap in data for ins in chap]
+        union_X = union(self.X)
+        union_Y = union(self.Y)
+        self.X = [ union_X[i:i+length] for i in range(0, len(union_X), length) ]
+        self.Y = [ union_Y[i:i+length] for i in range(0, len(union_Y), length) ]
     def save(self, file_name):
         pickle.dump(self, open(file_name, 'wb'))
     def load(self, file_name):
