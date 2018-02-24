@@ -2,7 +2,7 @@ from random import sample, randrange
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.decomposition import TruncatedSVD
-import sklearn_crfsuite
+from sklearn_crfsuite import CRF
 import pickle
 import logging
 
@@ -77,21 +77,6 @@ class WeightRandomForest(RandomForest):
             return True
         else:
             return False
-
-class CRF(sklearn_crfsuite.CRF):
-    def fit(self, x, y):
-        if len(x) <= 0:
-            return False
-        super().fit([x], [y])
-        return True
-
-    def predict(self, x):
-        res = super().predict([x])
-        return res[0]
-    def predict_prob(self, x):
-        res = super().predict_marginals([x])
-        res_list = [ ele['E'] for ele in res[0] ]
-        return res_list
 
 class WeightCRF(CRF):
     def fit(self, x, y, weight_list=None):

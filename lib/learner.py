@@ -1,7 +1,7 @@
 from lib.data import Data
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import *
-from sklearn_crfsuite import metrics
+from sklearn_crfsuite import metrics, CRF
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.utils import resample
 from lib.crf import *
@@ -62,18 +62,14 @@ class Learner(Data):
             self.crf = crf
             return crf
 
-        fit_res = crf.fit(self.X_train, self.Y_train)
-        if fit_res == True:
-            self.crf = crf
-            return crf
-        else:
-            return None
+        crf.fit(self.X_train, self.Y_train)
+        self.crf = crf
 
     def predict(self, X):
         return self.crf.predict(X)
 
     def predict_prob(self, X):
-        return self.crf.predict_prob(X)
+        return self.crf.predict_marginals(X)
 
     def predict_file(self, path):
         test_data = Data(path)

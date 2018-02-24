@@ -19,10 +19,10 @@ def m_ngram(data, num=2):
 class Context(Data):
     def __init__(self, path, n_gram=2, k=1):
         super().__init__(path)
-        feature_list = []
-        for chap in self.chapter_list:
-            text_append = '！'*k + chap.text + '！'*k
-            for i in range( k, len( chap.text )+k ):
+        for chap_text in self.text:
+            text_append = '！'*k + chap_text + '！'*k
+            chap_feature_list = []
+            for i in range( k, len( chap_text )+k ):
                 context_feature = {}
                 match_list = []
                 for n in range(1, n_gram+1):
@@ -31,8 +31,8 @@ class Context(Data):
                     start = match.start(1) - k
                     end = match.end(1) - k-1
                     context_feature[str(start)+','+str(end)] = match.group(1)
-                feature_list.append(context_feature)
-        self.X = feature_list
+                chap_feature_list.append(context_feature)
+            self.X.append(chap_feature_list)
 
 class VecContext(Context):
     def __init__(self, path, k=1):
@@ -69,22 +69,22 @@ class UniVec(VecContext):
 class MutualInfo(Data):
     def __init__(self, path):
         super().__init__(path)
-        text = self.text
-        w_dic = Counter(text)
-        bi_dic = Counter(ngram(text))
-        mi_score = []
-        for i in range(len(text)-1):
-            Pxy = bi_dic[text[i:i+2]]/( len(text)-1 ) + sys.float_info.min
-            Px = w_dic[text[i]]/len(text)
-            Py = w_dic[text[i+1]]/len(text)
-            mi_score.append( { 'mi-info': str(int(log2( Pxy/(Px*Py))*10) ) } )
-        mi_score.append( {'mi-info': '0'} )
-        self.X = mi_score
+        w_dic = Counter(''.join(self.text))
+        bi_dic = Counter([ gram for chap_text in self.text for gram in ngram(chap_text)])
+        for chap_text in self.text:
+            mi_score = []
+            for i in range(len(chap_text)-1):
+                Pxy = max(bi_dic[chap_text[i:i+2]]/( len(chap_text)-1 ), sys.float_info.min)
+                Px = w_dic[chap_text[i]]/len(chap_text)
+                Py = w_dic[chap_text[i+1]]/len(chap_text)
+                mi_score.append( { 'mi-info': str(int(log2( Pxy/(Px*Py))*10) ) } )
+            mi_score.append( {'mi-info': '0'} )
+            self.X.append(mi_score)
 
 class Tdiff(Data):
     def __init__(self, path):
         super().__init__(path)
-        text = self.text
+        text = ''.join(self.text)
         def t_test(f_xy, f_yz, f_x, f_y, v):
             return ( ( f_yz+0.5 )/( f_y + v/2 ) - ( f_xy+0.5 )/( f_x + v/2 ) )/sqrt( ( f_yz+0.5 )/pow(f_y + v/2, 2) + ( f_xy+0.5 )/pow(f_x + v/2, 2) )
 
@@ -125,12 +125,15 @@ class Tdiff(Data):
             t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
             t_diff_score.append({'t-diff': str(int( (t_x - t_y)*10))})
         t_diff_score.extend([{'t-diff': '0'}]*3)
-        self.X = t_diff_score
+        i = 0
+        for y in self.Y:
+            self.X.append(t_diff_score[i:i+len(y)])
+            i+=len(y)
 
 class Label(Data):
     def __init__(self, path, lab_name, lab_file):
         super().__init__(path)
-        text = self.text
+        text = ''.join(self.text)
         lab_data = open(lab_file, 'r', encoding='utf-8').read().split('\n')[:-1]
         lab_list = ['O']*len( text )
         for lab in lab_data:
@@ -146,12 +149,16 @@ class Label(Data):
                     lab_list[j] = lab_name + '-I'
             except:
                 continue
-        self.X = [ {lab_name:lab} for lab in lab_list ]
+        lab = [ {lab_name:lab} for lab in lab_list ]
+        i=0
+        for y in self.Y:
+            self.X.append(lab[i:i+len(y)])
+            i+=len(y)
 
 class Rhyme(Data):
     def __init__(self, path, index_file, db_file, rhy_type_list):
         super().__init__(path)
-        text = self.text
+        text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
@@ -175,4 +182,7 @@ class Rhyme(Data):
                 for types in rhy_type_list:
                     exp[types] = 'O'
                 ret.append(exp)
-        self.X = ret
+        i=0
+        for y in self.Y:
+            self.X.append(ret[i:i+len(y)])
+            i+=len(y)
