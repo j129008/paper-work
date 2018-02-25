@@ -37,6 +37,7 @@ class Context(Data):
 class VecContext(Context):
     def __init__(self, path, k=1):
         super().__init__(path, n_gram=1, k=k)
+        self.union()
         self.x2vec()
         self.y2vec()
     def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/data2.txt'):
@@ -49,12 +50,8 @@ class VecContext(Context):
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
     def x2vec(self):
-        docs = []
         w2v = self.genVec()
-        for ele in self.X:
-            vec = [ w2v[ele[feature_name]] for feature_name in ele ]
-            docs.append(vec)
-        self.X = np.array(docs)
+        self.X = np.array([ [ w2v[word] for word in ins.values() ] for ins in self.X ])
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
         return self.Y
