@@ -1,5 +1,6 @@
 from tqdm import tqdm as bar
 from copy import deepcopy
+from random import shuffle
 import pickle
 import re
 
@@ -32,6 +33,10 @@ class Data:
         for chap_i in range(len(self_copy.X)):
             self_copy.X[chap_i] = [ { **self.X[chap_i][i], **other.X[chap_i][i] } for i in range(len(self.X[chap_i])) ]
         return self_copy
+    def shuffle(self):
+        X_Y = [*zip(self.X, self.Y)]
+        shuffle(X_Y)
+        self.X, self.Y = zip(*X_Y)
     def segment(self, length=10):
         union = lambda data: [ ins for chap in data for ins in chap]
         union_X = union(self.X)
