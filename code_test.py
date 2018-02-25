@@ -27,6 +27,14 @@ class CodeTest(unittest.TestCase):
     def test_label(self):
         office_data = Label(path, 'office', './ref/known/office2.txt')
 
+    def test_shrink(self):
+        context = Context(path)
+        context.shrink()
+        learner = Learner(context)
+        learner.train()
+        print('shrink')
+        learner.report()
+
     def test_data_adder(self):
         mi = MutualInfo(path)
         data = mi+context

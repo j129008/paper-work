@@ -34,9 +34,13 @@ class Data:
             self_copy.X[chap_i] = [ { **self.X[chap_i][i], **other.X[chap_i][i] } for i in range(len(self.X[chap_i])) ]
         return self_copy
     def shuffle(self):
-        X_Y = [*zip(self.X, self.Y)]
-        shuffle(X_Y)
-        self.X, self.Y = zip(*X_Y)
+        X_Y_txt = [*zip(self.X, self.Y, self.text)]
+        shuffle(X_Y_txt)
+        self.X, self.Y, self.text = zip(*X_Y_txt)
+    def shrink(self, rate=0.5):
+        X_Y_txt = [*zip(self.X, self.Y, self.text)]
+        X_Y_txt = X_Y_txt[:int(len(self.Y)*rate)+1]
+        self.X, self.Y, self.text = zip(*X_Y_txt)
     def segment(self, length=10):
         union = lambda data: [ ins for chap in data for ins in chap]
         union_X = union(self.X)
