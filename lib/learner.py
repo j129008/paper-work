@@ -65,6 +65,21 @@ class Learner(Data):
         crf.fit(self.X_train, self.Y_train)
         self.crf = crf
 
+    def state_features(self, crf_model=None, file_name='state_features.txt'):
+        if crf_model == None:
+            crf_model = self.crf
+        state_features = Counter(crf_model.state_features_).most_common(30)
+        f = open(file_name, 'w')
+        f.write('Top positive:\n')
+        for (attr, label), weight in state_features:
+            f.write("%0.6f %-8s %s\n" % (weight, label, attr))
+
+        f.write('Top negative:\n')
+        state_features = Counter(crf_model.state_features_).most_common()[-30:]
+        for (attr, label), weight in state_features:
+            f.write("%0.6f %-8s %s\n" % (weight, label, attr))
+        f.close()
+
     def predict(self, X):
         return self.crf.predict(X)
 

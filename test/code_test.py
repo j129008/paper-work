@@ -13,7 +13,7 @@ import unittest
 
 path = './data/data4.txt'
 
-class CrfTest(unittest.TestCase):
+class DataTest(unittest.TestCase):
     def setUp(self):
         context = Context(path)
         mi = MutualInfo(path)
@@ -23,6 +23,11 @@ class CrfTest(unittest.TestCase):
         self.data = context + mi + tdiff + rhyme + office_data
         self.data.shrink()
         self.data.segment(length=10)
+
+class CrfTest(unittest.TestCase):
+    def setUp(self):
+        self.data = Context(path)
+        self.data.shrink()
 
     def test_boost(self):
         print('boost')
