@@ -2,6 +2,7 @@ from lib.learner import Learner
 from lib.ensumble_learner import Bagging, Boosting
 from lib.feature import *
 from tqdm import tqdm as bar
+from copy import deepcopy
 import csv
 import sys
 
@@ -16,7 +17,9 @@ def experiment(data, tune=False, random_state=0):
         man = Bagging(data, random_state=random_state)
         tune = False
     elif learn_method == 'Boosting':
-        man = Boosting(data, random_state=random_state)
+        data_clone = deepcopy(data)
+        data_clone.segment()
+        man = Boosting(data_clone, random_state=random_state)
         tune = False
     else:
         man = Learner(data, random_state=random_state)
@@ -24,6 +27,8 @@ def experiment(data, tune=False, random_state=0):
         man.train_CV()
     else:
         man.train()
+    if learn_method == 'Boosting':
+        print(man.alpha_list)
     man.report()
     return man.get_score()
 
