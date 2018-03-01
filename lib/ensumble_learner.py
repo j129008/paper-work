@@ -61,6 +61,8 @@ class Bagging(EnsumbleTool, RandomLearner):
         for thread in pool:
             thread.join()
             self.model_list.append(self.queue.get())
+        self.gap = self.get_gap()
+
     def gen_predict(self, model, X):
         self.queue.put( model.predict_prob(X) )
     def predict_score(self, X):
@@ -104,8 +106,6 @@ class Boosting(EnsumbleTool, WeightLearner):
         Y_private = self.Y_train
         epsilon = max(self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list), sys.float_info.min)
         t = sqrt((1-epsilon)/epsilon)
-        if t > 10:
-            return -1
         for i in range(len(Y_pred)):
             if Y_pred[i] == Y_private[i]:
                 self.weight_list[i]/=t
@@ -120,9 +120,11 @@ class Boosting(EnsumbleTool, WeightLearner):
         for i in range(max_model):
             self.model = super().train()
             alpha = self.update_weight()
-            if alpha > 0 and alpha < 50 and self.model != None:
+            if alpha > 0 and self.model != None:
                 self.model_list.append( self.model )
                 self.alpha_list.append( alpha )
+                if alpha > 20:
+                    break
             else:
                 break
         if len(self.model_list) == 0:
