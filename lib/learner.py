@@ -10,6 +10,7 @@ import numpy as np
 import scipy
 from collections import Counter
 import pickle
+import pdb
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -81,6 +82,7 @@ class Learner(Data):
         f.close()
 
     def predict(self, X):
+        #  print('pred by learner, not boosting')
         return self.crf.predict(X)
 
     def predict_prob(self, X):

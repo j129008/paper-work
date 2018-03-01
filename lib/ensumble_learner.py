@@ -19,10 +19,12 @@ class EnsumbleTool:
         meature = 1000
         threshold_gap = (max_score - min_score)/meature
         threshold = min_score
+        #  pdb.set_trace()
         for _ in range(meature):
             threshold += threshold_gap
             train_pred = self.score2lab(threshold, score_list)
-            f1_dic[self.get_score(train_pred, self.Y_train)['f1']] = threshold
+            f1 = self.get_score(train_pred, self.Y_train)['f1']
+            f1_dic[f1] = threshold
         return f1_dic[max(f1_dic)]
     def score2lab(self, gap, score_list):
         res_list = []
@@ -36,11 +38,11 @@ class EnsumbleTool:
             res_list.append(chap_res)
         return res_list
     def predict(self, x):
+        print('ensumble predict')
         score_list = self.predict_score(x)
-        gap = self.get_gap()
-        return self.score2lab(gap, score_list)
+        return self.score2lab(self.gap, score_list)
 
-class Bagging(RandomLearner, EnsumbleTool):
+class Bagging(EnsumbleTool, RandomLearner):
     def __init__(self, data, random_state=None):
         super().__init__(data, random_state=random_state)
         self.model_list = []
@@ -86,7 +88,7 @@ class Bagging(RandomLearner, EnsumbleTool):
             vote_res.append(chap_res)
         return vote_res
 
-class Boosting(WeightLearner, EnsumbleTool):
+class Boosting(EnsumbleTool, WeightLearner):
     def __init__(self, data, random_state=None):
         super().__init__(data, random_state=random_state)
 
@@ -98,10 +100,12 @@ class Boosting(WeightLearner, EnsumbleTool):
         return sum_of_error_weight
 
     def update_weight(self):
-        Y_pred = super().predict(self.X_train)
+        Y_pred = self.crf.predict(self.X_train)
         Y_private = self.Y_train
-        epsilon = self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list) + sys.float_info.min
+        epsilon = max(self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list), sys.float_info.min)
         t = sqrt((1-epsilon)/epsilon)
+        if t > 10:
+            return -1
         for i in range(len(Y_pred)):
             if Y_pred[i] == Y_private[i]:
                 self.weight_list[i]/=t
@@ -114,22 +118,28 @@ class Boosting(WeightLearner, EnsumbleTool):
         self.model_list = []
         self.alpha_list = []
         for i in range(max_model):
-            model = super().train()
+            self.model = super().train()
             alpha = self.update_weight()
-            if alpha > 0 and model != None:
-                self.model_list.append( model )
+            if alpha > 0 and alpha < 50 and self.model != None:
+                self.model_list.append( self.model )
                 self.alpha_list.append( alpha )
             else:
                 break
+        if len(self.model_list) == 0:
+            self.model_list = [self.model]
+            self.alpha_list = [1.0]
+        self.gap = self.get_gap()
 
     def predict_score(self, x):
         predict_res = []
         predict_list = []
         predict_score = []
         for model in self.model_list:
-            predict_list.append( model.predict_prob(x) )
+            predict_list.append( [ [ ins['E'] for ins in chap ] for chap in model.predict_prob(x) ] )
         predict_list = [*zip(*predict_list)]
-        for item in predict_list:
-            score = sum( [ a*b for a, b in zip(item, self.alpha_list) ] )
-            predict_score.append(score)
+        for merge_chap in predict_list:
+            chap_score = []
+            for merge_ins in zip(*merge_chap):
+                chap_score.append(sum([a*b for a, b in zip(merge_ins, self.alpha_list)]))
+            predict_score.append(chap_score)
         return predict_score

@@ -3,6 +3,7 @@ from copy import deepcopy
 from random import shuffle
 import pickle
 import re
+import pdb
 
 def ngram(data, num=2):
     pattern = r'(?=(.{' + str(num)  + '}))'
