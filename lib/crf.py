@@ -93,6 +93,8 @@ class WeightCRF(CRF):
             y_.extend( weight_list[i]*[ y[i] ] )
         super().fit(x_, y_)
         return True
+    def predict_prob(self, x):
+        return super().predict_marginals(x)
 
 class RandomCRF(CRF):
     def feature_select(self, x, feature_list):
