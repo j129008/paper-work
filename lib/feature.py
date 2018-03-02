@@ -68,7 +68,6 @@ class UniformScore:
         uni = lambda data: [ ins for chap in data for ins in chap ]
         score = np.array(sorted([list(ele.values())[0] for ele in uni(self.X)]))
         threshold_list = score[[ int(i*len(score)/10) for i in range(10)]+[-1]]
-        print(threshold_list)
         for chap_i in range(len(self.X)):
             for ins_i in range(len(self.X[chap_i])):
                 key = list(self.X[chap_i][ins_i].keys())[0]

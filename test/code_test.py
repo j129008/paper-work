@@ -26,6 +26,14 @@ class DataTest(unittest.TestCase):
         self.data.segment(length=10)
     def test_feautre_info(self):
         pprint(self.data.X[0:2])
+    def test_tdiff_type(self):
+        for chap in self.data.X:
+            for ins in chap:
+                self.assertEqual(type(ins['t-diff']), str)
+    def test_mi_type(self):
+        for chap in self.data.X:
+            for ins in chap:
+                self.assertEqual(type(ins['mi-info']), str)
 
 class CrfTest(unittest.TestCase):
     def setUp(self):
