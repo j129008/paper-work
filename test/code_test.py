@@ -10,6 +10,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import LSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional
 import unittest
+from pprint import pprint
 
 path = './data/data4.txt'
 
@@ -23,6 +24,8 @@ class DataTest(unittest.TestCase):
         self.data = context + mi + tdiff + rhyme + office_data
         self.data.shrink()
         self.data.segment(length=10)
+    def test_feautre_info(self):
+        pprint(self.data.X[0:2])
 
 class CrfTest(unittest.TestCase):
     def setUp(self):

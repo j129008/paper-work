@@ -63,9 +63,27 @@ class UniVec(VecContext):
         super().__init__(path, k=0)
         self.X = [ vec_list[0] for vec_list in self.X ]
 
-class MutualInfo(Data):
+class UniformScore:
+    def uniform_score(self):
+        uni = lambda data: [ ins for chap in data for ins in chap ]
+        score = np.array(sorted([list(ele.values())[0] for ele in uni(self.X)]))
+        threshold_list = score[[ int(i*len(score)/10) for i in range(10)]+[-1]]
+        print(threshold_list)
+        for chap_i in range(len(self.X)):
+            for ins_i in range(len(self.X[chap_i])):
+                key = list(self.X[chap_i][ins_i].keys())[0]
+                value = self.X[chap_i][ins_i][key]
+                i = 0
+                for threshold_i in range(len(threshold_list)-1):
+                    i+=1
+                    if value >= threshold_list[threshold_i] and value <= threshold_list[threshold_i+1]:
+                        self.X[chap_i][ins_i][key] = str(i)
+                        break
+
+class MutualInfo(UniformScore, Data):
     def __init__(self, path):
         super().__init__(path)
+        tag_name = 'mi-info'
         w_dic = Counter(''.join(self.text))
         bi_dic = Counter([ gram for chap_text in self.text for gram in ngram(chap_text)])
         for chap_text in self.text:
@@ -74,11 +92,13 @@ class MutualInfo(Data):
                 Pxy = max(bi_dic[chap_text[i:i+2]]/( len(chap_text)-1 ), sys.float_info.min)
                 Px = w_dic[chap_text[i]]/len(chap_text)
                 Py = w_dic[chap_text[i+1]]/len(chap_text)
-                mi_score.append( { 'mi-info': str(int(log2( Pxy/(Px*Py))*10) ) } )
-            mi_score.append( {'mi-info': '0'} )
+                mi = log2( Pxy/(Px*Py))
+                mi_score.append( { tag_name: mi } )
+            mi_score.append( { tag_name: 0.0 } )
             self.X.append(mi_score)
+        self.uniform_score()
 
-class Tdiff(Data):
+class Tdiff(UniformScore, Data):
     def __init__(self, path):
         super().__init__(path)
         text = ''.join(self.text)
@@ -120,12 +140,13 @@ class Tdiff(Data):
             f_yz = bi_dic[text[i+1:i+3]]
             t_x = t_test(f_wx, f_xy, f_w, f_y, v_dic[w_w] + v_dic[w_x] )
             t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
-            t_diff_score.append({'t-diff': str(int( (t_x - t_y)*10))})
-        t_diff_score.extend([{'t-diff': '0'}]*3)
+            t_diff_score.append({'t-diff': t_x - t_y})
+        t_diff_score.extend([{'t-diff': 0.0}, {'t-diff': 0.0}, {'t-diff': 0.0}])
         i = 0
         for y in self.Y:
             self.X.append(t_diff_score[i:i+len(y)])
             i+=len(y)
+        self.uniform_score()
 
 class Label(Data):
     def __init__(self, path, lab_name, lab_file):
