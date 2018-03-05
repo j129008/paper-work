@@ -54,6 +54,7 @@ class Data:
         self.Y = uni(self.Y)
     def save(self, file_name):
         pickle.dump(self, open(file_name, 'wb'))
+        print('save to', file_name)
     def load(self, file_name):
         data = pickle.load(open(file_name, 'rb'))
         self.X = data.X
