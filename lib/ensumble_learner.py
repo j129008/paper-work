@@ -19,7 +19,6 @@ class EnsumbleTool:
         meature = 1000
         threshold_gap = (max_score - min_score)/meature
         threshold = min_score
-        #  pdb.set_trace()
         for _ in range(meature):
             threshold += threshold_gap
             train_pred = self.score2lab(threshold, score_list)
@@ -60,6 +59,7 @@ class Bagging(EnsumbleTool, RandomLearner):
             pool.append(thread)
         for thread in pool:
             thread.join()
+        for _ in range(voter):
             self.model_list.append(self.queue.get())
         self.gap = self.get_gap()
 
@@ -78,6 +78,7 @@ class Bagging(EnsumbleTool, RandomLearner):
             pool.append(thread)
         for thread in pool:
             thread.join()
+        for _ in range(len(pool)):
             predict_res.append(self.queue.get())
         predict_res = zip(*predict_res)
         for chap_pred in predict_res:
