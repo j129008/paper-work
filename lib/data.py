@@ -34,6 +34,11 @@ class Data:
         for chap_i in range(len(self_copy.X)):
             self_copy.X[chap_i] = [ { **self.X[chap_i][i], **other.X[chap_i][i] } for i in range(len(self.X[chap_i])) ]
         return self_copy
+    def get_feature(self, name):
+        self_copy = deepcopy(self)
+        for chap_i in range(len(self_copy.X)):
+            self_copy.X[chap_i] = [ { name : self.X[chap_i][i][name]} for i in range(len(self.X[chap_i])) ]
+        return self_copy
     def shuffle(self):
         X_Y_txt = [*zip(self.X, self.Y, self.text)]
         shuffle(X_Y_txt)
