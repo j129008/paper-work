@@ -16,7 +16,7 @@ class EnsumbleTool:
         max_score = max(score)
         min_score = min(score)
         f1_dic = dict()
-        meature = 1000
+        meature = 100
         threshold_gap = (max_score - min_score)/meature
         threshold = min_score
         for _ in range(meature):
