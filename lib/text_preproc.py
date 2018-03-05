@@ -25,3 +25,6 @@ class TextPreproc:
             for p in pause_punc:
                 chap_proc = chap_proc.replace(p, '，')
             f_proc.write(chap_proc+'\n')
+
+if __name__ == '__main__':
+    TextPreproc()
