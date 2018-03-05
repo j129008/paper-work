@@ -1,10 +1,7 @@
 from lib.learner import Learner
-from lib.ensumble_learner import Bagging, Boosting
 from lib.feature import *
 from tqdm import tqdm as bar
-from copy import deepcopy
 import csv
-import sys
 
 for n in range(1,4):
     result_table = csv.writer( open('/mnt/d/progress/data_need_'+str(n)+'_gram.csv', 'w') )
