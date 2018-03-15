@@ -85,12 +85,12 @@ class WeightCRF(CRF):
         if weight_list == None:
             return super().fit(x, y)
         N = len(x)
-        weight_list = [ int(weight*N*10) for weight in weight_list ]
+        weight_list_ = [ int(weight*N*10) for weight in weight_list ]
         x_ = []
         y_ = []
         for i in range(len(weight_list)):
-            x_.extend( weight_list[i]*[ x[i] ] )
-            y_.extend( weight_list[i]*[ y[i] ] )
+            x_.extend( weight_list_[i]*[ x[i] ] )
+            y_.extend( weight_list_[i]*[ y[i] ] )
         super().fit(x_, y_)
         return True
     def predict_prob(self, x):
