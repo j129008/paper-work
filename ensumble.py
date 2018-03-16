@@ -17,7 +17,7 @@ score = man.get_score()
 result_table.writerow(['bagging', score['P'], score['R'], score['f1']])
 
 context = Context(path)
-context.segment()
+context.segment(length=3)
 man = Boosting(context)
 man.train()
 print(man.alpha_list)
