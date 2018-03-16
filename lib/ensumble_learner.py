@@ -36,10 +36,9 @@ class EnsumbleTool:
                     chap_res.append('I')
             res_list.append(chap_res)
         return res_list
-    def predict(self, x):
-        print('ensumble predict')
+    def predict(self, x, tuner=1.1):
         score_list = self.predict_score(x)
-        return self.score2lab(self.gap, score_list)
+        return self.score2lab(self.gap*tuner, score_list)
 
 class Bagging(EnsumbleTool, RandomLearner):
     def __init__(self, data, random_state=None):
