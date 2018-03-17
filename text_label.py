@@ -24,17 +24,17 @@ context = Context(path)
 
 compare_list = [ (office, 'office'), (nianhao, 'nianhao'), (entry, 'entry'), (address, 'address'), (name, 'name') ]
 
-result_table = csv.writer( open('/mnt/d/progress/text_label.csv', 'w') )
+result_table = csv.writer( open('text_label.csv', 'w') )
 for data, data_name in bar(compare_list):
     man = Learner(data + context)
-    man.train(sub_train=0.5)
+    man.train()
     man.report()
     score = man.get_score()
     result_table.writerow([data_name, score['P'], score['R'], score['f1']])
 
 # baseline
 man = Learner(context)
-man.train(sub_train=0.5)
+man.train()
 man.report()
 score = man.get_score()
 result_table.writerow(['baseline', score['P'], score['R'], score['f1']])
