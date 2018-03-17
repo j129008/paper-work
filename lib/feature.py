@@ -2,6 +2,7 @@ from collections import Counter
 from lib.data import Data
 from math import log2, sqrt, pow
 from gensim.models import Word2Vec
+from itertools import chain
 import numpy as np
 import re
 import pickle
@@ -47,7 +48,7 @@ class VecContext(Context):
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
             sentence.append(['！'])
-            w2v = Word2Vec(sentence, min_count=1, workers=8, iter=50)
+            w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
     def x2vec(self):
@@ -61,8 +62,8 @@ class VecContext(Context):
 
 class UniVec(VecContext):
     def __init__(self, path):
-        super().__init__(path, k=0)
-        self.X = [ vec_list[0] for vec_list in self.X ]
+        super().__init__(path, k=1)
+        self.X = [ list(chain(*vec_list)) for vec_list in self.X ]
 
 class UniformScore:
     def uniform_score(self):
