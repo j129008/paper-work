@@ -22,7 +22,7 @@ Y = np.array(vec.Y)
 
 clf_list = [
     RandomForestClassifier(n_jobs=8),
-    KNeighborsClassifier(n_neighbors=3),
+    KNeighborsClassifier(n_neighbors=8, n_jobs=8),
     AdaBoostClassifier(),
     MLPClassifier(hidden_layer_sizes=(20,10,5), alpha=1e-10),
     GaussianNB(),
