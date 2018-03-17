@@ -4,7 +4,7 @@ from tqdm import tqdm as bar
 import csv
 
 for n in range(1,4):
-    result_table = csv.writer( open('data_need_'+str(n)+'_gram.csv', 'w') )
+    result_table = csv.writer( open('context_'+str(n)+'_gram.csv', 'w') )
     path = './data/data_proc.txt'
     result_table.writerow(['k', 'precision', 'recall', 'f1'])
     print('ngram:', n)
