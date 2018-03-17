@@ -40,11 +40,11 @@ class VecContext(Context):
         self.union()
         self.x2vec()
         self.y2vec()
-    def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/data_proc.txt'):
+    def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
             w2v = pickle.load(open(vec_file, 'rb'))
         except:
-            sentence = open(txt_file, 'r').read().replace('\n','').split('，')
+            sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
             sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, workers=8, iter=50)
