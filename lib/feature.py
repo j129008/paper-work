@@ -36,8 +36,8 @@ class Context(Data):
             self.X.append(chap_feature_list)
 
 class VecContext(Context):
-    def __init__(self, path, k=1):
-        super().__init__(path, n_gram=1, k=k)
+    def __init__(self, path, k=1, n_gram=1):
+        super().__init__(path, n_gram=n_gram, k=k)
         self.union()
         self.x2vec()
         self.y2vec()
@@ -59,6 +59,49 @@ class VecContext(Context):
         return self.Y
     def y2lab(self, y):
         return [ 'E' if ele > 0.5 else 'I' for ele in y ]
+
+class BigramVecContext(VecContext):
+    def __init__(self, path, k=1, min_count=10):
+        super().__init__(path, n_gram=2, k=k)
+    def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
+        text = open(txt_file, 'r').read()
+        sentence = text.replace('\n','').replace('。','，').split('，')
+        bigram = chain(*[ ngram(s) for s in sentence ])
+        bigram_cnter = Counter(bigram)
+        bigram_min = [ ele[0] for ele in bigram_cnter.items() if ele[1]>min_count ]
+        return bigram_min
+    def textCutter(self, bigram, text):
+        proc_text = text
+        for b in bigram:
+            proc_text.replace(b, ','+b+',')
+        proc_text = proc_text.split('。')
+        proc_text = [ s.split(',') for s in proc_text ]
+        return proc_text
+    def genVec(self, min_count=10, vec_file='./pickles/bigram_word2vec.pkl', txt_file='./data/w2v.txt'):
+        try:
+            w2v = pickle.load(open(vec_file, 'rb'))
+        except:
+            bigram = self.genBigram(min_count=min_count)
+            text = open(txt_file, 'r').read().replace('\n','')
+            sentence = self.textCutter(bigram, text)
+            sentence = open(txt_file, 'r').read().replace('\n','').split('。')
+            sentence = [ ele if len(ele)>2 else list(ele) for ele in sentence]
+            sentence.append(['！'])
+            w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
+            pickle.dump(w2v, open(vec_file, 'wb'))
+        return w2v
+    def x2vec(self, min_count=10):
+        w2v = self.genVec(min_count)
+        X = []
+        for ins in self.X:
+            w_list = []
+            for word in ins.values():
+                try:
+                    w_list.append(w2v[word])
+                except:
+                    w_list.append(w2v['！'])
+            X.append(w_list)
+        self.X = np.array(X)
 
 class UniVec(VecContext):
     def __init__(self, path):
