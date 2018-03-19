@@ -84,8 +84,7 @@ class BigramVecContext(VecContext):
             bigram = self.genBigram(min_count=min_count)
             text = open(txt_file, 'r').read().replace('\n','')
             sentence = self.textCutter(bigram, text)
-            sentence = open(txt_file, 'r').read().replace('\n','').split('。')
-            sentence = [ ele if len(ele)>2 else list(ele) for ele in sentence]
+            sentence = [ word if len(word)==2 else list(word) for word in sentence]
             sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
