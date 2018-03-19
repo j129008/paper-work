@@ -5,3 +5,4 @@ pickles
 .ipynb_checkpoints
 *.csv
 tags
+log
