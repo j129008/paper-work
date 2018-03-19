@@ -26,7 +26,8 @@ clf_list = [
     AdaBoostClassifier(),
     MLPClassifier(hidden_layer_sizes=(20,10,5), alpha=1e-10),
     GaussianNB(),
-    DecisionTreeClassifier()
+    DecisionTreeClassifier(),
+    svm.SVC(C=1000, max_iter=5000)
 ]
 
 kf = KFold(n_splits=3)
