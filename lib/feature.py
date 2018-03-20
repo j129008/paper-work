@@ -3,6 +3,7 @@ from lib.data import Data
 from math import log2, sqrt, pow
 from gensim.models import Word2Vec
 from itertools import chain
+from pprint import pprint
 import numpy as np
 import re
 import pickle
@@ -61,14 +62,14 @@ class VecContext(Context):
         return [ 'E' if ele > 0.5 else 'I' for ele in y ]
 
 class BigramVecContext(VecContext):
-    def __init__(self, path, k=1, min_count=10):
+    def __init__(self, path, k=1, min_count=100):
         super().__init__(path, n_gram=2, k=k)
     def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
         text = open(txt_file, 'r').read()
         sentence = text.replace('\n','').replace('。','，').split('，')
         bigram = chain(*[ ngram(s) for s in sentence ])
         bigram_cnter = Counter(bigram)
-        bigram_min = [ ele[0] for ele in bigram_cnter.items() if ele[1]>min_count ]
+        bigram_min = [ ele[0] for ele in bigram_cnter.most_common() if ele[1]>min_count ]
         return bigram_min
     def textCutter(self, bigram, text):
         proc_text = text
@@ -93,12 +94,15 @@ class BigramVecContext(VecContext):
         w2v = self.genVec(min_count)
         X = []
         for ins in self.X:
+            miss_word = 0
             w_list = []
             for word in ins.values():
                 try:
                     w_list.append(w2v[word])
                 except:
-                    w_list.append(w2v['！'])
+                    miss_word += 1
+            w2v_size = 30
+            w_list.extend( [ [0]*w2v_size ]*miss_word )
             X.append(w_list)
         self.X = np.array(X)
 
