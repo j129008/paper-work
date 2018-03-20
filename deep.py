@@ -24,9 +24,9 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-early_stop = EarlyStopping(min_delta=0.01, mode='max')
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0.0001, mode='min')
 ts = TensorBoard(log_dir='./log2')
-model.fit(x_train, y_train, batch_size=100, callbacks=[early_stop, ts], epochs=100)
+model.fit(x_train, y_train, batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
 pred = model.predict(x_test)
 y_pred = data.y2lab(pred)
 y_test = data.y2lab(y_test)
