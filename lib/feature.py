@@ -100,7 +100,6 @@ class BigramVecContext(VecContext):
             bigram = self.genBigram(min_count=self.min_count)
             text = open(txt_file, 'r').read().replace('\n','')
             sentence = self.textCutter(bigram, text)
-            pprint(sentence[:2])
             sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file+'.'+str(self.min_count), 'wb'))
@@ -112,15 +111,12 @@ class BigramVecContext(VecContext):
             w_list = []
             f_list = sorted([ (sum([int(num) for num in pos.split(',')]), ins[pos]) for pos in ins ])
             w_list_debug = []
-            print(f_list)
             for num, word in f_list:
                 try:
                     w_list.append(w2v[word])
                     w_list_debug.append(word)
                 except:
                     pass
-            print(w_list_debug)
-            input()
             w2v_size = 30
             w_list.extend( [ [0]*w2v_size ]*( (self.k*2+1)*2 - len(w_list) ) )
             X.append(w_list)
