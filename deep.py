@@ -10,14 +10,14 @@ from sklearn.model_selection import train_test_split
 path = './data/data_proc.txt'
 voc_size = len(set(open(path, 'r').read()))
 k = 5
-data = BigramVecContext(path, k=k, min_count=1000)
+data = BigramVecContext(path, k=k, min_count=1)
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.6, random_state=1, shuffle=False
 )
 
 model = Sequential()
 for _ in range(4):
-    model.add(Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True), input_shape=((k*2+1)*2, 30)))
+    model.add(Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True), input_shape=(len(x_test[0]), len(x_test[0][0]))))
 model.add(Bidirectional(CuDNNLSTM(50)))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy',
