@@ -110,11 +110,9 @@ class BigramVecContext(VecContext):
         for ins in self.X:
             w_list = []
             f_list = sorted([ (sum([int(num) for num in pos.split(',')]), ins[pos]) for pos in ins ])
-            w_list_debug = []
             for num, word in f_list:
                 try:
                     w_list.append(w2v[word])
-                    w_list_debug.append(word)
                 except:
                     pass
             w2v_size = 30
