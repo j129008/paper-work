@@ -20,6 +20,7 @@ def m_ngram(data, num=2):
 
 class Context(Data):
     def __init__(self, path, n_gram=2, k=1):
+        self.k = k
         super().__init__(path)
         for chap_text in self.text:
             text_append = '！'*k + chap_text + '！'*k
@@ -63,6 +64,7 @@ class VecContext(Context):
 
 class BigramVecContext(VecContext):
     def __init__(self, path, k=1, min_count=100):
+        self.min_count = min_count
         super().__init__(path, n_gram=2, k=k)
     def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
         text = open(txt_file, 'r').read()
@@ -75,34 +77,42 @@ class BigramVecContext(VecContext):
         proc_text = text
         for b in bigram:
             proc_text.replace(b, ','+b+',')
+        proc_text.replace(',,', ',')
         proc_text = proc_text.split('。')
         proc_text = [ s.split(',') for s in proc_text ]
-        return proc_text
+        ret_text = []
+        for seg in proc_text:
+            if len(seg) == 2:
+                ret_text.append(seg)
+            else:
+                ret_text.extend(list(seg))
+        return ret_text
     def genVec(self, min_count=10, vec_file='./pickles/bigram_word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
-            w2v = pickle.load(open(vec_file, 'rb'))
+            w2v = pickle.load(open(vec_file+'.'+str(self.min_count), 'rb'))
+            print('load w2v')
         except:
-            bigram = self.genBigram(min_count=min_count)
+            print('gen w2v')
+            bigram = self.genBigram(min_count=self.min_count)
             text = open(txt_file, 'r').read().replace('\n','')
             sentence = self.textCutter(bigram, text)
-            sentence = [ word if len(word)==2 else list(word) for word in sentence]
             sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
-            pickle.dump(w2v, open(vec_file, 'wb'))
+            pickle.dump(w2v, open(vec_file+'.'+str(self.min_count), 'wb'))
         return w2v
     def x2vec(self, min_count=10):
         w2v = self.genVec(min_count)
         X = []
         for ins in self.X:
-            miss_word = 0
             w_list = []
-            for word in ins.values():
+            f_list = sorted([ (sum([int(num) for num in pos.split(',')]), ins[pos]) for pos in ins ])
+            for num, word in f_list:
                 try:
                     w_list.append(w2v[word])
                 except:
-                    miss_word += 1
+                    pass
             w2v_size = 30
-            w_list.extend( [ [0]*w2v_size ]*miss_word )
+            w_list.extend( [ [0]*w2v_size ]*( (self.k*2+1)*2 - len(w_list) ) )
             X.append(w_list)
         self.X = np.array(X)
 
