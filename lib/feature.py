@@ -38,8 +38,9 @@ class Context(Data):
             self.X.append(chap_feature_list)
 
 class VecContext(Context):
-    def __init__(self, path, k=1, n_gram=1):
+    def __init__(self, path, k=1, n_gram=1, vec_size=50):
         super().__init__(path, n_gram=n_gram, k=k)
+        self.vec_size=vec_size
         self.union()
         self.x2vec()
         self.y2vec()
@@ -64,6 +65,7 @@ class VecContext(Context):
 
 class BigramVecContext(VecContext):
     def __init__(self, path, k=1, min_count=100):
+        self.path = path
         self.min_count = min_count
         super().__init__(path, n_gram=2, k=k)
     def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
@@ -73,6 +75,30 @@ class BigramVecContext(VecContext):
         bigram_cnter = Counter(bigram)
         bigram_min = [ ele[0] for ele in bigram_cnter.most_common() if ele[1]>min_count ]
         return bigram_min
+    def tdiffCutter(self, path):
+        tdiff = Tdiff(path, uniform=False)
+        context = Context(path, k=0, n_gram=1)
+        data = tdiff+context
+        cut_sentence = ''
+        for chap in data.X:
+            for ins in chap:
+                if ins['t-diff']>0:
+                    cut_sentence += ins['0,0']
+                else:
+                    cut_sentence += ins['0,0']+','
+        cut_sentence = cut_sentence.replace(',,', ',')
+        cut_sentence = cut_sentence.split('。')
+        s_sentence = []
+        for s in cut_sentence:
+            s_cut = s.split(',')
+            _s_cut = []
+            for ele in s_cut:
+                if len(ele)>2:
+                    _s_cut.extend(list(ele))
+                else:
+                    _s_cut.append(ele)
+            s_sentence.append(_s_cut)
+        return s_sentence
     def textCutter(self, bigram, text):
         proc_text = text
         for b in bigram:
@@ -91,19 +117,16 @@ class BigramVecContext(VecContext):
                     sen.extend(list(w))
             ret_text.append(sen)
         return ret_text
-    def genVec(self, min_count=10, vec_file='./pickles/bigram_word2vec.pkl', txt_file='./data/w2v.txt'):
+    def genVec(self, min_count=10, vec_file='./pickles/tdiff_word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
-            w2v = pickle.load(open(vec_file+'.'+str(self.min_count), 'rb'))
-            print('load w2v')
+            w2v = pickle.loads(open(vec_file, 'rb'))
+            return w2v
         except:
-            print('gen w2v')
-            bigram = self.genBigram(min_count=self.min_count)
-            text = open(txt_file, 'r').read().replace('\n','')
-            sentence = self.textCutter(bigram, text)
+            sentence = self.tdiffCutter(txt_file)
             sentence.append(['！'])
-            w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
+            w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file+'.'+str(self.min_count), 'wb'))
-        return w2v
+            return w2v
     def x2vec(self, min_count=10):
         w2v = self.genVec(min_count)
         X = []
@@ -115,10 +138,11 @@ class BigramVecContext(VecContext):
                     w_list.append(w2v[word])
                 except:
                     pass
-            w2v_size = 30
-            w_list.extend( [ [0]*w2v_size ]*( (self.k*2+1)*2 - len(w_list) ) )
+            max_len = max(max_len, len(w_list))
             X.append(w_list)
-        self.X = np.array(X)
+        for i in range(len(X)):
+            X[i].extend( [ [0]*self.vec_size ]*( max_len - len(X[i]) ) )
+        self.X = X
 
 class UniVec(VecContext):
     def __init__(self, path):
@@ -160,7 +184,7 @@ class MutualInfo(UniformScore, Data):
         self.uniform_score()
 
 class Tdiff(UniformScore, Data):
-    def __init__(self, path):
+    def __init__(self, path, uniform=True):
         super().__init__(path)
         text = ''.join(self.text)
         def t_test(f_xy, f_yz, f_x, f_y, v):
@@ -207,7 +231,8 @@ class Tdiff(UniformScore, Data):
         for y in self.Y:
             self.X.append(t_diff_score[i:i+len(y)])
             i+=len(y)
-        self.uniform_score()
+        if uniform == True:
+            self.uniform_score()
 
 class Label(Data):
     def __init__(self, path, lab_name, lab_file):
