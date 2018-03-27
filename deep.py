@@ -14,6 +14,10 @@ data = BigramVecContext(path, k=k, min_count=1)
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.6, random_state=1, shuffle=False
 )
+x_train = np.array(x_train)
+x_test = np.array(x_test)
+y_train = np.array(y_train)
+y_test = np.array(y_test)
 
 model = Sequential()
 for _ in range(4):
@@ -24,7 +28,7 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, mode='min')
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
 ts = TensorBoard(log_dir='./log')
 model.fit(x_train, y_train, batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
 pred = model.predict(x_test)
