@@ -51,7 +51,7 @@ class VecContext(Context):
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
             sentence.append(['！'])
-            w2v = Word2Vec(sentence, min_count=1, size=30, workers=8, iter=50)
+            w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
     def x2vec(self):
@@ -119,7 +119,7 @@ class BigramVecContext(VecContext):
         return ret_text
     def genVec(self, min_count=10, vec_file='./pickles/tdiff_word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
-            w2v = pickle.loads(open(vec_file, 'rb'))
+            w2v = pickle.load(open(vec_file, 'rb'))
             return w2v
         except:
             sentence = self.tdiffCutter(txt_file)

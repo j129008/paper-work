@@ -4,7 +4,7 @@ from keras.layers import Dense, Dropout, Input, concatenate
 from sklearn_crfsuite import metrics
 from keras.callbacks import EarlyStopping, TensorBoard, CSVLogger
 from keras.optimizers import Adam
-from keras.layers import LSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
+from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 
 path = './data/data_test.txt'
@@ -39,14 +39,14 @@ aux_output = Dense(1, activation='sigmoid')(lstm_output)
 x = concatenate([lstm_output, aux_input])
 main_output = Dense(1, activation='sigmoid')(x)
 
-model = Model(inputs=[inputs, aux_input], outputs=[main_output, aux_output])
+model = Model(inputs=[inputs, aux_input], outputs=main_output)
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
 ts = TensorBoard(log_dir='./log')
-model.fit([x_train, _x_train], [y_train, y_train], batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
+model.fit([x_train, _x_train], y_train, batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
 pred = model.predict([x_test, _x_test])
 y_pred = data.y2lab(pred)
 y_test = data.y2lab(y_test)
