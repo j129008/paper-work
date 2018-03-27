@@ -2,14 +2,15 @@ from lib.feature import *
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Input, concatenate
 from sklearn_crfsuite import metrics
+import keras
 from keras.callbacks import EarlyStopping, TensorBoard, CSVLogger
 from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 
-path = './data/data_test.txt'
+path = './data/data_proc.txt'
 k = 5
-data = VecContext(path, k=k)
+data = VecContext(path, k=k, vec_size=100)
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.6, shuffle=False
 )
@@ -31,15 +32,18 @@ inputs = Input(shape=(len(x_test[0]), len(x_test[0][0])))
 x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(inputs)
 for _ in range(4):
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(x)
-x = Bidirectional(CuDNNLSTM(50))(x)
-lstm_output = Dense(1, activation='sigmoid')(x)
+lstm_output= Bidirectional(CuDNNLSTM(50))(x)
 
 aux_input = Input(shape=(1,))
-aux_output = Dense(1, activation='sigmoid')(lstm_output)
 x = concatenate([lstm_output, aux_input])
+x = Dense(50, activation='relu')(x)
+x = Dense(50, activation='relu')(x)
+x = Dense(50, activation='relu')(x)
 main_output = Dense(1, activation='sigmoid')(x)
 
 model = Model(inputs=[inputs, aux_input], outputs=main_output)
+keras.utils.plot_model(model, to_file='model.png')
+model.summary()
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
