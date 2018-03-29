@@ -15,7 +15,7 @@ from sklearn_crfsuite import metrics
 import csv
 
 path = './data/data_proc.txt'
-result_table = csv.writer( open('./other_model.csv', 'w') )
+result_table = csv.writer( open('./csv/other_model.csv', 'w') )
 vec = UniVec(path)
 X = np.array(vec.X)
 Y = np.array(vec.Y)

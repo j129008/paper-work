@@ -3,7 +3,7 @@ from lib.feature import Context
 from tqdm import tqdm as bar
 import csv
 
-result_table = csv.writer( open('/mnt/d/data_need.csv', 'w') )
+result_table = csv.writer( open('./csv/data_need.csv', 'w') )
 path = './data/data_proc.txt'
 result_table.writerow(['data size', 'precision', 'recall', 'f1'])
 

@@ -5,8 +5,8 @@ from tqdm import tqdm as bar
 import csv
 
 path = './data/data_proc.txt'
-result_table = csv.writer( open('tdiff_mi.csv', 'w') )
-context = Context(path)
+result_table = csv.writer( open('./csv/tdiff_mi.csv', 'w') )
+context = Context(path, k=5)
 tdiff = Tdiff(path)
 mi = MutualInfo(path)
 

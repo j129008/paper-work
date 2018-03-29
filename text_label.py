@@ -20,7 +20,7 @@ address.save('./pickles/address.pkl')
 name = Label(path, lab_name='name', lab_file='./ref/known/name5.txt')
 name.save('./pickles/name.pkl')
 
-context = Context(path)
+context = Context(path, k=5)
 
 compare_list = [ (office, 'office'), (nianhao, 'nianhao'), (entry, 'entry'), (address, 'address'), (name, 'name') ]
 
