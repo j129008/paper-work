@@ -19,9 +19,9 @@ x_test = np.array(x_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
-aux_data = Tdiff(path, uniform=False)
+aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False)
 aux_data.union()
-aux_data.X = [ ele['t-diff'] for ele in aux_data.X ]
+aux_data.X = [ [ele['t-diff'], ele['mi-info']] for ele in aux_data.X ]
 _x_train, _x_test, _y_train, _y_test = train_test_split(
     aux_data.X, aux_data.Y, test_size=0.6, shuffle=False
 )
@@ -34,7 +34,7 @@ for _ in range(4):
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(x)
 lstm_output= Bidirectional(CuDNNLSTM(50))(x)
 
-aux_input = Input(shape=(1,))
+aux_input = Input(shape=(2,))
 x = concatenate([lstm_output, aux_input])
 x = Dense(50, activation='relu')(x)
 x = Dense(50, activation='relu')(x)

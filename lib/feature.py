@@ -166,7 +166,7 @@ class UniformScore:
                         break
 
 class MutualInfo(UniformScore, Data):
-    def __init__(self, path):
+    def __init__(self, path, uniform=True):
         super().__init__(path)
         tag_name = 'mi-info'
         w_dic = Counter(''.join(self.text))
@@ -181,7 +181,8 @@ class MutualInfo(UniformScore, Data):
                 mi_score.append( { tag_name: mi } )
             mi_score.append( { tag_name: 0.0 } )
             self.X.append(mi_score)
-        self.uniform_score()
+        if uniform == True:
+            self.uniform_score()
 
 class Tdiff(UniformScore, Data):
     def __init__(self, path, uniform=True):
