@@ -19,9 +19,34 @@ x_test = np.array(x_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
-aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False)
+try:
+    office = pickle.load(open('./pickles/office.pkl', 'rb'))
+    nianhao = pickle.load(open('./pickles/nianhao.pkl', 'rb'))
+    entry = pickle.load(open('./pickles/entry.pkl', 'rb'))
+    address = pickle.load(open('./pickles/address.pkl', 'rb'))
+    name = pickle.load(open('./pickles/name.pkl', 'rb'))
+except:
+    office = Label(path, lab_name='office', lab_file='./ref/known/office2.txt')
+    nianhao = Label(path, lab_name='nianhao', lab_file='./ref/known/nianhao.txt')
+    entry = Label(path, lab_name='entry', lab_file='./ref/known/entry1.txt')
+    address = Label(path, lab_name='address', lab_file='./ref/known/address2.txt')
+    name = Label(path, lab_name='name', lab_file='./ref/known/name5.txt')
+    office.save('./pickles/office.pkl')
+    nianhao.save('./pickles/nianhao.pkl')
+    entry.save('./pickles/entry.pkl')
+    address.save('./pickles/address.pkl')
+    name.save('./pickles/name.pkl')
+
+aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False) + office + nianhao + entry + address + name
 aux_data.union()
-aux_data.X = [ [ele['t-diff'], ele['mi-info']] for ele in aux_data.X ]
+def lab2val(l):
+    if l[0] == 'O':
+        return 0
+    elif l[0] == 'B':
+        return 1
+    else:
+        return 2
+aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office']), lab2val(ele['name']), lab2val(ele['address']), lab2val(ele['nianhao']), lab2val(ele['entry'])] for ele in aux_data.X ]
 _x_train, _x_test, _y_train, _y_test = train_test_split(
     aux_data.X, aux_data.Y, test_size=0.6, shuffle=False
 )
@@ -34,7 +59,7 @@ for _ in range(4):
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(x)
 lstm_output= Bidirectional(CuDNNLSTM(50))(x)
 
-aux_input = Input(shape=(2,))
+aux_input = Input(shape=(len(_x_test[0]),))
 x = concatenate([lstm_output, aux_input])
 x = Dense(50, activation='relu')(x)
 x = Dense(50, activation='relu')(x)
