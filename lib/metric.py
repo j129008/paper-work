@@ -1,4 +1,34 @@
 import pdb
+class Demo:
+    def __init__(self, file_name='demo.txt', learner=None):
+        f = open(file_name, 'w')
+        truth = learner.Y_private
+        pred = learner.predict(learner.X_private)
+        w = lambda i: learner.X_private[i[0]][i[1]]['0,0']
+        for chap_i in range(len(pred)):
+            T = ''
+            P = ''
+            for i in range(len(pred[chap_i])):
+                word = w((chap_i,i))
+                P += word
+                T += word
+                if pred[chap_i][i] != truth[chap_i][i]:
+                    if pred[chap_i] == 'I':
+                        P += '　'
+                        T += '，'
+                    else:
+                        P += '，'
+                        T += '　'
+                else:
+                    if pred[chap_i] == 'I':
+                        P += '　'
+                        T += '　'
+                    else:
+                        P += '，'
+                        T += '，'
+            f.write('T: '+T+'\n')
+            f.write('P: '+P+'\n')
+
 class ErrorAnalyze:
     def __init__(self, file_name='pred.txt', pred=None, feature_data=None):
         f = open(file_name, 'w')
