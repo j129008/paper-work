@@ -13,17 +13,14 @@ class Demo:
                 P += word
                 T += word
                 if pred[chap_i][i] != truth[chap_i][i]:
-                    if pred[chap_i] == 'I':
+                    if pred[chap_i][i] == 'I':
                         P += '　'
                         T += '，'
                     else:
                         P += '，'
                         T += '　'
                 else:
-                    if pred[chap_i] == 'I':
-                        P += '　'
-                        T += '　'
-                    else:
+                    if pred[chap_i][i] == 'E':
                         P += '，'
                         T += '，'
             f.write('T: '+T+'\n')
