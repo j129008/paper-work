@@ -1,10 +1,14 @@
 import pdb
+import re
+from collections import Counter
 class Demo:
     def __init__(self, file_name='demo.txt', learner=None):
         f = open(file_name, 'w')
         truth = learner.Y_private
         pred = learner.predict(learner.X_private)
         w = lambda i: learner.X_private[i[0]][i[1]]['0,0']
+        miss_list = []
+        err_list = []
         for chap_i in range(len(pred)):
             T = ''
             P = ''
@@ -25,6 +29,10 @@ class Demo:
                         T += '，'
             f.write('T: '+T+'\n')
             f.write('P: '+P+'\n')
+            miss_list.extend(re.findall(r'(...)　', P))
+            err_list.extend(re.findall(r'(...)　', T))
+        f.write('miss list:\n' + '\n'.join([ str(ele) for ele in Counter(miss_list).most_common(10) ]) + '\n')
+        f.write('err list:\n' + '\n'.join([ str(ele) for ele in Counter(err_list).most_common(10) ]) + '\n')
 
 class ErrorAnalyze:
     def __init__(self, file_name='pred.txt', pred=None, feature_data=None):

@@ -5,7 +5,7 @@ class TextPreproc:
         f = open(input_path, 'r')
         f_proc = open(output_path, 'w')
         bracket = ['「', '」', '『', '』', '“', '”', '‘', '’', '《', '》']
-        pause_punc = ['，', '。', '；','：', '！', '？', '、']
+        pause_punc = ['，', '；','：', '！', '？', '、']
 
         for chap in f:
             chap_proc = chap.strip()
@@ -19,6 +19,7 @@ class TextPreproc:
             chap_proc = re.sub(r'（[^）]*）', '', chap_proc)
             chap_proc = re.sub(r'【[^】]*】', '', chap_proc)
             chap_proc = re.sub(r'〔[^〕]*〕', '', chap_proc)
+            chap_proc = re.sub(r'〈[^〉]*〉', '', chap_proc)
             if len(chap_proc) < 30:
                 continue
             if chap_proc[-1] not in pause_punc:
@@ -28,4 +29,4 @@ class TextPreproc:
             f_proc.write(chap_proc+'\n')
 
 if __name__ == '__main__':
-    TextPreproc(input_path='./data/budd.txt', output_path='./data/budd_proc.txt')
+    TextPreproc(input_path='./data/budd.txt', output_path='./data/budd_w2v.txt')

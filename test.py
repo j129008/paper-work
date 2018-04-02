@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn_crfsuite import metrics
 from pprint import pprint
 
-path = './data/budda_proc.txt'
+path = './data/budd_proc.txt'
 context = Context(path, k=5)
 tdiff = Tdiff(path)
 pmi = MutualInfo(path)

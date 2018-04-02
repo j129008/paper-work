@@ -22,7 +22,10 @@ for path in glob('../data/buddhist/*.xml'):
         return list(chain(*[ tag_finder(ele, tag) for ele in tags ])) + tags
 
     for chap in data_list:
-        title = chap.find('tei:head', ns).text
+        try:
+            title = chap.find('tei:head', ns).text
+        except:
+            continue
         div_list = tag_finder(chap, 'div')
         hp_list = []
         for div in div_list:
