@@ -18,6 +18,7 @@ class TextPreproc:
             chap_proc = re.sub(r'[\x00-\x7F]', '', chap_proc)
             chap_proc = re.sub(r'（[^）]*）', '', chap_proc)
             chap_proc = re.sub(r'【[^】]*】', '', chap_proc)
+            chap_proc = re.sub(r'〔[^〕]*〕', '', chap_proc)
             if len(chap_proc) < 30:
                 continue
             if chap_proc[-1] not in pause_punc:
@@ -27,4 +28,4 @@ class TextPreproc:
             f_proc.write(chap_proc+'\n')
 
 if __name__ == '__main__':
-    TextPreproc(input_path='./data/budda2.txt', output_path='./data/budda2_proc.txt')
+    TextPreproc(input_path='./data/budd.txt', output_path='./data/budd_proc.txt')
