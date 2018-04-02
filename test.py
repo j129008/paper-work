@@ -9,9 +9,11 @@ from sklearn.model_selection import train_test_split
 from sklearn_crfsuite import metrics
 from pprint import pprint
 
-path = './data/data_small.txt'
-
-context = Context(path)
-man = Learner(context)
+path = './data/budda_proc.txt'
+context = Context(path, k=5)
+tdiff = Tdiff(path)
+pmi = MutualInfo(path)
+man = Learner(context+tdiff+pmi)
 man.train()
-demo = Demo(learner=man)
+man.report()
+demo = Demo(file_name='budda_demo.txt', learner=man)
