@@ -12,7 +12,9 @@ data_dict = {}
 for path in glob('../data/buddhist/*.xml'):
     text = open(path, 'r').read()
     text = re.sub(r'<note[^>]*>[^<]*</note>', '', text)
+    text = re.sub(r'<sic[^>]*>[^<]*</sic>', '', text)
     text = re.sub(r'<caesura/>', '，', text)
+    text = re.sub(r'<l/>', '。<l/>', text)
     tree = ET.fromstring(text)
     root = tree.find('tei:text/tei:body/tei:div', ns)
     data_list = [ ele for ele in root.findall('tei:div', ns) ]
@@ -32,12 +34,17 @@ for path in glob('../data/buddhist/*.xml'):
             h = div.findall('tei:head', ns)
             h = ''.join(h[0].itertext()) if len(h)>0 else ''
             p = div.findall('tei:p', ns)
-            p = ''.join(p[0].itertext()) if len(p)>0 else ''
+            if len(p) == 0:
+                continue
+            p = ''.join(p[0].itertext())
             lg = div.findall('tei:lg', ns)
             lg = ''.join(lg[0].itertext()) if len(lg)>0 else ''
-            hp_list.append(h+'，'+p+lg)
+            hp_list.append('，'.join([h,p,lg]).replace('，，','，').replace('：，','：').replace('。，','。'))
         data_dict[title] = hp_list
 for title in data_dict:
+    print(title)
     for sentence in data_dict[title]:
-        if len(sentence) > 30:
-            print(sentence)
+        #  if len(sentence) > 30:
+        sentence = re.sub('^，','', sentence)
+        print(sentence)
+    print('')
