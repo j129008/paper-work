@@ -64,10 +64,10 @@ class VecContext(Context):
         return [ 'E' if ele > 0.5 else 'I' for ele in y ]
 
 class BigramVecContext(VecContext):
-    def __init__(self, path, k=1, min_count=100):
+    def __init__(self, path, k=1, min_count=100, vec_size=50):
         self.path = path
         self.min_count = min_count
-        super().__init__(path, n_gram=2, k=k)
+        super().__init__(path, n_gram=2, k=k, vec_size=vec_size)
     def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
         text = open(txt_file, 'r').read()
         sentence = text.replace('\n','').replace('。','，').split('，')
@@ -130,6 +130,7 @@ class BigramVecContext(VecContext):
     def x2vec(self, min_count=10):
         w2v = self.genVec(min_count)
         X = []
+        max_len = 0
         for ins in self.X:
             w_list = []
             f_list = sorted([ (sum([int(num) for num in pos.split(',')]), ins[pos]) for pos in ins ])

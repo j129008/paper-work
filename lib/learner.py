@@ -15,10 +15,10 @@ import pdb
 logging.basicConfig(level=logging.DEBUG)
 
 class Learner(Data):
-    def __init__(self, data, random_state=None):
+    def __init__(self, data, random_state=None, train_size=0.6):
         self.X = data.X
         self.Y = data.Y
-        self.split_data(random_state=random_state)
+        self.split_data(random_state=random_state, train_size=train_size)
     def split_data(self, train_size=0.6, random_state=None, shuffle=False):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
