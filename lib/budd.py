@@ -42,9 +42,9 @@ for path in glob('../data/buddhist/*.xml'):
             hp_list.append('，'.join([h,p,lg]).replace('，，','，').replace('：，','：').replace('。，','。'))
         data_dict[title] = hp_list
 for title in data_dict:
-    print(title)
+    chap = []
     for sentence in data_dict[title]:
-        #  if len(sentence) > 30:
-        sentence = re.sub('^，','', sentence)
-        print(sentence)
-    print('')
+        if len(sentence) > 30:
+            sentence = re.sub('^，','', sentence)
+            chap.append(sentence)
+    print('，'.join(chap))
