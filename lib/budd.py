@@ -10,7 +10,7 @@ ns = {
 
 def tag_finder(x, tag):
     tags = x.findall('tei:'+tag, ns)
-    return tags + list(chain(*[ tag_finder(ele, tag) for ele in tags ]))
+    return list(chain(*[ [ele] + tag_finder(ele, tag) for ele in tags ]))
 
 data_all = []
 for path in glob('../data/buddhist/*.xml'):
@@ -44,9 +44,14 @@ for path in glob('../data/buddhist/*.xml'):
             lg = ''.join(lg[0].itertext()) if len(lg)>0 else ''
             hp_list.append('，'.join([h,p,lg]).replace('，，','，').replace('：，','：').replace('。，','。').replace(' ', '').replace('\n', '').replace('。。','。'))
         data_all.append( (title, hp_list) )
+
+title_list = []
 for title, hp_list in data_all:
+    if title in title_list:
+        continue
+    title_list.append(title)
     chap = []
-    print(title)
+    print('\n'+str(title))
     for sentence in hp_list:
         #  if len(sentence) > 30:
         sentence = re.sub('^，','', sentence)
