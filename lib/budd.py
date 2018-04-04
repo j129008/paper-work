@@ -20,7 +20,7 @@ for path in glob('../data/buddhist/*.xml'):
     text = re.sub(r'<del[^>]*>[^<]*</del>', '', text)
     text = re.sub(r'<orig[^>]*>[^<]*</orig>', '', text)
     text = re.sub(r'<caesura/>', '，', text)
-    text = re.sub(r'<l/>', '。<l/>', text)
+    text = re.sub(r'</l>', r'。</l>', text)
     tree = ET.fromstring(text)
     root = tree.find('tei:text/tei:body/tei:div', ns)
     data_list = [ ele for ele in root.findall('tei:div', ns) ]
