@@ -8,20 +8,23 @@ ns = {
     'tei' : 'http://www.tei-c.org/ns/1.0'
 }
 
-data_dict = {}
+def tag_finder(x, tag):
+    tags = x.findall('tei:'+tag, ns)
+    return tags + list(chain(*[ tag_finder(ele, tag) for ele in tags ]))
+
+data_all = []
 for path in glob('../data/buddhist/*.xml'):
     text = open(path, 'r').read()
     text = re.sub(r'<note[^>]*>[^<]*</note>', '', text)
     text = re.sub(r'<sic[^>]*>[^<]*</sic>', '', text)
+    text = re.sub(r'<del[^>]*>[^<]*</del>', '', text)
+    text = re.sub(r'<orig[^>]*>[^<]*</orig>', '', text)
     text = re.sub(r'<caesura/>', '，', text)
     text = re.sub(r'<l/>', '。<l/>', text)
     tree = ET.fromstring(text)
     root = tree.find('tei:text/tei:body/tei:div', ns)
     data_list = [ ele for ele in root.findall('tei:div', ns) ]
 
-    def tag_finder(x, tag):
-        tags = x.findall('tei:'+tag, ns)
-        return list(chain(*[ tag_finder(ele, tag) for ele in tags ])) + tags
 
     for chap in data_list:
         try:
@@ -36,15 +39,17 @@ for path in glob('../data/buddhist/*.xml'):
             p = div.findall('tei:p', ns)
             if len(p) == 0:
                 continue
-            p = ''.join(p[0].itertext())
+            p = ''.join([ ''.join(_p.itertext()) for _p in p ])
             lg = div.findall('tei:lg', ns)
             lg = ''.join(lg[0].itertext()) if len(lg)>0 else ''
-            hp_list.append('，'.join([h,p,lg]).replace('，，','，').replace('：，','：').replace('。，','。'))
-        data_dict[title] = hp_list
-for title in data_dict:
+            hp_list.append('，'.join([h,p,lg]).replace('，，','，').replace('：，','：').replace('。，','。').replace(' ', '').replace('\n', '').replace('。。','。'))
+        data_all.append( (title, hp_list) )
+for title, hp_list in data_all:
     chap = []
-    for sentence in data_dict[title]:
-        if len(sentence) > 30:
-            sentence = re.sub('^，','', sentence)
-            chap.append(sentence)
-    print('，'.join(chap))
+    print(title)
+    for sentence in hp_list:
+        #  if len(sentence) > 30:
+        sentence = re.sub('^，','', sentence)
+        #  chap.append(sentence)
+        print(sentence)
+    #  print('，'.join(chap))
