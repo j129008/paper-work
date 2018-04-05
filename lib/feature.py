@@ -38,11 +38,12 @@ class Context(Data):
             self.X.append(chap_feature_list)
 
 class VecContext(Context):
-    def __init__(self, path, k=1, n_gram=1, vec_size=50):
+    def __init__(self, path, k=1, n_gram=1, vec_size=50, w2v_text='./data/w2v.txt'):
         super().__init__(path, n_gram=n_gram, k=k)
+        self.shuffle(seed=1)
         self.vec_size=vec_size
         self.union()
-        self.x2vec()
+        self.x2vec(w2v_text=w2v_text)
         self.y2vec()
     def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
@@ -54,8 +55,8 @@ class VecContext(Context):
             w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
-    def x2vec(self):
-        w2v = self.genVec()
+    def x2vec(self, w2v_text='./data/w2v.txt'):
+        w2v = self.genVec(txt_file=w2v_text)
         self.X = np.array([ [ w2v[word] for word in ins.values() ] for ins in self.X ])
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])

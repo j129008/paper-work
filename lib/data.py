@@ -1,6 +1,6 @@
 from tqdm import tqdm as bar
 from copy import deepcopy
-from random import shuffle
+import random
 import pickle
 import re
 import pdb
@@ -39,9 +39,11 @@ class Data:
         for chap_i in range(len(self_copy.X)):
             self_copy.X[chap_i] = [ { name : self.X[chap_i][i][name]} for i in range(len(self.X[chap_i])) ]
         return self_copy
-    def shuffle(self):
+    def shuffle(self, seed=None):
+        if seed != None:
+            random.seed(seed)
         X_Y_txt = [*zip(self.X, self.Y, self.text)]
-        shuffle(X_Y_txt)
+        random.shuffle(X_Y_txt)
         self.X, self.Y, self.text = zip(*X_Y_txt)
     def shrink(self, rate=0.5):
         X_Y_txt = [*zip(self.X, self.Y, self.text)]
