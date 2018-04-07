@@ -15,11 +15,11 @@ import pdb
 logging.basicConfig(level=logging.DEBUG)
 
 class Learner(Data):
-    def __init__(self, data, random_state=None, train_size=0.6):
+    def __init__(self, data, random_state=None, train_size=0.7):
         self.X = data.X
         self.Y = data.Y
         self.split_data(random_state=random_state, train_size=train_size)
-    def split_data(self, train_size=0.6, random_state=None, shuffle=False):
+    def split_data(self, train_size=0.7, random_state=None, shuffle=False):
         self.random_state = random_state
         self.X_train, self.X_private, self.Y_train, self.Y_private = train_test_split(
             self.X, self.Y, test_size=1.0-train_size, random_state=random_state, shuffle=shuffle
@@ -27,7 +27,7 @@ class Learner(Data):
     def get_CRF(self, c1=0, c2=1):
         crf = CRF(
             algorithm                = 'lbfgs',
-            max_iterations           = 100,
+            max_iterations           = 1000,
             all_possible_transitions = True,
             c1 = c1,
             c2 = c2
