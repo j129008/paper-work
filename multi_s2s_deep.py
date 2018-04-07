@@ -14,13 +14,22 @@ from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 
+def seq2context(Y, k, dim=1):
+    seq_y = []
+    if dim == 1:
+        y = [0]*k + list(Y) + [0]*k
+        for i in range(k, len(Y)+k):
+            seq_y.append( [ [ele] for ele in y[i-k:i+k+1] ] )
+    else:
+        y = [Y[0]]*k + list(Y) + [Y[0]]*k
+        for i in range(k, len(Y)+k):
+            seq_y.append( y[i-k:i+k+1] )
+    return seq_y
+
 path = './data/data_proc.txt'
 k = 5
 data = VecContext(path, k=k, vec_size=50, w2v_text='./data/w2v.txt')
-seq_y = []
-y = [0]*k + list(data.Y) + [0]*k
-for i in range(k, len(data.Y)+k):
-    seq_y.append( [ [ele] for ele in y[i-k:i+k+1] ] )
+seq_y = seq2context(data.Y, k)
 
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, seq_y, test_size=0.3, shuffle=False
@@ -34,6 +43,7 @@ aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False)
 aux_data.union()
 
 aux_data.X = [ [ele['t-diff'], ele['mi-info']] for ele in aux_data.X ]
+aux_data.X = seq2context(aux_data.X, k, 2)
 
 _x_train, _x_test, _y_train, _y_test = train_test_split(
     aux_data.X, aux_data.Y, test_size=0.3, shuffle=False
@@ -49,13 +59,12 @@ x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
 x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
 lstm_output = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
 
-aux_input = Input(shape=(len(_x_test[0]),))
-x = Dense(50, activation='relu')(aux_input)
-x = Dense(50, activation='relu')(x)
-x = Dense(50, activation='relu')(x)
-x = Dense(50, activation='relu')(x)
-x = RepeatVector(len(x_test[0]))(x)
-aux_output = TimeDistributed(Dense(len(x_test[0][0]), activation='relu'))(x)
+aux_input = Input(shape=(len(_x_test[0]), len(_x_test[0][0])))
+x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(aux_input)
+x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+aux_output = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
 
 x = concatenate([lstm_output, aux_output])
 x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
