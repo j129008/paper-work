@@ -147,9 +147,17 @@ class BigramVecContext(VecContext):
         self.X = X
 
 class UniVec(VecContext):
-    def __init__(self, path, k=1, vec_size=50):
+    def __init__(self, path, k=1, vec_size=50, mode='chain'):
         super().__init__(path, k=k, vec_size=vec_size)
-        self.X = [ [ sum(u)/len(u) for u in zip(*vec_list) ] for vec_list in self.X ]
+        if mode == 'chain':
+            self.X = [ list(chain(*vec_list)) for vec_list in self.X ]
+        elif mode == 'average':
+            self.X = [ [ sum(u)/len(u) for u in zip(*vec_list) ] for vec_list in self.X  ]
+        elif mode == 'weight':
+            w = list(range(1, k))
+            weight = w + [k] + list(reversed(w))
+            vec_mul = lambda v1, v2 : [ ele[0]*ele[1] for ele in zip(v1, v2) ]
+            self.X = [ [ sum(vec_mul(u, weight))/len(u) for u in zip(*vec_list) ] for vec_list in self.X  ]
 
 class UniformScore:
     def uniform_score(self):
