@@ -44,4 +44,4 @@ for clf in bar(clf_list):
     R = metrics.flat_recall_score(y_test, pred_lab, pos_label=label)
     f1 = metrics.flat_f1_score(y_test, pred_lab, pos_label=label)
     print(P, R, f1)
-    result_table.writerow(P, R, f1)
+    result_table.writerow([P, R, f1])
