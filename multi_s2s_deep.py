@@ -26,9 +26,31 @@ def seq2context(Y, k, dim=1):
             seq_y.append( y[i-k:i+k+1] )
     return seq_y
 
+def lab2val(l):
+    if l[0] == 'O':
+        return 0
+    elif l[0] == 'B':
+        return 1
+    else:
+        return 2
+
+
 path = './data/data_proc.txt'
 k = 5
-data = VecContext(path, k=k, vec_size=50, w2v_text='./data/w2v.txt')
+
+try:
+    office = pickle.load(open('./pickles/office.pkl', 'rb'))
+    nianhao = pickle.load(open('./pickles/nianhao.pkl', 'rb'))
+    address = pickle.load(open('./pickles/address.pkl', 'rb'))
+except:
+    office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
+    nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
+    address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
+    office.save('./pickles/office.pkl')
+    nianhao.save('./pickles/nianhao.pkl')
+    address.save('./pickles/address.pkl')
+
+data = VecContext(path, k=k, vec_size=100, w2v_text='./data/w2v.txt')
 seq_y = seq2context(data.Y, k)
 
 x_train, x_test, y_train, y_test = train_test_split(
@@ -39,10 +61,10 @@ x_test = np.array(x_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
-aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False)
+aux_data = Tdiff(path, uniform=False) + MutualInfo(path, uniform=False) + office + nianhao + address
 aux_data.union()
 
-aux_data.X = [ [ele['t-diff'], ele['mi-info']] for ele in aux_data.X ]
+aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office']), lab2val(ele['address']), lab2val(ele['nianhao']) ] for ele in aux_data.X ]
 aux_data.X = seq2context(aux_data.X, k, 2)
 
 _x_train, _x_test, _y_train, _y_test = train_test_split(
