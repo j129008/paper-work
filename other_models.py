@@ -16,37 +16,32 @@ import csv
 
 path = './data/data_proc.txt'
 result_table = csv.writer( open('./csv/other_model.csv', 'w') )
-vec = UniVec(path)
+vec = UniVec(path, vec_size=50, k=1)
 X = np.array(vec.X)
 Y = np.array(vec.Y)
 
+x_train, x_test, y_train, y_test = train_test_split(
+    X, Y, test_size=0.3, shuffle=False
+)
+
 clf_list = [
     RandomForestClassifier(n_jobs=8),
-    KNeighborsClassifier(n_neighbors=8, n_jobs=8),
-    AdaBoostClassifier(),
-    MLPClassifier(hidden_layer_sizes=(20,10,5), alpha=1e-10),
-    GaussianNB(),
-    DecisionTreeClassifier(),
-    svm.SVC(C=1000, max_iter=5000)
+    #  KNeighborsClassifier(n_neighbors=8, n_jobs=8),
+    #  AdaBoostClassifier(),
+    #  MLPClassifier(hidden_layer_sizes=(20,10,5), alpha=1e-10),
+    #  GaussianNB(),
+    #  DecisionTreeClassifier(),
+    #  svm.SVC(C=1000, max_iter=5000)
 ]
 
-kf = KFold(n_splits=3)
 for clf in bar(clf_list):
-    P_list = []
-    R_list = []
-    f1_list = []
-    for train, test in kf.split(X):
-        clf.fit(X[train], Y[train])
-        pred_vec = clf.predict(X[test])
-        pred_lab = vec.y2lab(pred_vec)
-        y_test = vec.y2lab(Y[test])
-        label = 'E'
-        P = metrics.flat_precision_score(y_test, pred_lab, pos_label=label)
-        R = metrics.flat_recall_score(y_test, pred_lab, pos_label=label)
-        f1 = metrics.flat_f1_score(y_test, pred_lab, pos_label=label)
-        P_list.append(P)
-        R_list.append(R)
-        f1_list.append(f1)
-        print(P, R, f1)
-    avg = lambda l:sum(l)/len(l)
-    result_table.writerow([avg(P_list), avg(R_list), avg(f1_list)])
+    clf.fit(x_train, y_train)
+    pred_vec = clf.predict(x_test)
+    pred_lab = vec.y2lab(pred_vec)
+    y_test = vec.y2lab(y_test)
+    label = 'E'
+    P = metrics.flat_precision_score(y_test, pred_lab, pos_label=label)
+    R = metrics.flat_recall_score(y_test, pred_lab, pos_label=label)
+    f1 = metrics.flat_f1_score(y_test, pred_lab, pos_label=label)
+    print(P, R, f1)
+    result_table.writerow(P, R, f1)
