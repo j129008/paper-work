@@ -5,24 +5,18 @@ from tqdm import tqdm as bar
 import csv
 
 path = './data/data_proc.txt'
-office = Label(path, lab_name='office', lab_file='./ref/known/office2.txt')
+office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
 office.save('./pickles/office.pkl')
 
-nianhao = Label(path, lab_name='nianhao', lab_file='./ref/known/nianhao.txt')
+nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
 nianhao.save('./pickles/nianhao.pkl')
 
-entry = Label(path, lab_name='entry', lab_file='./ref/known/entry1.txt')
-entry.save('./pickles/entry.pkl')
-
-address = Label(path, lab_name='address', lab_file='./ref/known/address2.txt')
+address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
 address.save('./pickles/address.pkl')
-
-name = Label(path, lab_name='name', lab_file='./ref/known/name5.txt')
-name.save('./pickles/name.pkl')
 
 context = Context(path, k=5)
 
-compare_list = [ (office, 'office'), (nianhao, 'nianhao'), (entry, 'entry'), (address, 'address'), (name, 'name') ]
+compare_list = [ (office, 'office'), (nianhao, 'nianhao'), (address, 'address') ]
 
 result_table = csv.writer( open('text_label.csv', 'w') )
 for data, data_name in bar(compare_list):
