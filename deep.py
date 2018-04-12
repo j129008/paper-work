@@ -12,7 +12,7 @@ path = './data/data_proc.txt'
 k = 5
 data = VecContext(path, k=k, vec_size=100)
 x_train, x_test, y_train, y_test = train_test_split(
-    data.X, data.Y, test_size=0.6, shuffle=False
+    data.X, data.Y, test_size=0.3, shuffle=False
 )
 x_train = np.array(x_train)
 x_test = np.array(x_test)
