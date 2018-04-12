@@ -9,8 +9,8 @@ from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, 
 from sklearn.model_selection import train_test_split
 
 path = './data/data_proc.txt'
-k = 5
-data = VecContext(path, k=k, vec_size=100)
+k = 9
+data = VecContext(path, k=k, vec_size=50)
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.3, shuffle=False
 )
@@ -48,7 +48,7 @@ def lab2val(l):
         return 2
 aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office']), lab2val(ele['name']), lab2val(ele['address']), lab2val(ele['nianhao']), lab2val(ele['entry'])] for ele in aux_data.X ]
 _x_train, _x_test, _y_train, _y_test = train_test_split(
-    aux_data.X, aux_data.Y, test_size=0.6, shuffle=False
+    aux_data.X, aux_data.Y, test_size=0.3, shuffle=False
 )
 _x_train = np.array(_x_train)
 _x_test = np.array(_x_test)
