@@ -65,9 +65,10 @@ class VecContext(Context):
         return [ 'E' if ele > 0.5 else 'I' for ele in y ]
 
 class BigramVecContext(VecContext):
-    def __init__(self, path, k=1, min_count=100, vec_size=50):
+    def __init__(self, path, k=1, min_count=100, vec_size=50, mode='tdiff'):
         self.path = path
         self.min_count = min_count
+        self.mode = mode
         super().__init__(path, n_gram=2, k=k, vec_size=vec_size)
     def genBigram(self, min_count=10, txt_file='./data/w2v.txt'):
         text = open(txt_file, 'r').read()
@@ -123,7 +124,10 @@ class BigramVecContext(VecContext):
             w2v = pickle.load(open(vec_file, 'rb'))
             return w2v
         except:
-            sentence = self.tdiffCutter(txt_file)
+            if self.mode == 'tdiff':
+                sentence = self.tdiffCutter(txt_file)
+            else:
+                sentence = self.textCutter(self.genBigram(), txt_file)
             sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file+'.'+str(self.min_count), 'wb'))
