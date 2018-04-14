@@ -47,17 +47,19 @@ for k in range(9, 15):
 
     trans = lambda data : np.array(list(chunks(data, seg_size)))
     split_p = len(x_train)//10
-    x_vaild = trans(x_train[split_p:])
-    y_vaild = trans(y_train[split_p:])
-    x_train = x_train[:split_p]
-    y_train = y_train[:split_p]
-    x_test = x_test + (seg_size-len(x_test)%seg_size)* [50*[0]]
-    y_test = y_test + (seg_size-len(y_test)%seg_size)* [[0]]
+    x_vaild = trans(x_train[-split_p:])
+    y_vaild = trans(y_train[-split_p:])
+    x_train = x_train[:-split_p]
+    y_train = y_train[:-split_p]
+    padding = (seg_size - len(x_test)%seg_size)%seg_size
+    x_test = x_test + padding* [50*[0]]
+    y_test = y_test + padding* [[0]]
 
     print('start training')
     inputs = Input(shape=(seg_size, 50))
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Dropout(0.1)(x)
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
@@ -72,12 +74,11 @@ for k in range(9, 15):
                   metrics=['accuracy'])
 
     early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
-    model.fit_generator(batch_gen(x_train, y_train, seq_len=seg_size, batch_size=100), steps_per_epoch=len(y_train)//50, epochs=100, validation_data=(x_vaild, y_vaild), callbacks=[early_stop])
+    model.fit_generator(batch_gen(x_train, y_train, seq_len=seg_size, batch_size=100), steps_per_epoch=len(y_train)//1000, epochs=100, validation_data=(x_vaild, y_vaild), callbacks=[early_stop])
     pred = model.predict([trans(x_test)])
     union = lambda data: [ ins for chap in data for ins in chap]
     y_pred = data.y2lab(union(pred))
     y_test = data.y2lab(union(y_test))
-    print(len(y_pred), len(y_test))
     print(metrics.flat_classification_report(
         y_test, y_pred, labels=('I', 'E'), digits=4
     ), file=open('lstm_seg.txt', 'a'))
