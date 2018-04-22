@@ -38,9 +38,10 @@ class Context(Data):
             self.X.append(chap_feature_list)
 
 class VecContext(Context):
-    def __init__(self, path, k=1, n_gram=1, vec_size=50, w2v_text='./data/w2v.txt', pkl_name='./pickles/word2vec.pkl'):
+    def __init__(self, path, k=1, n_gram=1, vec_size=50, w2v_text='./data/w2v.txt', pkl_name='./pickles/word2vec.pkl', shuffle=False):
         super().__init__(path, n_gram=n_gram, k=k)
-        self.shuffle(seed=1)
+        if shuffle == True:
+            self.shuffle(seed=1)
         self.vec_size=vec_size
         self.union()
         self.x2vec(w2v_text=w2v_text, vec_file=pkl_name)
@@ -61,8 +62,8 @@ class VecContext(Context):
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
         return self.Y
-    def y2lab(self, y):
-        return [ 'E' if ele > 0.5 else 'I' for ele in y ]
+    def y2lab(self, y, threshold=0.5):
+        return [ 'E' if ele > threshold else 'I' for ele in y ]
 
 class BigramVecContext(VecContext):
     def __init__(self, path, k=1, min_count=100, vec_size=50, mode='tdiff'):

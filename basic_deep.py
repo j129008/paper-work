@@ -13,11 +13,11 @@ from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 
-path = './data/data_proc.txt'
-k = 5
-data = VecContext(path, k=k, vec_size=100)
+path = './data/budd_proc.txt'
+k = 12
+data = VecContext(path, k=k, vec_size=50, w2v_text='./data/budd_w2v.txt')
 x_train, x_test, y_train, y_test = train_test_split(
-    data.X, data.Y, test_size=0.3, shuffle=False
+    data.X, data.Y, test_size=0.3, shuffle=True
 )
 x_train = np.array(x_train)
 x_test = np.array(x_test)
@@ -39,8 +39,8 @@ model.compile(loss='binary_crossentropy',
               metrics=['accuracy'])
 
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
-ts = TensorBoard(log_dir='./log')
-model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
+model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=0.01, epochs=100)
+model.save('./pickles/keras.h5')
 pred = model.predict([x_test])
 y_pred = data.y2lab(pred)
 y_test = data.y2lab(y_test)
