@@ -18,7 +18,7 @@ valid_data = lgb.Dataset(x_valid, y_valid, reference=train_data)
 params = {
         'task'             : 'train',
         'boosting_type'    : 'gbdt',
-        'objective'        : 'regression',
+        'objective'        : 'binary',
         'metric'           : {'l2', 'auc'},
         'num_leaves'       : 2047,
         'learning_rate'    : 0.05,
