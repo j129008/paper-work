@@ -25,12 +25,12 @@ params = {
         'bagging_freq'     : 5,
         'verbose'          : 0
 }
-num_round = 1
+num_round = 1000
 bst = lgb.train(params, train_data, num_round, valid_sets=[valid_data], early_stopping_rounds=10)
 
 pred = bst.predict(test_data.X)
 lab_pred = data.y2lab(pred)
-lab_true = data.y2lab(y_test)
+lab_true = data.y2lab(test_data.Y)
 print(metrics.flat_classification_report(
     lab_true, lab_pred, labels=('I', 'E'), digits=4
 ))
