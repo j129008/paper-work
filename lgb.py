@@ -9,7 +9,7 @@ x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.3, shuffle=True
 )
 x_train, x_valid, y_train, y_valid = train_test_split(
-    data.X, data.Y, test_size=0.1, shuffle=True
+    x_train, y_train, test_size=0.1, shuffle=True
 )
 
 train_data = lgb.Dataset(x_train, y_train)
