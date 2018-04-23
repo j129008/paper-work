@@ -6,8 +6,8 @@ from sys import argv
 
 k = int(argv[1])
 print('k:', k, file=open('lgb.log', 'a'))
-data = UniVec('./data/train.txt', k=2)
-test_data = UniVec('./data/test.txt', k=2)
+data = UniVec('./data/train.txt', k=k)
+test_data = UniVec('./data/test.txt', k=k)
 
 x_train, x_valid, y_train, y_valid = train_test_split(
     data.X, data.Y, test_size=0.1, shuffle=True
