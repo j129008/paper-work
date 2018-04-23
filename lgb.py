@@ -3,7 +3,7 @@ from lib.feature import *
 from sklearn.model_selection import train_test_split
 from sklearn_crfsuite import metrics
 
-data = UniVec('./data/data_proc.txt')
+data = UniVec('./data/data_proc.txt', k=1)
 
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=0.3, shuffle=True
@@ -20,15 +20,15 @@ params = {
         'boosting_type'    : 'gbdt',
         'objective'        : 'regression',
         'metric'           : {'l2', 'auc'},
-        'num_leaves'       : 31,
+        'num_leaves'       : 2047,
         'learning_rate'    : 0.05,
         'feature_fraction' : 0.9,
         'bagging_fraction' : 0.8,
         'bagging_freq'     : 5,
         'verbose'          : 0
 }
-num_round = 5000
-bst = lgb.train(params, train_data, num_round, valid_sets=[valid_data])
+num_round = 1000
+bst = lgb.train(params, train_data, num_round, valid_sets=[valid_data], early_stopping_rounds=10)
 
 pred = bst.predict(x_test)
 lab_pred = data.y2lab(pred)
