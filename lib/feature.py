@@ -58,7 +58,12 @@ class VecContext(Context):
         return w2v
     def x2vec(self, w2v_text='./data/w2v.txt', vec_file='./pickles/word2vec.pkl'):
         w2v = self.genVec(txt_file=w2v_text, vec_file=vec_file)
-        self.X = np.array([ [ w2v[word] for word in ins.values() ] for ins in self.X ])
+        def my_w2v(w):
+            try:
+                return w2v[w]
+            except:
+                return w2v['！']
+        self.X = np.array([ [ my_w2v(word) for word in ins.values() ] for ins in self.X ])
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
         return self.Y
