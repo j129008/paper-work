@@ -30,6 +30,7 @@ params = {
 }
 num_round = 1000
 bst = lgb.train(params, train_data, num_round, valid_sets=[valid_data], early_stopping_rounds=10)
+bst.save_model('./pickles/lgb.md')
 
 pred = bst.predict(test_data.X)
 lab_pred = data.y2lab(pred)
