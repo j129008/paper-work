@@ -13,23 +13,29 @@ from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 from keras.models import load_model
+from glob import glob
 
-path = './data/budd_proc.txt'
+
+def pred2text(text_path, pred):
+    i = 0
+    output = ''
+    for line in open(text_path):
+        _line = line.strip()
+        for char in _line:
+            if y_pred[i] == 'E':
+                output += char + '，'
+            else:
+                output += char
+            i += 1
+        output += '\n'
+    print(output, file=open(text_path + '.res', 'w'))
+
 k = 12
-new_data = VecContext('./data/budd_test.txt', k=k, vec_size=50, w2v_text='./data/budd_w2v.txt')
-X = np.array(new_data.X)
 model = load_model('./pickles/keras.h5')
-pred = model.predict([X])
-y_pred = new_data.y2lab(pred, threshold=0.5)
-i = 0
-output = ''
-for line in open('./data/budd_test.txt'):
-    _line = line.strip()
-    for char in _line:
-        if y_pred[i] == 'E':
-            output += char + '，'
-        else:
-            output += char
-        i += 1
-    output += '\n'
-print(output, file=open('budd_output.txt', 'w'))
+
+for f_name in glob('./data/budd_raw/proc_*'):
+    new_data = VecContext(f_name, k=k, vec_size=100, w2v_text='./data/budd_w2v.txt')
+    X = np.array(new_data.X)
+    pred = model.predict([X])
+    y_pred = new_data.y2lab(pred, threshold=0.5)
+    pred2text(f_name, y_pred)
