@@ -29,18 +29,12 @@ model = load_model('./pickles/keras.h5')
 deep_pred = model.predict([np.array(deep_test.X)])
 deep_pred = union(deep_pred)
 
-# lgb
-lgb_test = UniVec(test_path, k=lgb_k, vec_size=50)
-bst = lgb.Booster(model_file='./pickles/lgb.md')
-bst_pred = bst.predict(lgb_test.X)
-
 # ensemble
-avg = lambda x, y, z: [ (x[i]+y[i]+z[i])/3 for i in range(len(x)) ]
-crf_deep = avg(crf_pred, deep_pred, bst_pred)
+avg = lambda x, y: [ (x[i]+y[i])/2 for i in range(len(x)) ]
+crf_deep = avg(crf_pred, deep_pred)
 label_crf_deep = deep_test.y2lab(crf_deep)
 label_deep = deep_test.y2lab(deep_pred)
 label_crf = deep_test.y2lab(crf_pred)
-label_lgb = deep_test.y2lab(bst_pred)
 
 print('average:')
 print(metrics.flat_classification_report(
@@ -53,8 +47,4 @@ print(metrics.flat_classification_report(
 print('CRF:')
 print(metrics.flat_classification_report(
     ans, label_crf, labels=('I', 'E'), digits=4
-))
-print('LGB:')
-print(metrics.flat_classification_report(
-    ans, label_lgb, labels=('I', 'E'), digits=4
 ))
