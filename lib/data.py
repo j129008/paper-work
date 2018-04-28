@@ -12,6 +12,8 @@ def ngram(data, num=2):
 class Chapter:
     def __init__(self, text):
         label = []
+        if text[-1] != '，':
+            text = text + '，'
         for bi in ngram( text, 2 ):
             if bi[0] == '，':
                 continue
