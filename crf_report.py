@@ -4,7 +4,7 @@ from lib.feature import *
 from copy import deepcopy
 import csv
 
-path = './data/data_lite.txt'
+path = './data/data_proc.txt'
 result_table = csv.writer( open('./csv/crf_report.csv', 'w') )
 
 base_data = Context(path, k=5)
@@ -29,10 +29,12 @@ for train_size in [0.1*i for i in range(1, 11)]:
 # context
 result_table.writerow(['context', 'k'])
 for n in [1, 2, 3]:
-    for k in bar(range(1, 10)):
+    for k in range(1, 10):
         context_data = Context(path, k=k, n_gram=n)
         man = Learner(context_data)
         man.train()
+        print('context', n, k)
+        man.report()
         score = man.get_score()
         result_table.writerow([n, k, score['P'], score['R'], score['f1']])
 
@@ -40,6 +42,7 @@ for n in [1, 2, 3]:
 tdiff = Tdiff(path)
 man = Learner(tdiff + base_data)
 man.train()
+print('tdiff')
 man.report()
 score = man.get_score()
 result_table.writerow(['tdiff', score['P'], score['R'], score['f1']])
@@ -48,6 +51,7 @@ result_table.writerow(['tdiff', score['P'], score['R'], score['f1']])
 pmi = MutualInfo(path)
 man = Learner(pmi + base_data)
 man.train()
+print('pmi')
 man.report()
 score = man.get_score()
 result_table.writerow(['pmi', score['P'], score['R'], score['f1']])
@@ -55,6 +59,7 @@ result_table.writerow(['pmi', score['P'], score['R'], score['f1']])
 # tdiff + pmi
 man = Learner(pmi + tdiff + base_data)
 man.train()
+print('tdiff+pmi')
 man.report()
 score = man.get_score()
 result_table.writerow(['tdiff + mi', score['P'], score['R'], score['f1']])
@@ -68,6 +73,7 @@ for t in type_list:
     t_data = rhyme.get_feature(t)
     man = Learner(t_data + base_data)
     man.train()
+    print('rhyme:', t)
     man.report()
     score = man.get_score()
     result_table.writerow([t, score['P'], score['R'], score['f1']])
@@ -79,6 +85,7 @@ for seg_size in [1, 10, 100]:
     seg_data.segment(length=seg_size)
     man = Learner(base_data)
     man.train()
+    print('seg size:', seg_size)
     man.report()
     score = man.get_score()
     result_table.writerow([seg_size, score['P'], score['R'], score['f1']])
@@ -86,6 +93,7 @@ for seg_size in [1, 10, 100]:
 # ensemble
 man = Bagging(base_data)
 man.train()
+print('bagging')
 man.report()
 score = man.get_score()
 result_table.writerow(['bagging', score['P'], score['R'], score['f1']])
@@ -95,6 +103,7 @@ _context.segment(length=10)
 man = Boosting(_context)
 man.train()
 print(man.alpha_list)
+print('boost')
 man.report()
 score = man.get_score()
 result_table.writerow(['boosting', score['P'], score['R'], score['f1']])
