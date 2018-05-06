@@ -4,7 +4,7 @@ from lib.feature import *
 from copy import deepcopy
 import csv
 
-path = './data/data_proc.txt'
+path = './data/data_shuffle.txt'
 result_table = csv.writer( open('./csv/crf_report.csv', 'w') )
 
 base_data = Context(path, k=5)
@@ -89,6 +89,20 @@ for seg_size in [1, 10, 100]:
     man.report()
     score = man.get_score()
     result_table.writerow([seg_size, score['P'], score['R'], score['f1']])
+
+# name tag
+office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
+nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
+address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
+compare_list = [ (office, 'office'), (nianhao, 'nianhao'), (address, 'address') ]
+
+for data, data_name in compare_list:
+    man = Learner(data + base_data)
+    man.train()
+    print('tag name:', data_name)
+    man.report()
+    score = man.get_score()
+    result_table.writerow([data_name, score['P'], score['R'], score['f1']])
 
 # ensemble
 man = Bagging(base_data)
