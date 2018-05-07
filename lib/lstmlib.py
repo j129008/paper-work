@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import csv
 import keras
 from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Input, concatenate
+from keras.layers import Dense, Dropout, Input, concatenate, RepeatVector
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, Bidirectional
@@ -76,6 +76,38 @@ def basic_model(data, stack=5, seq=False):
     else:
         x = Bidirectional(CuDNNLSTM(50))(x)
         main_output = Dense(1, activation='sigmoid')(x)
+
+    model = Model(inputs=[inputs], outputs=main_output)
+    model.compile(loss='binary_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
+    return model
+
+def encoder_model(data):
+    inputs = Input(shape=(len(data[0]), len(data[0][0])))
+
+    # encoder
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=False))(x)
+    coder_output = RepeatVector(len(data[0]))(x)
+
+    # stack lstm
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    lstm_output = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = concatenate([lstm_output, coder_output])
+
+    # decoder
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    main_output = TimeDistributed(Dense(1, activation='sigmoid'))(x)
 
     model = Model(inputs=[inputs], outputs=main_output)
     model.compile(loss='binary_crossentropy',
