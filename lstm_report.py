@@ -8,6 +8,7 @@ path = './data/data_lite.txt'
 result_table = csv.writer( open('./csv/lstm_report.csv', 'w') )
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
 k_baseline = 10
+"""
 
 # context
 result_table.writerow(['context k'])
@@ -72,14 +73,15 @@ for aux_name, aux_train, aux_test in [ ('tdiff', tdiff_train, tdiff_test), ('pmi
     score = report(pred, y_test)
     result_table.writerow([aux_name, score['P'], score['R'], score['f1']])
 
+"""
 # seq2seq
 x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, seq=True)
-model = basic_model(x_test, stack=stack)
+model = basic_model(x_test, seq=True)
 model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=0.1, epochs=100)
 pred = model.predict([x_test])
-choose = lambda x : [ ele[k] for ele in x ]
-y_pred = data.y2lab(choose(pred))
-y_test = data.y2lab(choose(y_test))
+choose = lambda x : [ ele[k_baseline] for ele in x ]
+y_pred = VecContext.y2lab(choose(pred))
+y_test = VecContext.y2lab(choose(y_test))
 print(metrics.flat_classification_report(
     y_test, y_pred, labels=('I', 'E'), digits=4
 ))
