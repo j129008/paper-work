@@ -8,7 +8,7 @@ from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 from sklearn.model_selection import train_test_split
 
-path = './data/data_proc.txt'
+path = './data/data_lite.txt'
 k = 9
 data = VecContext(path, k=k, vec_size=50)
 x_train, x_test, y_train, y_test = train_test_split(
@@ -77,8 +77,8 @@ early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='mi
 ts = TensorBoard(log_dir='./log')
 model.fit([x_train, _x_train], y_train, batch_size=100, callbacks=[early_stop, ts], validation_split=0.1, epochs=100)
 pred = model.predict([x_test, _x_test])
-y_pred = data.y2lab(pred)
-y_test = data.y2lab(y_test)
+y_pred = VecContext.y2lab(pred)
+y_test = VecContext.y2lab(y_test)
 print(metrics.flat_classification_report(
     y_test, y_pred, labels=('I', 'E'), digits=4
 ))

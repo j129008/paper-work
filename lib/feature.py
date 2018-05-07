@@ -67,7 +67,7 @@ class VecContext(Context):
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
         return self.Y
-    def y2lab(self, y, threshold=0.5):
+    def y2lab(y, threshold=0.5):
         return [ 'E' if ele > threshold else 'I' for ele in y ]
 
 class BigramVecContext(VecContext):
