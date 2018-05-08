@@ -83,7 +83,7 @@ result_table.writerow(['seg size'])
 for seg_size in [1, 10, 100]:
     seg_data = deepcopy(base_data)
     seg_data.segment(length=seg_size)
-    man = Learner(base_data)
+    man = Learner(seg_data)
     man.train()
     print('seg size:', seg_size)
     man.report()
