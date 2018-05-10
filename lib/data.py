@@ -55,12 +55,15 @@ class Data:
         union = lambda data: [ ins for chap in data for ins in chap]
         union_X = union(self.X)
         union_Y = union(self.Y)
+        union_text = union(self.text)
         self.X = [ union_X[i:i+length] for i in range(0, len(union_X), length) ]
         self.Y = [ union_Y[i:i+length] for i in range(0, len(union_Y), length) ]
+        self.text = [ union_text[i:i+length] for i in range(0, len(union_text), length) ]
     def union(self):
         uni = lambda data: [ ins for chap in data for ins in chap ]
         self.X = uni(self.X)
         self.Y = uni(self.Y)
+        self.text = uni(self.text)
     def save(self, file_name):
         pickle.dump(self, open(file_name, 'wb'))
         print('save to', file_name)

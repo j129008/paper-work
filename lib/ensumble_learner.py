@@ -36,7 +36,7 @@ class EnsumbleTool:
                     chap_res.append('I')
             res_list.append(chap_res)
         return res_list
-    def predict(self, x, tuner=1.1):
+    def predict(self, x, tuner=1.0):
         score_list = self.predict_score(x)
         return self.score2lab(self.gap*tuner, score_list)
 
