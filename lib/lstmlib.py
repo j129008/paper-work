@@ -44,7 +44,7 @@ def context_data(path, k=10, size=None, seq=False):
     y_test = np.array(y_test)
     return x_train, x_test, y_train, y_test
 
-def aux_data():
+def aux_data(path):
     def lab2val(l):
         if l[0] == 'O':
             return 1
