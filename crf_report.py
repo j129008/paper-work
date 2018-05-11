@@ -78,18 +78,6 @@ for t in type_list:
     score = man.get_score()
     result_table.writerow([t, score['P'], score['R'], score['f1']])
 
-# seg size
-result_table.writerow(['seg size'])
-for seg_size in [1, 10, 100]:
-    seg_data = deepcopy(base_data)
-    seg_data.segment(length=seg_size)
-    man = Learner(seg_data)
-    man.train()
-    print('seg size:', seg_size)
-    man.report()
-    score = man.get_score()
-    result_table.writerow([seg_size, score['P'], score['R'], score['f1']])
-
 # name tag
 office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
 nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
@@ -104,20 +92,29 @@ for data, data_name in compare_list:
     score = man.get_score()
     result_table.writerow([data_name, score['P'], score['R'], score['f1']])
 
-# ensemble
-man = Bagging(base_data)
-man.train()
-print('bagging')
-man.report()
-score = man.get_score()
-result_table.writerow(['bagging', score['P'], score['R'], score['f1']])
+# seg size
+for k in range(1, 7):
+    base_data = Context(path, k=k)
+    base_data.segment(length=1)
+    base_data.shuffle()
+    man = Learner(base_data)
+    man.train()
+    print('k:', k)
+    man.report()
+    score = man.get_score()
+    result_table.writerow(['baseline', k, score['P'], score['R'], score['f1']])
 
-_context = deepcopy(base_data)
-_context.segment(length=10)
-man = Boosting(_context)
-man.train()
-print(man.alpha_list)
-print('boost')
-man.report()
-score = man.get_score()
-result_table.writerow(['boosting', score['P'], score['R'], score['f1']])
+    man = Bagging(base_data)
+    man.train()
+    print('bagging:', k)
+    man.report()
+    score = man.get_score()
+    result_table.writerow(['bagging', k, score['P'], score['R'], score['f1']])
+
+    man = Boosting(base_data)
+    man.train()
+    print(man.alpha_list)
+    print('boost:', k)
+    man.report()
+    score = man.get_score()
+    result_table.writerow(['boosting', k, score['P'], score['R'], score['f1']])
