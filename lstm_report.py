@@ -11,7 +11,7 @@ k_baseline = 10
 
 # context
 result_table.writerow(['context k'])
-for k in range(1, 2):
+for k in range(1, 11):
     x_train, x_test, y_train, y_test = context_data(path, k)
     model = basic_model(x_test)
     model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=0.01, epochs=100)
