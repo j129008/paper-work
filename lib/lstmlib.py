@@ -8,6 +8,7 @@ from keras.layers import Dense, Dropout, Input, concatenate, RepeatVector
 from keras.callbacks import EarlyStopping
 from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, Bidirectional
+from keras.utils import plot_model
 
 def report(pred, truth):
     _pred = VecContext.y2lab(pred)
@@ -49,11 +50,12 @@ def aux_data(path):
         if l[0] == 'O':
             return 1
         elif l[0] == 'B':
-            return 0
-        elif l[0] == 'I':
-            return 0
-        elif l[0] == 'E':
             return 2
+        elif l[0] == 'I':
+            return 3
+        elif l[0] == 'E':
+            return 4
+        return 0
     office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
     nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
     address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')

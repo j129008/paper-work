@@ -269,10 +269,10 @@ class Label(Data):
                 # check exist
                 if set( lab_list[m:m+len(lab)] ) != {'O'}:
                     continue
-                lab_list[m] = lab_name + '-B'
-                lab_list[m+len(lab)-1] = lab_name + '-E'
+                lab_list[m] = 'B'
+                lab_list[m+len(lab)-1] = 'E'
                 for j in range(m+1, m+len(lab)-1):
-                    lab_list[j] = lab_name + '-I'
+                    lab_list[j] = 'I'
             except:
                 continue
         lab = [ {lab_name:lab} for lab in lab_list ]
