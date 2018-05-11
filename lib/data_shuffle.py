@@ -1,17 +1,12 @@
-from random import shuffle
+from sklearn.model_selection import train_test_split
 
-text_list = [ line for line in open('./data/data_proc.txt', 'r') ]
-shuffle(text_list)
+text_list = [ line for line in open('./data/data_shuffle.txt', 'r') ]
+train_list, test_list = train_test_split(text_list, test_size=0.3, shuffle=False)
 
-fw = open('./data/data_shuffle.txt', 'w')
-fw.writelines(text_list)
-fw.close()
-
-spliter = int(len(text_list) * 0.7)
 fw = open('./data/train.txt', 'w')
-fw.writelines(text_list[:spliter])
+fw.writelines(train_list)
 fw.close()
 
 fw = open('./data/test.txt', 'w')
-fw.writelines(text_list[spliter:])
+fw.writelines(test_list)
 fw.close()
