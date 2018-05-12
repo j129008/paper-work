@@ -7,13 +7,13 @@ import pickle
 from lib.feature import *
 from keras.models import load_model
 from sklearn_crfsuite import metrics
-import lightgbm as lgb
+from lib.lstmlib import *
 import numpy as np
 
-test_path = './data/test.txt'
-crf_k     = 5
-deep_k    = 12
-lgb_k = 4
+train_path = './data/train.txt'
+test_path  = './data/test.txt'
+crf_k      = 5
+deep_k     = 10
 
 # CRF
 crf_test  = Context(test_path, k=crf_k)
@@ -24,17 +24,19 @@ crf_pred = [ ele['E'] for ele in union(crf_pred) ]
 ans = union(crf_test.Y)
 
 # LSTM
+deep_train = VecContext(train_path, k=deep_k, vec_size=50, w2v_text='./data/w2v.txt')
 deep_test = VecContext(test_path, k=deep_k, vec_size=50, w2v_text='./data/w2v.txt')
-model = load_model('./pickles/keras.h5')
-deep_pred = model.predict([np.array(deep_test.X)])
-deep_pred = union(deep_pred)
+model = basic_model(deep_train.X)
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
+model.fit([deep_train.X], deep_train.Y, batch_size=100, callbacks=[early_stop], validation_split=0.01, epochs=100)
+deep_pred = model.predict([deep_test.X])
 
 # ensemble
 avg = lambda x, y: [ (x[i]+y[i])/2 for i in range(len(x)) ]
 crf_deep = avg(crf_pred, deep_pred)
-label_crf_deep = deep_test.y2lab(crf_deep)
-label_deep = deep_test.y2lab(deep_pred)
-label_crf = deep_test.y2lab(crf_pred)
+label_crf_deep = VecContext.y2lab(crf_deep)
+label_deep = VecContext.y2lab(deep_pred)
+label_crf = VecContext.y2lab(crf_pred)
 
 print('average:')
 print(metrics.flat_classification_report(
