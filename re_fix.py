@@ -45,7 +45,7 @@ deep_k    = 10
 
 # LSTM
 deep_test = VecContext(test_path, k=deep_k, vec_size=50, w2v_text='./data/w2v.txt')
-model = load_model('./pickles/lstm_train-valid.h5')
+model = load_model('./pickles/lstm-train.h5')
 deep_pred = model.predict([deep_test.X])
 deep_pred_lab = VecContext.y2lab(deep_pred)
 
