@@ -64,3 +64,17 @@ class ErrorCompare:
                 f.write('{}\n'.format(X_u[i]['0,0']) )
             if truth[i] == 'E':
                 f.write('\n')
+
+def pred2text(text_path, pred):
+    i = 0
+    output = ''
+    for line in open(text_path):
+        _line = line.replace('，', '').strip()
+        for char in _line:
+            if pred[i] == 'E':
+                output += char + '，'
+            else:
+                output += char
+            i += 1
+        output += '\n'
+    return output

@@ -15,7 +15,7 @@ from keras.optimizers import Adam
 from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, GRU, Bidirectional, CuDNNLSTM
 
 train_path = './data/train.txt'
-deep_k     = 12
+deep_k     = 10
 
 deep_train = VecContext(train_path, k=deep_k, vec_size=50, w2v_text='./data/w2v.txt')
 
@@ -38,4 +38,4 @@ model.compile(loss='binary_crossentropy',
 
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
 model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=0.01, epochs=100)
-model.save('./pickles/keras.h5')
+model.save('./pickles/lstm-train.h5')
