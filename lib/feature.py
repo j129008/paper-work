@@ -187,11 +187,16 @@ class UniformScore:
                         break
 
 class MutualInfo(UniformScore, Data):
-    def __init__(self, path, uniform=True):
+    def __init__(self, path, uniform=True, text_file=None):
         super().__init__(path)
         tag_name = 'mi-info'
-        w_dic = Counter(''.join(self.text))
-        bi_dic = Counter([ gram for chap_text in self.text for gram in ngram(chap_text)])
+        if text_file != None:
+            _text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
+            w_dic = Counter(_text)
+            bi_dic = Counter(ngram(_text))
+        else:
+            w_dic = Counter(''.join(self.text))
+            bi_dic = Counter([ gram for chap_text in self.text for gram in ngram(chap_text)])
         for chap_text in self.text:
             mi_score = []
             for i in range(len(chap_text)-1):
@@ -206,7 +211,7 @@ class MutualInfo(UniformScore, Data):
             self.uniform_score()
 
 class Tdiff(UniformScore, Data):
-    def __init__(self, path, uniform=True):
+    def __init__(self, path, uniform=True, text_file=None):
         super().__init__(path)
         text = ''.join(self.text)
         def t_test(f_xy, f_yz, f_x, f_y, v):
@@ -227,8 +232,13 @@ class Tdiff(UniformScore, Data):
                 v_dic[key] = len(v_dic[key])
             return v_dic
         # wxyz
-        w_dic = Counter(text)
-        bi_dic = Counter(ngram(text))
+        if text_file != None:
+            _text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
+            w_dic = Counter(_text)
+            bi_dic = Counter(ngram(_text))
+        else:
+            w_dic = Counter(text)
+            bi_dic = Counter(ngram(text))
         bi_list = [ ele for ele in bi_dic ]
         v_dic = v_calc(bi_list)
         t_diff_score = []

@@ -45,7 +45,7 @@ class Learner(Data):
         clf_CV = RandomizedSearchCV(crf, params_space,
                                 cv      = cv,
                                 verbose = 3,
-                                n_jobs  = 8,
+                                n_jobs  = 3,
                                 n_iter  = n_iter,
                                 scoring = f1_scorer)
         clf_CV.fit(self.X_train, self.Y_train)
