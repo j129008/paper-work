@@ -49,6 +49,9 @@ class VecContext(Context):
     def genVec(self, vec_file='./pickles/word2vec.pkl', txt_file='./data/w2v.txt'):
         try:
             w2v = pickle.load(open(vec_file, 'rb'))
+            if len(w2v['！']) != self.vec_size:
+                print('regen w2v', len(w2v['！']), 'to', self.vec_size)
+                raise 'w2v err'
         except:
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]

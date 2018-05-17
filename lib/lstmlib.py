@@ -67,6 +67,32 @@ def aux_data(path):
     )
     return x_train, x_test
 
+def aux_adv_data(path):
+    def lab2val(l, tag):
+        if l[0] == 'O':
+            return 1 + tag*10
+        elif l[0] == 'B':
+            return 2 + tag*10
+        elif l[0] == 'I':
+            return 3 + tag*10
+        elif l[0] == 'E':
+            return 4 + tag*10
+        return 0
+    office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
+    nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
+    address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
+    tdiff = Tdiff(path, uniform=False)
+    pmi = MutualInfo(path, uniform=False)
+    tdiff.shuffle()
+    pmi.shuffle()
+    aux_data = tdiff + pmi + office + nianhao + address
+    aux_data.union()
+    aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office'], 1), lab2val(ele['address'], 2), lab2val(ele['nianhao'], 3)] for ele in aux_data.X ]
+    x_train, x_test, y_train, y_test = train_test_split(
+        aux_data.X, aux_data.Y, test_size=0.3, shuffle=False
+    )
+    return x_train, x_test
+
 def basic_model(data, stack=5, seq=False):
     inputs = Input(shape=(len(data[0]), len(data[0][0])))
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
