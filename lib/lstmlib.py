@@ -81,11 +81,9 @@ def aux_adv_data(path):
     office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
     nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
     address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
-    tdiff = Tdiff(path, uniform=False)
-    pmi = MutualInfo(path, uniform=False)
-    tdiff.shuffle()
-    pmi.shuffle()
-    aux_data = tdiff + pmi + office + nianhao + address
+    tdiff = Tdiff(path, uniform=False, noise=True)
+    pmi = MutualInfo(path, uniform=False, noise=True)
+    aux_data = office + nianhao + address + pmi + tdiff
     aux_data.union()
     aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office'], 1), lab2val(ele['address'], 2), lab2val(ele['nianhao'], 3)] for ele in aux_data.X ]
     x_train, x_test, y_train, y_test = train_test_split(

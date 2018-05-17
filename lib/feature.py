@@ -4,6 +4,7 @@ from math import log2, sqrt, pow
 from gensim.models import Word2Vec
 from itertools import chain
 from pprint import pprint
+from random import shuffle
 import numpy as np
 import re
 import pickle
@@ -190,7 +191,7 @@ class UniformScore:
                         break
 
 class MutualInfo(UniformScore, Data):
-    def __init__(self, path, uniform=True, text_file=None):
+    def __init__(self, path, uniform=True, text_file=None, noise=False):
         super().__init__(path)
         tag_name = 'mi-info'
         if text_file != None:
@@ -209,12 +210,14 @@ class MutualInfo(UniformScore, Data):
                 mi = log2( Pxy/(Px*Py))
                 mi_score.append( { tag_name: mi } )
             mi_score.append( { tag_name: 0.0 } )
+            if noise == True:
+                shuffle(mi_score)
             self.X.append(mi_score)
         if uniform == True:
             self.uniform_score()
 
 class Tdiff(UniformScore, Data):
-    def __init__(self, path, uniform=True, text_file=None):
+    def __init__(self, path, uniform=True, text_file=None, noise=False):
         super().__init__(path)
         text = ''.join(self.text)
         def t_test(f_xy, f_yz, f_x, f_y, v):
@@ -262,6 +265,8 @@ class Tdiff(UniformScore, Data):
             t_y = t_test(f_xy, f_yz, f_x, f_y, v_dic[w_x] + v_dic[w_y] )
             t_diff_score.append({'t-diff': t_x - t_y})
         t_diff_score.extend([{'t-diff': 0.0}, {'t-diff': 0.0}, {'t-diff': 0.0}])
+        if noise == True:
+            shuffle(t_diff_score)
         i = 0
         for y in self.Y:
             self.X.append(t_diff_score[i:i+len(y)])
