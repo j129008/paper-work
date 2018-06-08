@@ -4,7 +4,7 @@ from lib.feature import *
 from copy import deepcopy
 import csv
 
-path = './data/data_shuffle.txt'
+path = './data/data_lite.txt'
 result_table = csv.writer( open('./csv/crf_report.csv', 'w') )
 
 base_data = Context(path, k=5)

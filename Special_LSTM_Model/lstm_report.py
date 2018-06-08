@@ -4,7 +4,7 @@ config.gpu_options.allow_growth = True
 session = tf.Session(config=config)
 from lib.lstmlib import *
 
-path = './data/data_lite.txt'
+path = './data/data_shuffle.txt'
 result_table = csv.writer( open('./csv/lstm_report.csv', 'w') )
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
 k_baseline = 10

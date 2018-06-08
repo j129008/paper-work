@@ -15,7 +15,7 @@ from sklearn_crfsuite import metrics
 import lightgbm as lgb
 import csv
 
-path = './data/data_shuffle.txt'
+path = './data/data_lite.txt'
 result_table = csv.writer( open('./csv/other_model.csv', 'w') )
 vec = UniVec(path, vec_size=50, k=2, mode='chain')
 X = np.array(vec.X)
