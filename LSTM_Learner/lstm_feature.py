@@ -24,32 +24,31 @@ early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, m
 k_baseline = k
 
 # features
-x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, vec_size=vec, w2v_text=w2v_text)
-aux_name, aux_train, aux_test = lstm_data(args)
+x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, vec_size=vec, w2v_text=w2v_text, train_size=trainsplit)
+aux_name, aux_x_train, aux_x_test, aux_y_train, aux_y_test = lstm_data(args)
 
-for aux_name, aux_train, aux_test in [ ( aux_name[i], aux_train[i], aux_test[i] ) for i in range(len(aux_name))]:
-    print(aux_name)
-    aux_train = np.array(aux_train).reshape(-1, 1)
-    aux_test = np.array(aux_test).reshape(-1, 1)
-    inputs = Input(shape=(len(x_test[0]), len(x_test[0][0])))
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
-    for _ in range(stack-2):
-        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    lstm_output= Bidirectional(CuDNNLSTM(50))(x)
+print(aux_name)
+aux_train = np.array(aux_x_train).reshape(-1, 1)
+aux_test = np.array(aux_x_test).reshape(-1, 1)
+inputs = Input(shape=(len(x_test[0]), len(x_test[0][0])))
+x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+for _ in range(stack-2):
+    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+lstm_output= Bidirectional(CuDNNLSTM(50))(x)
 
-    aux_input = Input(shape=(len(aux_train[0]),))
-    x = concatenate([lstm_output, aux_input])
-    x = Dense(50, activation='relu')(x)
-    x = Dense(50, activation='relu')(x)
-    x = Dense(50, activation='relu')(x)
-    x = Dense(50, activation='relu')(x)
-    main_output = Dense(1, activation='sigmoid')(x)
+aux_input = Input(shape=(len(aux_x_train[0]),))
+x = concatenate([lstm_output, aux_input])
+x = Dense(50, activation='relu')(x)
+x = Dense(50, activation='relu')(x)
+x = Dense(50, activation='relu')(x)
+x = Dense(50, activation='relu')(x)
+main_output = Dense(1, activation='sigmoid')(x)
 
-    model = Model(inputs=[inputs, aux_input], outputs=main_output)
-    model.compile(loss='binary_crossentropy',
-                  optimizer='adam',
-                  metrics=['accuracy'])
+model = Model(inputs=[inputs, aux_input], outputs=main_output)
+model.compile(loss='binary_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy'])
 
-    model.fit([x_train, aux_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=valid, epochs=100)
-    pred = model.predict([x_test, aux_test])
-    score = report(pred, y_test)
+model.fit([x_train, np.array(aux_x_train)], y_train, batch_size=100, callbacks=[early_stop], validation_split=valid, epochs=100)
+pred = model.predict([x_test, np.array(aux_x_test)])
+score = report(pred, y_test)
