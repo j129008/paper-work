@@ -27,12 +27,14 @@ k_baseline = k
 
 if enc != True:
     # seq2seq
-    x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, seq=True)
+    x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, seq=True, train_size=trainsplit)
     model = basic_model(x_test, seq=True, stack=stack)
     model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=valid, epochs=100)
     pred = model.predict([x_test])
     choose = lambda x : [ ele[k_baseline] for ele in x ]
     score = report(choose(pred), choose(y_test))
+    if args.smod != None:
+        model.save(args.smod)
 else:
     # seq2seq + encoder/decoder + lstm stack
     x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, seq=True)
@@ -41,3 +43,5 @@ else:
     pred = model.predict([x_test])
     choose = lambda x : [ ele[k_baseline] for ele in x ]
     score = report(choose(pred), choose(y_test))
+    if args.smod != None:
+        model.save(args.smod)

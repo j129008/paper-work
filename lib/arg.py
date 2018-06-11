@@ -16,6 +16,7 @@ def crf_arg():
 def lstm_arg():
     parser = ArgumentParser()
     parser.add_argument('-i', dest='input')
+    parser.add_argument('--savemodel', '-smod', dest='smod', default=None)
     parser.add_argument('-k', dest='k', default=1, type=int)
     parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt')
     parser.add_argument('--valid', '-val', dest='valid', type=float, default=0.1)
@@ -69,8 +70,6 @@ def lstm_data(args):
     keys = [ key for key in data.X[0] ]
     data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
     x_train, x_test, y_train, y_test = train_test_split(
-        data.X, data.Y, test_size=0.3, shuffle=False
+        data.X, data.Y, test_size=1.0-args.trainsplit, shuffle=False
     )
-    train_list = list(zip(*x_train))
-    test_list = list(zip(*x_test))
-    return keys, train_list, test_list
+    return keys, x_train, x_test, y_train, y_test

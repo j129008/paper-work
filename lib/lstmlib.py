@@ -22,7 +22,7 @@ def report(pred, truth):
     f1 = metrics.flat_f1_score(_test, _pred, pos_label=label)
     return {'P':P, 'R':R, 'f1':f1}
 
-def context_data(path, k=10, size=None, seq=False, vec_size=50, w2v_text='./data/w2v.txt'):
+def context_data(path, k=10, size=None, seq=False, vec_size=50, w2v_text='./data/w2v.txt', train_size=0.7):
     data = VecContext(path, k=k, vec_size=vec_size, w2v_text=w2v_text)
     if seq == True:
         seq_y = []
@@ -32,7 +32,7 @@ def context_data(path, k=10, size=None, seq=False, vec_size=50, w2v_text='./data
         data.Y = seq_y
 
     x_train, x_test, y_train, y_test = train_test_split(
-        data.X, data.Y, test_size=0.3, shuffle=False
+        data.X, data.Y, test_size=1.0-train_size, shuffle=False
     )
 
     if size != None:
