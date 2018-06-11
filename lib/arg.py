@@ -17,7 +17,7 @@ def lstm_arg():
     parser = ArgumentParser()
     parser.add_argument('-i', dest='input')
     parser.add_argument('-k', dest='k', default=1, type=int)
-    parser.add_argument('-w2v', dest='w2v')
+    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt')
     parser.add_argument('--valid', '-val', dest='valid', type=float, default=0.1)
     parser.add_argument('-vec', dest='vec', default=50, type=int)
     parser.add_argument('-stack', dest='stack', default=5, type=int)

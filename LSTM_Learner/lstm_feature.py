@@ -24,7 +24,7 @@ early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, m
 k_baseline = k
 
 # features
-x_train, x_test, y_train, y_test = context_data(path, k=k_baseline)
+x_train, x_test, y_train, y_test = context_data(path, k=k_baseline, vec_size=vec, w2v_text=w2v_text)
 aux_name, aux_train, aux_test = lstm_data(args)
 
 for aux_name, aux_train, aux_test in [ ( aux_name[i], aux_train[i], aux_test[i] ) for i in range(len(aux_name))]:

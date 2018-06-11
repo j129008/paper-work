@@ -54,6 +54,7 @@ class VecContext(Context):
                 print('regen w2v', len(w2v['！']), 'to', self.vec_size)
                 raise 'w2v err'
         except:
+            print('load:', txt_file)
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
             sentence.append(['！'])
