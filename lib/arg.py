@@ -17,10 +17,12 @@ def lstm_arg():
     parser.add_argument('-i', dest='input')
     parser.add_argument('-k', dest='k', default=1, type=int)
     parser.add_argument('-w2v', dest='w2v')
+    parser.add_argument('--valid', '-val', dest='valid', type=float, default=0.1)
     parser.add_argument('-vec', dest='vec', default=50, type=int)
     parser.add_argument('-stack', dest='stack', default=5, type=int)
-    parser.add_argument('-trainsplit', dest='trainsplit', default=0.7, type=float)
+    parser.add_argument('--trainsplit', '-ts', dest='trainsplit', default=0.7, type=float)
     parser.add_argument('-plot', dest='plot', default=None)
+    parser.add_argument('--patience', '-pat' , dest='patience', type=int, default=2)
     return parser
 
 def crf_data(args):

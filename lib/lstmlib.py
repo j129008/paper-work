@@ -109,30 +109,39 @@ def basic_model(data, stack=5, seq=False):
                   metrics=['accuracy'])
     return model
 
-def encoder_model(data):
+def encoder_model(data, n_encoder, n_decoder, n_lstm):
     inputs = Input(shape=(len(data[0]), len(data[0][0])))
+    if n_lstm != 0:
+        # encoder
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+        for _ in range(n_encoder-2):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=False))(x)
+        coder_output = RepeatVector(len(data[0]))(x)
 
-    # encoder
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=False))(x)
-    coder_output = RepeatVector(len(data[0]))(x)
+        # stack lstm
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+        for _ in range(n_lstm-2):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        lstm_output = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        x = concatenate([lstm_output, coder_output])
 
-    # stack lstm
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    lstm_output = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = concatenate([lstm_output, coder_output])
+        # decoder
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        for _ in range(n_decoder-1):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+    else:
+        # encoder
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+        for _ in range(n_encoder-2):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=False))(x)
+        x = RepeatVector(len(data[0]))(x)
 
-    # decoder
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        # decoder
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        for _ in range(n_decoder-1):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
     main_output = TimeDistributed(Dense(1, activation='sigmoid'))(x)
 
     model = Model(inputs=[inputs], outputs=main_output)

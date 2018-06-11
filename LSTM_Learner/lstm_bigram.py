@@ -24,6 +24,8 @@ w2v_text = args.w2v
 vec = args.vec
 stack = args.stack
 trainsplit = args.trainsplit
+patience = args.patience
+valid = args.valid
 
 data = VecContext(path, k=k, vec_size=vec, w2v_text=w2v_text)
 vec_adder = lambda v1, v2: [ v1[i]+v2[i] for i in range(len(v1)) ]
@@ -44,7 +46,7 @@ def batch_gen(x, y, batch_size=100):
 x_train, x_test, y_train, y_test = train_test_split(
     data.X, data.Y, test_size=1.0-trainsplit, shuffle=False
 )
-split_p = -len(x_train)//10
+split_p = int(-len(x_train)*valid)
 x_vaild = x_train[split_p:]
 y_vaild = y_train[split_p:]
 x_train = x_train[:split_p]
@@ -64,7 +66,7 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=2, mode='min')
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, mode='min')
 model.fit_generator(batch_gen(x_train, y_train, batch_size=100), steps_per_epoch=len(y_train)//100, epochs=100, validation_data=(data_trans(x_vaild), y_vaild), callbacks=[early_stop])
 pred = model.predict([data_trans(x_test)])
 y_pred = VecContext.y2lab(pred)
