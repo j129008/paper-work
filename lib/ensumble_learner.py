@@ -105,6 +105,8 @@ class Boosting(EnsumbleTool, WeightLearner):
         Y_pred = self.crf.predict(self.X_train)
         Y_private = self.Y_train
         epsilon = max(self.sigma_error_weight(Y_pred, Y_private)/sum(self.weight_list), sys.float_info.min)
+        if epsilon > 0.5:
+            return 0
         t = sqrt((1-epsilon)/epsilon)
         for i in range(len(Y_pred)):
             if Y_pred[i] == Y_private[i]:
@@ -114,11 +116,16 @@ class Boosting(EnsumbleTool, WeightLearner):
         alpha = log(t)
         return alpha
 
+    def uniform_weight(self):
+        weight_sum = sum(self.weight_list)
+        self.weight_list = [ w/weight_sum for w in self.weight_list ]
+
     def train(self, max_model=10):
         self.model_list = []
         self.alpha_list = []
         for i in range(max_model):
             self.model = super().train()
+            self.uniform_weight()
             alpha = self.update_weight()
             if alpha > 0 and self.model != None:
                 self.model_list.append( self.model )
