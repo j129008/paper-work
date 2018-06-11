@@ -1,4 +1,5 @@
 from lib.feature import *
+from sklearn.model_selection import train_test_split
 from argparse import ArgumentParser
 
 def crf_arg():
@@ -39,3 +40,37 @@ def crf_data(args):
             lab_name, lab_file = name_path.split(':')
             data += Label(path, lab_name=lab_name, lab_file=lab_file)
     return data
+
+def lstm_data(args):
+    path = args.input
+    if args.pmi:
+        try:
+            data += MutualInfo(path, uniform=False)
+        except:
+            data = MutualInfo(path, uniform=False)
+    if args.tdiff:
+        try:
+            data += Tdiff(path, uniform=False)
+        except:
+            data = Tdiff(path, uniform=False)
+    if args.rhy != None:
+        try:
+            data += Rhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
+        except:
+            data = Rhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
+    if args.list != None:
+        for name_path in args.list.split(','):
+            lab_name, lab_file = name_path.split(':')
+            try:
+                data += VecLabel(path, lab_name=lab_name, lab_file=lab_file)
+            except:
+                data = VecLabel(path, lab_name=lab_name, lab_file=lab_file)
+    data.union()
+    keys = [ key for key in data.X[0] ]
+    data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
+    x_train, x_test, y_train, y_test = train_test_split(
+        data.X, data.Y, test_size=0.3, shuffle=False
+    )
+    train_list = list(zip(*x_train))
+    test_list = list(zip(*x_test))
+    return keys, train_list, test_list

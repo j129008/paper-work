@@ -299,6 +299,31 @@ class Label(Data):
             self.X.append(lab[i:i+len(y)])
             i+=len(y)
 
+class VecLabel(Data):
+    def __init__(self, path, lab_name, lab_file):
+        super().__init__(path)
+        text = ''.join(self.text)
+        lab_data = open(lab_file, 'r', encoding='utf-8').read().split('\n')[:-1]
+        lab_list = [0]*len( text )
+        for lab in lab_data:
+            try:
+                p = re.compile( lab )
+                m = p.search( text ).span()[0]
+                # check exist
+                if set( lab_list[m:m+len(lab)] ) != {0}:
+                    continue
+                lab_list[m] = 1
+                lab_list[m+len(lab)-1] = 3
+                for j in range(m+1, m+len(lab)-1):
+                    lab_list[j] = 2
+            except:
+                continue
+        lab = [ {lab_name:lab} for lab in lab_list ]
+        i=0
+        for y in self.Y:
+            self.X.append(lab[i:i+len(y)])
+            i+=len(y)
+
 class Rhyme(Data):
     def __init__(self, path, index_file, db_file, rhy_type_list):
         super().__init__(path)
