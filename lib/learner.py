@@ -144,6 +144,10 @@ class WeightLearner(Learner):
         super().__init__(data, random_state=random_state)
         N = len(self.X_train)
         self.weight_list = [np.longdouble(1/N)]*N
+    def split_data(self, train_size=0.7, random_state=None):
+        super().split_data(train_size=train_size)
+        N = len(self.X_train)
+        self.weight_list = [np.longdouble(1/N)]*N
     def get_CRF(self, c1=0, c2=1):
         crf = WeightCRF(
             algorithm                = 'lbfgs',
