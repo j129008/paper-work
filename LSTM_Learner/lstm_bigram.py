@@ -14,11 +14,18 @@ from keras.layers import CuDNNLSTM, TimeDistributed, SimpleRNN, Embedding, RNN, 
 from sklearn.model_selection import train_test_split
 from random import randint
 from sklearn.utils import shuffle
+from lib.arg import lstm_arg
 
-path = '../data/data_lite.txt'
-k = 5
+parser = lstm_arg()
+args = parser.parse_args()
+path = args.input
+k = args.k
+w2v_text = args.w2v
+vec = args.vec
+stack = args.stack
+trainsplit = args.trainsplit
 
-data = VecContext(path, k=k, vec_size=50, w2v_text='../data/w2v.txt')
+data = VecContext(path, k=k, vec_size=vec, w2v_text=w2v_text)
 vec_adder = lambda v1, v2: [ v1[i]+v2[i] for i in range(len(v1)) ]
 adder = lambda v_list : [ vec_adder(v_list[i], v_list[i+1]) for i in range(len(v_list)-1) ]
 bigram_adder = lambda v_list : list(adder(v_list)) + list(v_list)
@@ -35,7 +42,7 @@ def batch_gen(x, y, batch_size=100):
             yield (batch_x, batch_y)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    data.X, data.Y, test_size=0.3, shuffle=False
+    data.X, data.Y, test_size=1.0-trainsplit, shuffle=False
 )
 split_p = -len(x_train)//10
 x_vaild = x_train[split_p:]
@@ -43,16 +50,16 @@ y_vaild = y_train[split_p:]
 x_train = x_train[:split_p]
 y_train = y_train[:split_p]
 
-inputs = Input(shape=((2*k+1) + 2*k, 50))
+inputs = Input(shape=((2*k+1) + 2*k, vec))
 x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(inputs)
-for _ in range(4):
+for _ in range(stack-2):
     x = Bidirectional(CuDNNLSTM(50, return_sequences=True, go_backwards=True))(x)
 x= Bidirectional(CuDNNLSTM(50))(x)
 main_output = Dense(1, activation='sigmoid')(x)
 
 model = Model(inputs=[inputs], outputs=main_output)
-keras.utils.plot_model(model, to_file='model.png')
-model.summary()
+if args.plot != None:
+    keras.utils.plot_model(model, to_file=args.plot)
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])

@@ -1,7 +1,7 @@
 from lib.feature import *
+from argparse import ArgumentParser
 
 def crf_arg():
-    from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-pmi', action='store_true')
     parser.add_argument('-tdiff', action='store_true')
@@ -10,6 +10,17 @@ def crf_arg():
     parser.add_argument('-k', dest='k', default=1, type=int)
     parser.add_argument('-ngram', dest='ngram', default=2, type=int)
     parser.add_argument('-i', dest='input')
+    return parser
+
+def lstm_arg():
+    parser = ArgumentParser()
+    parser.add_argument('-i', dest='input')
+    parser.add_argument('-k', dest='k', default=1, type=int)
+    parser.add_argument('-w2v', dest='w2v')
+    parser.add_argument('-vec', dest='vec', default=50, type=int)
+    parser.add_argument('-stack', dest='stack', default=5, type=int)
+    parser.add_argument('-trainsplit', dest='trainsplit', default=0.7, type=float)
+    parser.add_argument('-plot', dest='plot', default=None)
     return parser
 
 def crf_data(args):
