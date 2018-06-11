@@ -1,4 +1,5 @@
 import re
+from argparse import ArgumentParser
 
 class TextPreproc:
     def __init__(self, input_path='./data/data.csv', output_path='./data/data_proc.txt', hold=None):
@@ -33,5 +34,9 @@ class TextPreproc:
             f_proc.write(chap_proc+'\n')
 
 if __name__ == '__main__':
-    TextPreproc(input_path='../data/epitaph_RAW.txt', output_path='../Text_Preproc/output_proc.txt')
-    TextPreproc(input_path='../data/epitaph_RAW.txt', output_path='../Text_Preproc/output_proc_w2v.txt', hold='。')
+    parser = ArgumentParser()
+    parser.add_argument('-i', dest='input', help='input file')
+    parser.add_argument('-o', dest='output', help='output file')
+    parser.add_argument('--hold', dest='hold', default=None, help='hold punctuation')
+    args = parser.parse_args()
+    TextPreproc(input_path=args.input, output_path=args.output, hold=args.hold)
