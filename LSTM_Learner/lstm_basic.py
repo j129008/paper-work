@@ -25,3 +25,5 @@ model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation
 pred = model.predict([x_test])
 print('context k =', k)
 score = report(pred, y_test)
+if args.smod != None:
+    model.save(args.smod)
