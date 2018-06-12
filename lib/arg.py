@@ -27,6 +27,17 @@ def lstm_arg():
     parser.add_argument('--patience', '-pat' , dest='patience', type=int, default=2)
     return parser
 
+def lstm_crf_arg():
+    parser = ArgumentParser()
+    parser.add_argument('-i', dest='input')
+    parser.add_argument('--lstm-k', '-lk', dest='lk', default=10, type=int)
+    parser.add_argument('--crf-k', '-ck', dest='ck', default=5, type=int)
+    parser.add_argument('--lstm-mod', '-lmod', dest='lmod')
+    parser.add_argument('--crf-mod', '-cmod', dest='cmod')
+    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt')
+    parser.add_argument('-vec', dest='vec', default=50, type=int)
+    return parser
+
 def crf_data(args):
     path = args.input
     data = Context(path, k=args.k, n_gram=args.ngram)
