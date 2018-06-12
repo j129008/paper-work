@@ -2,7 +2,6 @@ from lib.ensumble_learner import Bagging
 from lib.arg import crf_arg, crf_data
 
 parser = crf_arg()
-parser.add_argument('-trainsplit', dest='trainsplit', type=float, default=0.7)
 parser.add_argument('-seg', dest='seg', type=int, default=1)
 parser.add_argument('-voter', dest='voter', type=int, default=8)
 parser.add_argument('-votersize', dest='votersize', type=float, default=0.4)

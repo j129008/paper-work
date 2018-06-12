@@ -6,6 +6,7 @@ def crf_arg():
     parser = ArgumentParser()
     parser.add_argument('-pmi', action='store_true')
     parser.add_argument('-tdiff', action='store_true')
+    parser.add_argument('--trainsplit', '-ts', dest='trainsplit', type=float, default=0.7)
     parser.add_argument('-rhy', dest='rhy', default=None, help='反切,聲母,韻目,調,等,呼,韻母')
     parser.add_argument('-list', dest='list', default=None)
     parser.add_argument('-k', dest='k', default=1, type=int)
