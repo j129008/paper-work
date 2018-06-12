@@ -12,6 +12,7 @@ def crf_arg():
     parser.add_argument('-k', dest='k', default=1, type=int)
     parser.add_argument('-ngram', dest='ngram', default=2, type=int)
     parser.add_argument('-i', dest='input')
+    parser.add_argument('-savemodel', '-smod', dest='save', default=None)
     return parser
 
 def lstm_arg():
