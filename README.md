@@ -5,6 +5,7 @@
 -smod  : 儲存訓練完成的模型路徑
 -k     : 前後文範圍
 -ts    : 訓練、測試資料的比例
+-subtrain : 調整training data的大小比例
 
 ### CRF only options
 -cv   : 進行K-fold的crossvalidation
@@ -23,11 +24,6 @@
 -voter : 投票者數量
 -votersize : 投票者能得到的資料比例
 
-### boosting
-
-### other options
--subtrain : 調整training data的大小比例
-
 
 ## LSTM options
 
@@ -36,6 +32,7 @@
 -smod  : 儲存訓練完成的模型路徑
 -k     : 前後文範圍
 -ts    : 訓練、測試資料的比例
+-subtrain : 調整training data的大小比例
 
 ### LSTM options
 -w2v   : w2v 的文字檔案路徑
