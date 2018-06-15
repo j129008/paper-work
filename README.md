@@ -7,6 +7,7 @@
 -ts    : 訓練、測試資料的比例
 
 ### CRF only options
+-cv   : 進行K-fold的crossvalidation
 -iter : 每次CV tune參數的次數
 -c1   : L1 regularization 參數
 -c2   : L2 regularization 參數

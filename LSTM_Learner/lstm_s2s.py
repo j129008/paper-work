@@ -8,13 +8,11 @@ from lib.arg import lstm_arg
 parser = lstm_arg()
 parser.add_argument('--encoder', '-enc', dest='enc', type=int, default=5)
 parser.add_argument('--decoder', '-dec', dest='dec', type=int, default=5)
-parser.add_argument('--stack', '-st', dest='stack', type=int, default=5)
 args = parser.parse_args()
 path = args.input
 k = args.k
 w2v_text = args.w2v
 vec = args.vec
-stack = args.stack
 trainsplit = args.trainsplit
 patience = args.patience
 valid = args.valid
