@@ -17,6 +17,13 @@
 -pmi   : 加入pmi作為特徵
 -tdiff : 加入tdiff作為特徵
 
+### bagging
+-seg : 將資料單位切割成更小塊
+-voter : 投票者數量
+-votersize : 投票者能得到的資料比例
+
+### boosting
+
 ### other options
 -subtrain : 調整training data的大小比例
 
