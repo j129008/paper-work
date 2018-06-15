@@ -4,40 +4,44 @@ from argparse import ArgumentParser
 
 def crf_arg():
     parser = ArgumentParser()
-    parser.add_argument('-pmi', action='store_true')
-    parser.add_argument('-tdiff', action='store_true')
-    parser.add_argument('--trainsplit', '-ts', dest='trainsplit', type=float, default=0.7)
+    # basic option
+    parser.add_argument('-i', dest='input', help='input file path')
+    parser.add_argument('-smod', dest='save', default=None, help='model save path')
+    parser.add_argument('-k', dest='k', default=1, type=int, help='context size k')
+    parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
+    # feature option
     parser.add_argument('-rhy', dest='rhy', default=None, help='反切,聲母,韻目,調,等,呼,韻母')
-    parser.add_argument('-list', dest='list', default=None)
-    parser.add_argument('-k', dest='k', default=1, type=int)
-    parser.add_argument('-ngram', dest='ngram', default=2, type=int)
-    parser.add_argument('-i', dest='input')
-    parser.add_argument('-savemodel', '-smod', dest='save', default=None)
+    parser.add_argument('-list', dest='list', default=None, help='[feature name]:[list path],...')
+    parser.add_argument('-ngram', dest='ngram', default=2, type=int, help='set ngram size')
+    parser.add_argument('-pmi', action='store_true', help='add feature pmi')
+    parser.add_argument('-tdiff', action='store_true', help='add feature tdiff')
     return parser
 
 def lstm_arg():
     parser = ArgumentParser()
-    parser.add_argument('-i', dest='input')
-    parser.add_argument('--savemodel', '-smod', dest='smod', default=None)
-    parser.add_argument('-k', dest='k', default=1, type=int)
-    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt')
-    parser.add_argument('--valid', '-val', dest='valid', type=float, default=0.1)
-    parser.add_argument('-vec', dest='vec', default=50, type=int)
-    parser.add_argument('-stack', dest='stack', default=5, type=int)
-    parser.add_argument('--trainsplit', '-ts', dest='trainsplit', default=0.7, type=float)
-    parser.add_argument('-plot', dest='plot', default=None)
-    parser.add_argument('--patience', '-pat' , dest='patience', type=int, default=2)
+    # basic option
+    parser.add_argument('-i', dest='input', help='input file path')
+    parser.add_argument('-smod', dest='smod', default=None, help='model save path')
+    parser.add_argument('-k', dest='k', default=1, type=int, help='context size k')
+    parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
+    # LSTM option
+    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt', help='w2v text path')
+    parser.add_argument('-vec', dest='vec', default=50, type=int, help='w2v vec size')
+    parser.add_argument('-val', dest='valid', type=float, default=0.1, help='valid data proportion in training data')
+    parser.add_argument('-stack', dest='stack', default=5, type=int, help='layer stack size')
+    parser.add_argument('-plot', dest='plot', default=None, help='path of model graph')
+    parser.add_argument('-pat' , dest='patience', type=int, default=2, help='early stop patience')
     return parser
 
 def lstm_crf_arg():
     parser = ArgumentParser()
-    parser.add_argument('-i', dest='input')
-    parser.add_argument('--lstm-k', '-lk', dest='lk', default=10, type=int)
-    parser.add_argument('--crf-k', '-ck', dest='ck', default=5, type=int)
-    parser.add_argument('--lstm-mod', '-lmod', dest='lmod')
-    parser.add_argument('--crf-mod', '-cmod', dest='cmod')
-    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt')
-    parser.add_argument('-vec', dest='vec', default=50, type=int)
+    parser.add_argument('-i', dest='input', help='input file path')
+    parser.add_argument('-lk', dest='lk', default=10, type=int, help='lstm context k')
+    parser.add_argument('-ck', dest='ck', default=5, type=int, help='crf context k')
+    parser.add_argument('-lmod', dest='lmod', help='load lstm model')
+    parser.add_argument('-cmod', dest='cmod', help='load crf model')
+    parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt', help='w2v text path')
+    parser.add_argument('-vec', dest='vec', default=50, type=int, help='w2v vec size')
     return parser
 
 def crf_data(args):
