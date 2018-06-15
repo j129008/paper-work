@@ -11,7 +11,7 @@ def crf_arg():
     parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
     # feature option
     parser.add_argument('-rhy', dest='rhy', default=None, help='反切,聲母,韻目,調,等,呼,韻母')
-    parser.add_argument('-list', dest='list', default=None, help='[feature name]:[list path],...')
+    parser.add_argument('-list', dest='list', default=None, help='vocabulary list file path')
     parser.add_argument('-ngram', dest='ngram', default=2, type=int, help='set ngram size')
     parser.add_argument('-pmi', action='store_true', help='add feature pmi')
     parser.add_argument('-tdiff', action='store_true', help='add feature tdiff')

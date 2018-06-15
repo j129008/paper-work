@@ -6,11 +6,19 @@
 -k     : 前後文範圍
 -ts    : 訓練、測試資料的比例
 
+### CRF only options
+-iter : 每次CV tune參數的次數
+-c1   : L1 regularization 參數
+-c2   : L2 regularization 參數
+
 ### feature options
 -rhy   : [反切,聲母,韻目,調,等,呼,韻母]
 -ngram : 使用ngram的長度, 1代表使用unigram, 2則是bigram, 3使用trigram
 -pmi   : 加入pmi作為特徵
 -tdiff : 加入tdiff作為特徵
+
+### other options
+-subtrain : 調整training data的大小比例
 
 
 ## LSTM options
