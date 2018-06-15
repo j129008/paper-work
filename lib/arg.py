@@ -9,6 +9,7 @@ def crf_arg():
     parser.add_argument('-smod', dest='save', default=None, help='model save path')
     parser.add_argument('-k', dest='k', default=1, type=int, help='context size k')
     parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
+    parser.add_argument('-subtrain', dest='subtrain', type=float, default=1.0, help='set training data size')
     # feature option
     parser.add_argument('-rhy', dest='rhy', default=None, help='反切,聲母,韻目,調,等,呼,韻母')
     parser.add_argument('-list', dest='list', default=None, help='vocabulary list file path')
@@ -24,6 +25,7 @@ def lstm_arg():
     parser.add_argument('-smod', dest='smod', default=None, help='model save path')
     parser.add_argument('-k', dest='k', default=1, type=int, help='context size k')
     parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
+    parser.add_argument('-subtrain', dest='subtrain', type=float, default=1.0, help='set training data size')
     # LSTM option
     parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt', help='w2v text path')
     parser.add_argument('-vec', dest='vec', default=50, type=int, help='w2v vec size')

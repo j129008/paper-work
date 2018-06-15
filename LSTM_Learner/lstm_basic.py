@@ -15,11 +15,12 @@ stack = args.stack
 trainsplit = args.trainsplit
 patience = args.patience
 valid = args.valid
+subtrain=args.subtrain
 
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, mode='min')
 
 # context
-x_train, x_test, y_train, y_test = context_data(path, k=k, vec_size=vec, w2v_text=w2v_text, train_size=trainsplit)
+x_train, x_test, y_train, y_test = context_data(path, k=k, vec_size=vec, w2v_text=w2v_text, train_size=trainsplit, size=subtrain)
 model = basic_model(x_train, stack=stack)
 model.fit([x_train], y_train, batch_size=100, callbacks=[early_stop], validation_split=valid, epochs=100)
 print('context k =', k)
