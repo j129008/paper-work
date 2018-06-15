@@ -84,6 +84,8 @@ def lstm_data(args):
             except:
                 data = VecLabel(path, lab_name=lab_name, lab_file=lab_file)
     data.union()
+    if args.noise == True:
+        data.shuffle()
     keys = [ key for key in data.X[0] ]
     data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
     x_train, x_test, y_train, y_test = train_test_split(

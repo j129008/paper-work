@@ -8,6 +8,7 @@ from lib.arg import lstm_arg, lstm_data
 parser = lstm_arg()
 parser.add_argument('-pmi', action='store_true')
 parser.add_argument('-tdiff', action='store_true')
+parser.add_argument('-noise', action='store_true')
 parser.add_argument('-rhy', dest='rhy', default=None, help='反切,聲母,韻目,調,等,呼,韻母')
 parser.add_argument('-list', dest='list', default=None)
 args = parser.parse_args()
