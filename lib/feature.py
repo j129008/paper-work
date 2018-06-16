@@ -345,7 +345,10 @@ class Rhyme(Data):
                 pd_ret = small_rhyme[rhyme_dic[word]]
                 exp = {}
                 for types in rhy_type_list:
-                    exp[types] = pd_ret[types]
+                    try:
+                        exp[types] = pd_ret[types]
+                    except:
+                        exp[types] = pd_ret.loc[types].iloc[0]
                 ret.append(exp)
             except:
                 exp = {}
