@@ -58,7 +58,7 @@ class VecContext(Context):
             print('load:', txt_file)
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
-            sentence.append(['！'])
+            sentence.append(['＊'])
             w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
@@ -68,7 +68,7 @@ class VecContext(Context):
             try:
                 return w2v[w]
             except:
-                return w2v['！']
+                return w2v['＊']
         self.X = np.array([ [ my_w2v(word) for word in ins.values() ] for ins in self.X ])
     def y2vec(self):
         self.Y = np.array([ 1 if ele == 'E' else 0 for ele in self.Y ])
