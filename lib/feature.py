@@ -363,3 +363,54 @@ class Rhyme(Data):
         for y in self.Y:
             self.X.append(ret[i:i+len(y)])
             i+=len(y)
+
+class VecRhyme(Data):
+    def __init__(self, path, index_file, db_file, rhy_type_list):
+        super().__init__(path)
+        logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
+        text = ''.join(self.text)
+        small_rhyme = pickle.load(open(db_file, 'rb'))
+        # remove duplicate rhyme
+        small_rhyme = small_rhyme.T
+        small_rhyme = small_rhyme[~small_rhyme.index.duplicated(keep='first')]
+        small_rhyme = small_rhyme.T
+        db = small_rhyme
+        for rhyme_type in db.index:
+            n = 0
+            rhy_dic = {}
+            for small_rhy in db.loc[rhyme_type].index:
+                rhy = db.loc[rhyme_type][small_rhy]
+                try:
+                    db.loc[rhyme_type][small_rhy] = rhy_dic[rhy]
+                except:
+                    n += 1
+                    rhy_dic[rhy] = n
+                    db.loc[rhyme_type][small_rhy] = rhy_dic[rhy]
+        small_rhyme = db
+        data = open(index_file, 'r', encoding='utf-8')
+        rhyme_dic = dict()
+        rhyme_type = ''
+        for line in data:
+            id, word, exp = line.strip().split('|')
+            if id.split('.')[1] == '1':
+                rhyme_type = word
+            rhyme_dic[word] = rhyme_type
+        ret = []
+
+        for word in text:
+            try:
+                pd_ret = small_rhyme[rhyme_dic[word]]
+                exp = {}
+                for types in rhy_type_list:
+                    exp[types] = pd_ret[types]
+                ret.append(exp)
+            except:
+                exp = {}
+                logging.debug(word)
+                for types in rhy_type_list:
+                    exp[types] = -1
+                ret.append(exp)
+        i=0
+        for y in self.Y:
+            self.X.append(ret[i:i+len(y)])
+            i+=len(y)
