@@ -9,6 +9,7 @@ import numpy as np
 import re
 import pickle
 import sys
+import logging
 import pdb
 
 def ngram(data, num=2):
@@ -328,6 +329,7 @@ class VecLabel(Data):
 class Rhyme(Data):
     def __init__(self, path, index_file, db_file, rhy_type_list):
         super().__init__(path)
+        logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
         text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
         data = open(index_file, 'r', encoding='utf-8')
@@ -352,6 +354,7 @@ class Rhyme(Data):
                 ret.append(exp)
             except:
                 exp = {}
+                logging.debug(word)
                 for types in rhy_type_list:
                     exp[types] = 'O'
                 ret.append(exp)
