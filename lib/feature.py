@@ -332,6 +332,10 @@ class Rhyme(Data):
         logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
         text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
+        # remove duplicate rhyme
+        small_rhyme = small_rhyme.T
+        small_rhyme = small_rhyme[~small_rhyme.index.duplicated(keep='first')]
+        small_rhyme = small_rhyme.T
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
@@ -347,10 +351,7 @@ class Rhyme(Data):
                 pd_ret = small_rhyme[rhyme_dic[word]]
                 exp = {}
                 for types in rhy_type_list:
-                    try:
-                        exp[types] = pd_ret[types]
-                    except:
-                        exp[types] = pd_ret.loc[types].iloc[0]
+                    exp[types] = pd_ret[types]
                 ret.append(exp)
             except:
                 exp = {}
