@@ -52,13 +52,14 @@ class VecContext(Context):
         try:
             w2v = pickle.load(open(vec_file, 'rb'))
             if len(w2v['！']) != self.vec_size:
-                print('regen w2v', len(w2v['！']), 'to', self.vec_size)
+                print('regen w2v', len(w2v['＊']), 'to', self.vec_size)
                 raise 'w2v err'
-        except:
-            print('load:', txt_file)
+        except Exception as ex:
+            print(ex, 'load:', txt_file)
             sentence = open(txt_file, 'r').read().replace('\n','').split('。')
             sentence = [ list(ele) for ele in sentence]
             sentence.append(['＊'])
+            sentence.append(['！'])
             w2v = Word2Vec(sentence, min_count=1, size=self.vec_size, workers=8, iter=50)
             pickle.dump(w2v, open(vec_file, 'wb'))
         return w2v
