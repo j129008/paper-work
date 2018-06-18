@@ -29,7 +29,7 @@ crf_pred = [ ele['E'] for ele in union(crf_pred) ]
 ans = union(crf_test.Y)
 
 # LSTM
-deep_test = VecContext(test_path, k=deep_k, vec_size=50, w2v_text='../data/w2v.txt')
+deep_test = VecContext(test_path, k=deep_k, vec_size=50, w2v_text=w2v_text)
 model = load_model(args.lmod)
 deep_pred = model.predict([deep_test.X])
 
