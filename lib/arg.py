@@ -75,9 +75,9 @@ def lstm_data(args):
             data = Tdiff(path, uniform=False)
     if args.rhy != None:
         try:
-            data += Rhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
+            data += VecRhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
         except:
-            data = Rhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
+            data = VecRhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', args.rhy.split(','))
     if args.list != None:
         for name_path in args.list.split(','):
             lab_name, lab_file = name_path.split(':')
