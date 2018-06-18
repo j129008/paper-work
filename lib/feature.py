@@ -163,8 +163,8 @@ class BigramVecContext(VecContext):
         self.X = X
 
 class UniVec(VecContext):
-    def __init__(self, path, k=1, vec_size=50, mode='chain', weight=None):
-        super().__init__(path, k=k, vec_size=vec_size)
+    def __init__(self, path, k=1, vec_size=50, w2v_text='./data/w2v.txt', pkl_name='./pickles/word2vec.pkl', mode='chain', weight=None):
+        super().__init__(path, k=k, vec_size=vec_size, w2v_text=w2v_text, pkl_name=pkl_name)
         if mode == 'chain':
             self.X = [ list(chain(*vec_list)) for vec_list in self.X ]
         elif mode == 'average':

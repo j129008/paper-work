@@ -13,16 +13,27 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import KFold
 from sklearn_crfsuite import metrics
 import lightgbm as lgb
+from argparse import ArgumentParser
 import csv
 
-path = './data/data_lite.txt'
-result_table = csv.writer( open('./csv/other_model.csv', 'w') )
-vec = UniVec(path, vec_size=50, k=2, mode='chain')
+parser = ArgumentParser()
+parser.add_argument('-i', dest='input', help='input file path')
+parser.add_argument('-o', dest='output', help='output csv path')
+parser.add_argument('-k', dest='k', default=1, type=int, help='context size k')
+parser.add_argument('-ts', dest='trainsplit', default=0.7, type=float, help='train test split size')
+parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt', help='w2v text path')
+parser.add_argument('-vec', dest='vec', default=50, type=int, help='w2v vec size')
+args = parser.parse_args()
+
+path = args.input
+result_table = csv.writer( open(args.output, 'w') )
+result_table.writerow(['model', 'Precision', 'Recall', 'F1'])
+vec = UniVec(path, vec_size=args.vec, k=args.k, w2v_text=args.w2v, mode='chain')
 X = np.array(vec.X)
 Y = np.array(vec.Y)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    X, Y, test_size=0.3, shuffle=False
+    X, Y, test_size=1.0-args.trainsplit, shuffle=False
 )
 
 clf_list = [
