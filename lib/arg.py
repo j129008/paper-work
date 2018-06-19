@@ -91,7 +91,12 @@ def lstm_data(args):
     if args.noise == True:
         data.shuffle()
     keys = [ key for key in data.X[0] ]
-    data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
+    if args.rhy != None:
+        keys.remove(args.rhy)
+        data.X = [ [ ins[k] for k in keys ]+ins[args.rhy] for ins in data.X ]
+        keys.append(args.rhy)
+    else:
+        data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
     x_train, x_test, y_train, y_test = train_test_split(
         data.X, data.Y, test_size=1.0-args.trainsplit, shuffle=False
     )
