@@ -5,6 +5,8 @@ W2V=./data/w2v.txt
 cd ./LSTM_Learner
 echo 'lstm data need'
 ./lstm_data.sh $INPUT > lstm_data.txt
+echo 'lstm stack'
+./lstm_stack.sh $INPUT > lstm_stack.txt
 echo 'lstm context'
 ./lstm_k.sh $INPUT > lstm_k.txt
 echo 'lstm feature'
