@@ -23,6 +23,11 @@ deep_k     = args.lk
 
 # CRF
 crf_test  = Context(test_path, k=crf_k)
+if args.cpmi == True:
+    crf_test  += MutualInfo(test_path)
+if args.ctdiff == True:
+    crf_test  += Tdiff(test_path)
+
 crf = pickle.load(open(args.cmod, 'rb'))
 crf_pred = crf.predict_prob(crf_test.X)
 union = lambda x: [ ins for chap in x for ins in chap ]

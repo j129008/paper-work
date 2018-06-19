@@ -42,6 +42,8 @@ def lstm_crf_arg():
     parser.add_argument('-ck', dest='ck', default=5, type=int, help='crf context k')
     parser.add_argument('-lmod', dest='lmod', help='load lstm model')
     parser.add_argument('-cmod', dest='cmod', help='load crf model')
+    parser.add_argument('-cpmi', action='store_true', help='load crf pmi')
+    parser.add_argument('-ctdiff', action='store_true', help='load crf tdiff')
     parser.add_argument('-w2v', dest='w2v', default='./data/w2v.txt', help='w2v text path')
     parser.add_argument('-vec', dest='vec', default=50, type=int, help='w2v vec size')
     return parser
