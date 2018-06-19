@@ -93,15 +93,23 @@ def aux_adv_data(path):
 
 def basic_model(data, stack=5, seq=False):
     inputs = Input(shape=(len(data[0]), len(data[0][0])))
-    x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
-    for _ in range(stack-2):
-        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-    if seq == True:
-        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
-        main_output = TimeDistributed(Dense(1, activation='sigmoid'))(x)
-    else:
+    if stack == 1:
+        x = Bidirectional(CuDNNLSTM(50))(inputs)
+        main_output = Dense(1, activation='sigmoid')(x)
+    elif stack == 2:
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
         x = Bidirectional(CuDNNLSTM(50))(x)
         main_output = Dense(1, activation='sigmoid')(x)
+    else:
+        x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(inputs)
+        for _ in range(stack-2):
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+        if seq == True:
+            x = Bidirectional(CuDNNLSTM(50, return_sequences=True))(x)
+            main_output = TimeDistributed(Dense(1, activation='sigmoid'))(x)
+        else:
+            x = Bidirectional(CuDNNLSTM(50))(x)
+            main_output = Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs=[inputs], outputs=main_output)
     model.compile(loss='binary_crossentropy',
