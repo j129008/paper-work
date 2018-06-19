@@ -1,4 +1,6 @@
 from collections import Counter
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
 from lib.data import Data
 from math import log2, sqrt, pow
 from gensim.models import Word2Vec
@@ -333,10 +335,6 @@ class Rhyme(Data):
         logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
         text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
-        # remove duplicate rhyme
-        small_rhyme = small_rhyme.T
-        small_rhyme = small_rhyme[~small_rhyme.index.duplicated(keep='first')]
-        small_rhyme = small_rhyme.T
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
@@ -371,23 +369,9 @@ class VecRhyme(Data):
         logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
         text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
-        # remove duplicate rhyme
-        small_rhyme = small_rhyme.T
-        small_rhyme = small_rhyme[~small_rhyme.index.duplicated(keep='first')]
-        small_rhyme = small_rhyme.T
-        db = small_rhyme
-        for rhyme_type in db.index:
-            n = 0
-            rhy_dic = {}
-            for small_rhy in db.loc[rhyme_type].index:
-                rhy = db.loc[rhyme_type][small_rhy]
-                try:
-                    db.loc[rhyme_type][small_rhy] = rhy_dic[rhy]
-                except:
-                    n += 1
-                    rhy_dic[rhy] = n
-                    db.loc[rhyme_type][small_rhy] = rhy_dic[rhy]
-        small_rhyme = db
+        types = rhy_type_list[0]
+        vec_dict = pd.get_dummies(small_rhyme.loc[types]).T
+        vec_len = vec_dict.shape[0]
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
@@ -400,16 +384,13 @@ class VecRhyme(Data):
 
         for word in text:
             try:
-                pd_ret = small_rhyme[rhyme_dic[word]]
                 exp = {}
-                for types in rhy_type_list:
-                    exp[types] = pd_ret[types]
+                exp[types] = list(vec_dict[word])
                 ret.append(exp)
             except:
                 exp = {}
                 logging.debug(word)
-                for types in rhy_type_list:
-                    exp[types] = -1
+                exp[types] = [0]*vec_len
                 ret.append(exp)
         i=0
         for y in self.Y:

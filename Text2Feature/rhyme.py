@@ -12,6 +12,7 @@ for t in type_list:
 pprint(data.X[0][:10])
 
 # digit type
+type_list = ['調']
 rhyme = VecRhyme(path, '../data/rhyme.txt', '../pickles/rhyme_list.pkl', type_list)
 data = Context(path, k=0)
 
