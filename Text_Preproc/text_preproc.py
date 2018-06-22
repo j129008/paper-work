@@ -17,7 +17,7 @@ class TextPreproc:
             chap_proc = re.sub(r'[A-z]', '', chap_proc)
             chap_proc = re.sub(r'[ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ]', '', chap_proc)
             chap_proc = re.sub(r'[０１２３４５６７８９]', '', chap_proc)
-            chap_proc = re.sub(r'[■□╮●△↓Δ＊　]', '', chap_proc)
+            chap_proc = re.sub(r'[■╮●△↓Δ＊　]', '', chap_proc)
             chap_proc = re.sub(r'[\x00-\x7F]', '', chap_proc)
             chap_proc = re.sub(r'（[^）]*）', '', chap_proc)
             chap_proc = re.sub(r'【[^】]*】', '', chap_proc)

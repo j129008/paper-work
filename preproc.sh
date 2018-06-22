@@ -1,5 +1,5 @@
 #!/bin/bash
-RAW=./data/buddhist_info_RAW.txt
+RAW=./data/epitaph_RAW.txt
 DATA=./data/tang_epitaph.txt
 TRAIN=./data/train.txt
 TEST=./data/test.txt
