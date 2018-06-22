@@ -1,6 +1,9 @@
 import pdb
 import re
 from collections import Counter
+from sklearn_crfsuite import metrics
+from lib.data import Data
+
 class Demo:
     def __init__(self, file_name='demo.txt', learner=None):
         f = open(file_name, 'w')
@@ -78,3 +81,10 @@ def pred2text(text_path, pred):
             i += 1
         output += '\n'
     return output
+
+def text2score(ans_path, pred_path):
+    ans_data = Data(ans_path)
+    pred_data = Data(pred_path)
+    print(metrics.flat_classification_report(
+        ans_data.Y, pred_data.Y, labels=('I', 'E'), digits=4
+    ))
