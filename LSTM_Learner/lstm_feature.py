@@ -20,6 +20,7 @@ stack = args.stack
 trainsplit = args.trainsplit
 patience = args.patience
 valid = args.valid
+plot = args.plot
 
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=patience, mode='min')
 k_baseline = k
@@ -46,6 +47,8 @@ x = Dense(50, activation='relu')(x)
 main_output = Dense(1, activation='sigmoid')(x)
 
 model = Model(inputs=[inputs, aux_input], outputs=main_output)
+if plot != None:
+    plot_model(model, to_file=plot, show_layer_names=False)
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
