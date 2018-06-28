@@ -9,11 +9,10 @@ function linker {
    cd ..
 }
 
-linker CRF_Learner
-linker LSTM_Learner
-linker CRF_LSTM_Ensemble
-linker Text2Feature
-linker Text_Classify
-linker Text_Preproc
-linker Other_Model
-linker RE_Fix
+linker 斷句模型選擇
+linker 前後文範圍實驗
+linker 輔助特徵選擇
+linker 模型的資料量需求
+linker CRF的整合學習
+linker LSTM的模型結構
+linker CRF+LSTM的最佳整合
