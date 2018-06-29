@@ -29,5 +29,6 @@ basic_linker '前後文範圍實驗/'
 basic_linker '輔助特徵選擇/'
 basic_linker '模型的資料量需求'
 basic_linker 'LSTM的模型結構/'
+basic_linker 'CRF+LSTM的最佳整合/'
 
 rm ./LSTM的模型結構/crf_basic.py
