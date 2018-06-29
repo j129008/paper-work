@@ -7,7 +7,6 @@ TEST="$PROC.test"
 echo '文字前處理'
 cd 文字前處理/
 ./text_preproc.sh $RAW $PROC
-./text_split.sh $PROC $TRAIN $TEST
 cd ..
 
 echo '斷句模型選擇'
@@ -41,12 +40,14 @@ cd ..
 
 echo 'LSTM的模型結構'
 cd LSTM的模型結構/
+./w2v_size.sh* $PROC
 ./lstm_s2s.sh $PROC
 ./lstm_stack.sh $PROC
 cd ..
 
 echo 'CRF+LSTM的最佳整合'
 cd CRF+LSTM的最佳整合/
+./text_split.sh $PROC $TRAIN $TEST
 ./crf_best.sh $TRAIN
 ./lstm_best.sh $TRAIN
 ./avg_ensemble.sh $TEST
