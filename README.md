@@ -107,41 +107,41 @@ lstm+crf_avg_ensemble.py
 
 ## data
 ### 唐代墓誌銘語料
-epitaph_RAW.txt  : 原始語料  
-tang_epitaph.txt : 斷句語料  
+epitaph_RAW.txt  : 原始語料
+tang_epitaph.txt : 斷句語料
 ### 中國佛教寺廟志語料
-buddhist_info.txt     : 原始語料  
-buddhist_info_RAW.txt : 斷句語料  
+buddhist_info.txt     : 原始語料
+buddhist_info_RAW.txt : 斷句語料
 ### 字嵌入語料
 w2v.txt
 ### 測試語料
-data_lite_RAW.txt  
-data_lite.txt  
-test_lite.txt  
+data_lite_RAW.txt
+data_lite.txt
+test_lite.txt
 ### 小韻表
 rhyme.txt
 
 ## lib
-arg.py              : 讀取程式參數  
-ensumble_learner.py : 產生 CRF 整合學習模型  
-crf.py              : 產生 CRF 模型  
-learner.py          : 訓練 CRF 模型  
-lstmlib.py          : 產生 LSTM 模型  
-data.py             : 產生斷句語料與文字分類  
-feature.py          : 產生特徵資料  
-crawer.py           : 抓取「韻典網」的小韻表資訊  
+arg.py              : 讀取程式參數
+ensumble_learner.py : 產生 CRF 整合學習模型
+crf.py              : 產生 CRF 模型
+learner.py          : 訓練 CRF 模型
+lstmlib.py          : 產生 LSTM 模型
+data.py             : 產生斷句語料與文字分類
+feature.py          : 產生特徵資料
+crawer.py           : 抓取「韻典網」的小韻表資訊
 
 ## pickles
-bagging.pkl    : CRF-Bagging 模型檔案  
-boost.pkl      : CRF-Boost 模型檔案  
-crf.pkl        : CRF 模型檔案  
-lstm.h5        : LSTM 模型檔案  
-s2s.h5         : sequence to sequence 模型檔案  
-rhyme_list.pkl : 小韻表 python 資料庫物件  
-word2vec.pkl   : 字嵌入模型檔案  
+bagging.pkl    : CRF-Bagging 模型檔案
+boost.pkl      : CRF-Boost 模型檔案
+crf.pkl        : CRF 模型檔案
+lstm.h5        : LSTM 模型檔案
+s2s.h5         : sequence to sequence 模型檔案
+rhyme_list.pkl : 小韻表 python 資料庫物件
+word2vec.pkl   : 字嵌入模型檔案
 
 ## ref
-tang_name                            : 唐代墓誌銘名詞表資料夾  
-tang_name/tangAddresses.clliu.txt    : 地名  
-tang_name/tangOffice.clliu.txt       : 官職  
-tang_name/tangReignperiods.clliu.txt : 年號  
+tang_name                            : 唐代墓誌銘名詞表資料夾
+tang_name/tangAddresses.clliu.txt    : 地名
+tang_name/tangOffice.clliu.txt       : 官職
+tang_name/tangReignperiods.clliu.txt : 年號
