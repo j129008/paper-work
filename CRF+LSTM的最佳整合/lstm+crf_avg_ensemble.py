@@ -1,8 +1,3 @@
-import tensorflow as tf
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
-
 import pickle
 from lib.feature import *
 from keras.models import load_model

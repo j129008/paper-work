@@ -6,7 +6,7 @@ from sklearn_crfsuite import CRF
 import pickle
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 class RandomForest(RandomForestClassifier):
     def build_index(self, x, max_dim=200):

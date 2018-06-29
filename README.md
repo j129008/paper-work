@@ -18,10 +18,14 @@
 | CRF的整合學習      | 7.5  |
 | LSTM的模型結構     | 7.6  |
 | CRF+LSTM的最佳整合 | 7.7  |
-| data               | 4.3  |
-| lib                |      |
-| pickles            |      |
-| ref                |      |
+
+| 資料夾        | 用途         |
+| ------------- | ------------ |
+| basic_learner | 基礎模型     |
+| data          | 語料檔案     |
+| lib           | 函式庫       |
+| pickles       | 儲存訓練模型 |
+| ref           | 名詞表       |
 
 
 ## 文字前處理
@@ -42,7 +46,7 @@ other_models.py
 
 ## 前後文範圍實驗
 ### CRF實驗
-crf_learner.py
+crf_basic.py
 ```
 ./crf_k.sh [ 斷句語料路徑 ]
 ```
@@ -54,7 +58,7 @@ lstm_basic.py
 
 ## 輔助特徵選擇
 ### CRF實驗
-crf_learner.py
+crf_basic.py
 ```
 ./crf_feature.sh
 ```
@@ -67,7 +71,7 @@ lstm_feature.py
 
 ## 模型的資料量需求
 ### CRF實驗
-crf_learner.py
+crf_basic.py
 ```
 ./crf_data.sh [ 斷句語料路徑 ]
 ```
@@ -106,7 +110,9 @@ lstm+crf_avg_ensemble.py
 ```
 ./avg_ensemble.sh [ 斷句語料路徑 ]
 ```
-
+## basic_learner
+crf_basic.py  : CRF模型訓練工具
+lstm_basic.py : LSTM模型訓練工具
 ## data
 ### 唐代墓誌銘語料
 epitaph_RAW.txt  : 原始語料

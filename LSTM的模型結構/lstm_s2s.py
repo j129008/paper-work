@@ -1,7 +1,3 @@
-import tensorflow as tf
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.Session(config=config)
 from lib.lstmlib import *
 from lib.arg import lstm_arg
 
