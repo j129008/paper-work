@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 other_models.py -i ./data/data_lite.txt -o out.csv -k 1
+python3 other_models.py -i $1 -o out.csv -k 1
