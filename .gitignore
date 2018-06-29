@@ -6,5 +6,6 @@ pickles
 *.csv
 tags
 log*
+*.log
 *.png
 csv
