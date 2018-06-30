@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# -k: 前後文範圍, -i: 斷句語料路徑, -ts: 訓練資料佔斷句語料比例, -subtrain: 使用部分訓練資料比例
 echo 'data size :' 0.1
 time python3 ./crf_basic.py -i $1 -k 5 -ts 0.7 -subtrain 0.1
 echo 'data size :' 0.2

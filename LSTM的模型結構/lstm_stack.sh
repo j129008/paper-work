@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# END: 層數從 1~10 測試, -ts: 訓練資料比例, -stack: lstm 層數設定
 END=10
 for i in $(seq 1 $END);
 do

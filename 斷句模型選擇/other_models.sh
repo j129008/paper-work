@@ -1,2 +1,3 @@
 #!/bin/bash
-python3 other_models.py -i $1 -o out.csv -k 1
+# -i: 斷句語料路徑, -k: 前後文範圍
+python3 other_models.py -i $1 -k 1
