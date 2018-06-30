@@ -22,6 +22,7 @@ echo '前後文範圍實驗'
 cd 前後文範圍實驗/
 ./crf_k.sh $PROC
 ./lstm_k.sh $PROC
+./lstm_bigram_k.sh $PROC
 cd ..
 
 echo '輔助特徵選擇'
