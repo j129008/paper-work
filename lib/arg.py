@@ -37,7 +37,9 @@ def lstm_arg():
 
 def lstm_crf_arg():
     parser = ArgumentParser()
-    parser.add_argument('-i', dest='input', help='input file path')
+    parser.add_argument('-train', dest='train', help='train file path')
+    parser.add_argument('-test', dest='test', help='test file path')
+    parser.add_argument('-pred', dest='pred', default=None, help='predict file path')
     parser.add_argument('-lk', dest='lk', default=10, type=int, help='lstm context k')
     parser.add_argument('-ck', dest='ck', default=5, type=int, help='crf context k')
     parser.add_argument('-lmod', dest='lmod', help='load lstm model')

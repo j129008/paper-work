@@ -200,9 +200,11 @@ class MutualInfo(UniformScore, Data):
         super().__init__(path)
         tag_name = 'mi-info'
         if text_file != None:
-            _text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
-            w_dic = Counter(_text)
-            bi_dic = Counter(ngram(_text))
+            train_text = ''.join(self.text)
+            test_text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
+            train_test_text = train_text + test_text
+            w_dic = Counter(train_test_text)
+            bi_dic = Counter(ngram(train_test_text))
         else:
             w_dic = Counter(''.join(self.text))
             bi_dic = Counter([ gram for chap_text in self.text for gram in ngram(chap_text)])
@@ -212,7 +214,10 @@ class MutualInfo(UniformScore, Data):
                 Pxy = max(bi_dic[chap_text[i:i+2]]/( len(chap_text)-1 ), sys.float_info.min)
                 Px = w_dic[chap_text[i]]/len(chap_text)
                 Py = w_dic[chap_text[i+1]]/len(chap_text)
-                mi = log2( Pxy/(Px*Py))
+                try:
+                    mi = log2( Pxy/(Px*Py))
+                except:
+                    mi = 0.0
                 mi_score.append( { tag_name: mi } )
             mi_score.append( { tag_name: 0.0 } )
             if noise == True:
@@ -244,9 +249,11 @@ class Tdiff(UniformScore, Data):
             return v_dic
         # wxyz
         if text_file != None:
-            _text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
-            w_dic = Counter(_text)
-            bi_dic = Counter(ngram(_text))
+            train_text = ''.join(self.text)
+            test_text = open(text_file, 'r').read().replace('\n', '').replace('，', '')
+            train_test_text = train_text + test_text
+            w_dic = Counter(train_test_text)
+            bi_dic = Counter(ngram(train_test_text))
         else:
             w_dic = Counter(text)
             bi_dic = Counter(ngram(text))

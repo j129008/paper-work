@@ -5,12 +5,15 @@ from sklearn_crfsuite import metrics
 from lib.lstmlib import *
 import numpy as np
 from lib.arg import lstm_crf_arg
+from lib.metric import pred2text
 
 parser = lstm_crf_arg()
 args = parser.parse_args()
-test_path  = args.input
+train_path  = args.train
+test_path  = args.test
 w2v_text = args.w2v
 vec = args.vec
+pred_path = args.pred
 
 crf_k      = args.ck
 deep_k     = args.lk
@@ -18,9 +21,9 @@ deep_k     = args.lk
 # CRF
 crf_test  = Context(test_path, k=crf_k)
 if args.cpmi == True:
-    crf_test  += MutualInfo(test_path)
+    crf_test  += MutualInfo(test_path, text_file=train_path)
 if args.ctdiff == True:
-    crf_test  += Tdiff(test_path)
+    crf_test  += Tdiff(test_path, text_file=train_path)
 print(args.cmod)
 crf = pickle.load(open(args.cmod, 'rb'))
 crf_pred = crf.predict_prob(crf_test.X)
@@ -52,3 +55,7 @@ print('CRF:')
 print(metrics.flat_classification_report(
     ans, label_crf, labels=('I', 'E'), digits=4
 ))
+
+if pred_path != None:
+    f = open(pred_path, 'w')
+    f.write(pred2text(test_path, label_crf_deep))
