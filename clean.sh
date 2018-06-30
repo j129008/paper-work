@@ -1,5 +1,6 @@
 #!/bin/bash
 rm -f ./data/*.pred
+rm -f ./data/*.proc
 rm -f ./data/*.re
 rm -f ./data/*.train
 rm -f ./data/*.test
