@@ -1,12 +1,9 @@
 # 斷句程式使用說明
 初次使用本程式須先執行「config.sh」，方式如下：
-```
-./config.sh
-```
 
-以下是資料夾及其對應的論文實驗章節。
+若是執行新實驗，可使用「clean.sh」清除舊實驗資料以避免資料混亂。
 
-資料夾內容以及執行方法在下文分別介紹。
+以下是資料夾及其對應的論文實驗章節，內容以及執行方法在下文分別介紹。
 
 | 資料夾             | 章節 |
 | ------------------ | ---- |
@@ -30,102 +27,85 @@
 
 ## 文字前處理
 ### 統一符號
-text_preproc.py
 ```
 ./text_preproc.sh [ 原始語料路徑 ]
 ```
 ### 語料分割
+```
 text_split.sh
-text_split.py
+```
 
 ## 斷句模型選擇
-other_models.py
 ```
 ./other_models.sh [ 斷句語料路徑 ]
 ```
 
 ## 前後文範圍實驗
 ### CRF實驗
-crf_basic.py
 ```
 ./crf_k.sh [ 斷句語料路徑 ]
 ```
 ### LSTM實驗
-lstm_basic.py
 ```
 ./lstm_k.sh [ 斷句語料路徑 ]
 ```
 
 ## 輔助特徵選擇
 ### CRF實驗
-crf_basic.py
 ```
 ./crf_feature.sh
 ```
-
 ### LSTM實驗
-lstm_feature.py
 ```
 ./lstm_feature.sh [ 斷句語料路徑 ]
 ```
 
 ## 模型的資料量需求
 ### CRF實驗
-crf_basic.py
 ```
 ./crf_data.sh [ 斷句語料路徑 ]
 ```
 ### LSTM實驗
-lstm_basic.py
 ```
 ./lstm_data.sh [ 斷句語料路徑 ]
 ```
 
 ## CRF的整合學習
 ### CRF-Bagging實驗
-crf_bagging.py
 ```
 ./bagging_k.sh [ 斷句語料路徑 ]
 ```
 ### CRF-Boost實驗
-crf_boost.py
 ```
 ./boost_k.sh [ 斷句語料路徑 ]
 ```
 
 ## LSTM的模型結構
 ### LSTM stack實驗
-lstm_basic.py
 ```
 ./lstm_stack.sh [ 斷句語料路徑 ]
 ```
 ### sequence to sequence實驗
-lstm_s2s.py
 ```
 ./lstm_s2s.sh [ 斷句語料路徑 ]
 ```
 
 ## CRF+LSTM的最佳整合
-lstm+crf_avg_ensemble.py
 ```
 ./avg_ensemble.sh [ 斷句語料路徑 ]
 ```
+
 ## basic_learner
 crf_basic.py  : CRF模型訓練工具
 lstm_basic.py : LSTM模型訓練工具
+
 ## data
 ### 唐代墓誌銘語料
 epitaph_RAW.txt  : 原始語料
-tang_epitaph.txt : 斷句語料
 ### 中國佛教寺廟志語料
 buddhist_info.txt     : 原始語料
-buddhist_info_RAW.txt : 斷句語料
-### 字嵌入語料
-w2v.txt
 ### 測試語料
 data_lite_RAW.txt
-data_lite.txt
-test_lite.txt
 ### 小韻表
 rhyme.txt
 
@@ -140,16 +120,16 @@ feature.py          : 產生特徵資料
 crawer.py           : 抓取「韻典網」的小韻表資訊
 
 ## pickles
-bagging.pkl    : CRF-Bagging 模型檔案
-boost.pkl      : CRF-Boost 模型檔案
-crf.pkl        : CRF 模型檔案
-lstm.h5        : LSTM 模型檔案
-s2s.h5         : sequence to sequence 模型檔案
 rhyme_list.pkl : 小韻表 python 資料庫物件
-word2vec.pkl   : 字嵌入模型檔案
 
 ## ref
-tang_name                            : 唐代墓誌銘名詞表資料夾
+tang_name/                           : 唐代墓誌銘名詞表資料夾
 tang_name/tangAddresses.clliu.txt    : 地名
 tang_name/tangOffice.clliu.txt       : 官職
 tang_name/tangReignperiods.clliu.txt : 年號
+tang_name/all.txt                    : 合併以上三個名詞表的檔案
+
+budd/                                : 佛典資料夾
+budd/cjkve.txt                       : 佛典詞表1
+budd/ddb.txt                         : 佛典詞表2
+budd/all.txt                         : 合併以上兩個名詞表的檔案
