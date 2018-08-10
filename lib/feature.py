@@ -316,7 +316,7 @@ class VecLabel(Data):
         super().__init__(path)
         text = ''.join(self.text)
         lab_data = open(lab_file, 'r', encoding='utf-8').read().split('\n')[:-1]
-        lab_list = [0]*len( text )
+        lab_list = [[0,0,0]]*len( text )
         for lab in lab_data:
             try:
                 p = re.compile( lab )
@@ -324,10 +324,10 @@ class VecLabel(Data):
                 # check exist
                 if set( lab_list[m:m+len(lab)] ) != {0}:
                     continue
-                lab_list[m] = 1
-                lab_list[m+len(lab)-1] = 3
+                lab_list[m] = [1,0,0]
+                lab_list[m+len(lab)-1] = [0,0,1]
                 for j in range(m+1, m+len(lab)-1):
-                    lab_list[j] = 2
+                    lab_list[j] = [0,1,0]
             except:
                 continue
         lab = [ {lab_name:lab} for lab in lab_list ]
