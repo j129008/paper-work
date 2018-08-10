@@ -373,12 +373,8 @@ class Rhyme(Data):
 class VecRhyme(Data):
     def __init__(self, path, index_file, db_file, rhy_type_list):
         super().__init__(path)
-        logging.basicConfig(filename='rhyme.log', level=logging.DEBUG)
         text = ''.join(self.text)
         small_rhyme = pickle.load(open(db_file, 'rb'))
-        types = rhy_type_list[0]
-        vec_dict = pd.get_dummies(small_rhyme.loc[types]).T
-        vec_len = vec_dict.shape[0]
         data = open(index_file, 'r', encoding='utf-8')
         rhyme_dic = dict()
         rhyme_type = ''
@@ -392,13 +388,17 @@ class VecRhyme(Data):
         for word in text:
             try:
                 exp = {}
-                exp[types] = list(vec_dict[word])
-                ret.append(exp)
+                for types in rhy_type_list:
+                    vec_dict = pd.get_dummies(small_rhyme.loc[types]).T
+                    vec_len = vec_dict.shape[0]
+                    exp[types] = list(vec_dict[word])
             except:
                 exp = {}
-                logging.debug(word)
-                exp[types] = [0]*vec_len
-                ret.append(exp)
+                for types in rhy_type_list:
+                    vec_dict = pd.get_dummies(small_rhyme.loc[types]).T
+                    vec_len = vec_dict.shape[0]
+                    exp[types] = [0]*vec_len
+            ret.append(exp)
         i=0
         for y in self.Y:
             self.X.append(ret[i:i+len(y)])

@@ -8,6 +8,7 @@ session = tf.Session(config=config)
 from lib.feature import *
 from sklearn.model_selection import train_test_split
 from argparse import ArgumentParser
+import pdb
 
 def crf_arg():
     parser = ArgumentParser()
@@ -100,12 +101,16 @@ def lstm_data(args):
     if args.noise == True:
         data.shuffle()
     keys = [ key for key in data.X[0] ]
-    if args.rhy != None:
-        keys.remove(args.rhy)
-        data.X = [ [ ins[k] for k in keys ]+ins[args.rhy] for ins in data.X ]
-        keys.append(args.rhy)
-    else:
-        data.X = [ [ ins[k] for k in keys ] for ins in data.X ]
+    _X = []
+    for ins in data.X:
+        _ins = []
+        for k in keys:
+            if type(ins[k]) == list:
+                _ins += ins[k]
+            else:
+                _ins.append(ins[k])
+        _X.append(_ins)
+    data.X = _X
     x_train, x_test, y_train, y_test = train_test_split(
         data.X, data.Y, test_size=1.0-args.trainsplit, shuffle=False
     )
