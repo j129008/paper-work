@@ -75,16 +75,16 @@ def aux_data(path):
     return x_train, x_test
 
 def aux_adv_data(path):
-    def lab2val(l, tag):
+    def lab2val(l):
         if l[0] == 'O':
-            return 1 + tag*10
+            return [0,0,0]
         elif l[0] == 'B':
-            return 2 + tag*10
+            return [1,0,0]
         elif l[0] == 'I':
-            return 3 + tag*10
+            return [0,1,0]
         elif l[0] == 'E':
-            return 4 + tag*10
-        return 0
+            return [0,0,1]
+        return [0,0,0]
     office = Label(path, lab_name='office', lab_file='./ref/tang_name/tangOffice.clliu.txt')
     nianhao = Label(path, lab_name='nianhao', lab_file='./ref/tang_name/tangReignperiods.clliu.txt')
     address = Label(path, lab_name='address', lab_file='./ref/tang_name/tangAddresses.clliu.txt')
@@ -92,7 +92,7 @@ def aux_adv_data(path):
     pmi = MutualInfo(path, uniform=False, noise=True)
     aux_data = office + nianhao + address + pmi + tdiff
     aux_data.union()
-    aux_data.X = [ [ele['t-diff'], ele['mi-info'], lab2val(ele['office'], 1), lab2val(ele['address'], 2), lab2val(ele['nianhao'], 3)] for ele in aux_data.X ]
+    aux_data.X = [ [ele['t-diff'], ele['mi-info'] ] + lab2val(ele['office']) + lab2val(ele['address']) + lab2val(ele['nianhao']) for ele in aux_data.X ]
     x_train, x_test, y_train, y_test = train_test_split(
         aux_data.X, aux_data.Y, test_size=0.3, shuffle=False
     )
